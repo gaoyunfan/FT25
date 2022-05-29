@@ -81,11 +81,11 @@ function useProvideAuth() {
     });
   };
 
-  //const signInWithGoogle = () => {
-    //return signInWithPopup(firebaseAuth, googleAuthProvider);
-  //};
+  const signInWithGoogle = () => {
+    return signInWithPopup(firebaseAuth, googleAuthProvider);
+  };
 
-  const signInWithGoogle = async () => {
+ /* const signInWithGoogle = async () => {
     try {
       const res = await signInWithGoogle(firebaseAuth, googleAuthProvider);
       const user = res.user;
@@ -103,7 +103,7 @@ function useProvideAuth() {
       console.error(err);
       alert(err.message);
     } 
-  };
+  }; */
 
   const logInWithEmailAndPassword = async (email, password) => {
     try {
