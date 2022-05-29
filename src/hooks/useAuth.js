@@ -174,7 +174,5 @@ function useProvideAuth() {
     registerWithEmailAndPassword,
     sendPasswordReset,
     logout
-
-
   };
 }

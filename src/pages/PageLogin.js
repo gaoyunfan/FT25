@@ -19,36 +19,18 @@ import {
   InputGroup,
   InputRightElement,
   IconButton,
-  FormHelperText,
-  FormErrorMessage,
-  ButtonGroup,
 } from "@chakra-ui/react";
 
-import { useForm } from "react-hook-form";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 import { useState } from "react";
 import { HiEye, HiEyeOff } from "react-icons/hi";
 
 export default function PageLogin() {
-  const {
-    user,
-    signin,
-    signup,
-    signout,
-    sendPasswordResetEmail,
-    confirmPasswordReset,
-  } = useAuth();
+  const { user, logInWithEmailAndPassword } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
-
-  const onSubmit = (data) => {
-    console.log(data);
-      signin(data.email, data.password);
-  };
   const [isOpen, setOpen] = useState(false);
   const onClickReveal = () => setOpen(!isOpen);
 
@@ -116,7 +98,12 @@ export default function PageLogin() {
             <Stack spacing="5">
               <FormControl>
                 <FormLabel htmlFor="email">Email</FormLabel>
-                <Input id="email" type="email" />
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
               </FormControl>
               {/*<PasswordField />*/}
               <FormControl>
@@ -133,7 +120,9 @@ export default function PageLogin() {
                   <Input
                     id="password"
                     name="password"
+                    vaule={password}
                     type={isOpen ? "text" : "password"}
+                    onChange={(e) => setPassword(e.target.value)}
                     required
                   />
                 </InputGroup>
@@ -146,7 +135,13 @@ export default function PageLogin() {
               </Button>
             </HStack>
             <Stack spacing="6">
-              <Button colorScheme='twitter' variant="solid">Sign in</Button>
+              <Button
+                colorScheme="twitter"
+                variant="solid"
+                onClick={() => logInWithEmailAndPassword(email, password)}
+              >
+                Sign in
+              </Button>
               <HStack>
                 <Divider />
                 <Text fontSize="sm" whiteSpace="nowrap" color="muted">
