@@ -13,7 +13,7 @@ export default function App() {
     
     <div className="app">
       <Navbar />
-      {user ? <PageTodo /> : <PageLogin />}
+      {user ? <PageTodo /> : <><PageLogin /> <PageSignup /> </>}
     </div>
   );
 }

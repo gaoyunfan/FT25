@@ -137,14 +137,6 @@ export default function PageLogin() {
               >
                 Sign up
               </Button>
-              <HStack>
-                <Divider />
-                <Text fontSize="sm" whiteSpace="nowrap" color="muted">
-                  or continue with
-                </Text>
-                <Divider />
-              </HStack>
-              <OAuthButtonGroup />
             </Stack>
           </Stack>
         </Box>
