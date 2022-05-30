@@ -69,7 +69,7 @@ function useProvideAuth() {
     });
   };
 
-  const sendPasswordResetEmail = (email) => {
+  const sendPassResetEmail = (email) => {
     return firebaseAuth.sendPasswordResetEmail(email).then(() => {
       return true;
     });
@@ -114,13 +114,12 @@ function useProvideAuth() {
     }
   };
 
-  const registerWithEmailAndPassword = async (name, email, password) => {
+  const registerWithEmailAndPassword = async (email, password) => {
     try {
       const res = await createUserWithEmailAndPassword(firebaseAuth, email, password);
       const user = res.user;
       await addDoc(collection(db, "users"), {
         uid: user.uid,
-        name,
         authProvider: "local",
         email,
       });
@@ -167,7 +166,7 @@ function useProvideAuth() {
     signin,
     signup,
     signout,
-    sendPasswordResetEmail,
+    sendPassResetEmail,
     confirmPasswordReset,
     signInWithGoogle,
     logInWithEmailAndPassword,
