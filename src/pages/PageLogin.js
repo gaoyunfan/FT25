@@ -1,5 +1,7 @@
 import { useAuth } from "../hooks/useAuth";
 import OAuthButtonGroup from "./OAuthBtoonGroup";
+import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 
 import {
   Box,
@@ -23,7 +25,7 @@ import {
 
 import { useAuthState } from "react-firebase-hooks/auth";
 
-import { useState } from "react";
+//import { useState } from "react";
 import { HiEye, HiEyeOff } from "react-icons/hi";
 
 export default function PageLogin() {
@@ -33,6 +35,14 @@ export default function PageLogin() {
 
   const [isOpen, setOpen] = useState(false);
   const onClickReveal = () => setOpen(!isOpen);
+
+  const navigate = useNavigate();
+
+
+  useEffect(() => {
+    if (user) navigate("/dashboard");
+  });
+
 
   return (
     <Container
@@ -67,7 +77,7 @@ export default function PageLogin() {
             <HStack spacing="1" justify="center">
               <Text color="muted">Don't have an account?</Text>
               <Button variant="link" colorScheme="blue">
-                Sign up
+              <Link to="/register">Sign up now !</Link>
               </Button>
             </HStack>
           </Stack>
