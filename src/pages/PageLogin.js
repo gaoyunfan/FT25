@@ -58,7 +58,6 @@ export default function PageLogin() {
     >
       <Stack spacing="8">
         <Stack spacing="6">
-          {/*<Logo />*/}
           <Stack
             spacing={{
               base: "2",
@@ -141,7 +140,8 @@ export default function PageLogin() {
             <HStack justify="space-between">
               <Checkbox defaultChecked>Remember me</Checkbox>
               <Button variant="link" colorScheme="blue" size="sm">
-                Forgot password?
+              <Link to="/resetPassword">Forgot password?</Link>
+                
               </Button>
             </HStack>
             <Stack spacing="6">

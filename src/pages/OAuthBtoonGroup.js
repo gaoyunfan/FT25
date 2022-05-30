@@ -14,14 +14,6 @@ import { useAuth } from '../hooks/useAuth';
          <VisuallyHidden>Sign in with Google</VisuallyHidden>
          <GoogleIcon boxSize="5" />
        </Button>
-       <Button
-         type="button"
-         key="Github"
-         width="full"
-         >
-         <VisuallyHidden>Sign in with Github</VisuallyHidden>
-         <GitHubIcon boxSize="5" />       
-         </Button>
        
      </ButtonGroup>
    );

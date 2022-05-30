@@ -69,7 +69,7 @@ function useProvideAuth() {
     });
   };
 
-  const sendPasswordResetEmail = (email) => {
+  const sendPassResetEmail = (email) => {
     return firebaseAuth.sendPasswordResetEmail(email).then(() => {
       return true;
     });
@@ -167,7 +167,7 @@ function useProvideAuth() {
     signin,
     signup,
     signout,
-    sendPasswordResetEmail,
+    sendPassResetEmail,
     confirmPasswordReset,
     signInWithGoogle,
     logInWithEmailAndPassword,
