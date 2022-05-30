@@ -1,7 +1,6 @@
 import { useAuth } from "../hooks/useAuth";
 import OAuthButtonGroup from "./OAuthBtoonGroup";
 import { Link, useNavigate } from "react-router-dom";
-import React, { useEffect, useState } from "react";
 
 import {
   Box,
@@ -25,24 +24,23 @@ import {
 
 import { useAuthState } from "react-firebase-hooks/auth";
 
-//import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { HiEye, HiEyeOff } from "react-icons/hi";
 
 export default function PageLogin() {
-  const { user, logInWithEmailAndPassword } = useAuth();
+  const { user, registerWithEmailAndPassword } = useAuth(); 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const navigate = useNavigate();
+
   const [isOpen, setOpen] = useState(false);
   const onClickReveal = () => setOpen(!isOpen);
-
-  const navigate = useNavigate();
 
 
   useEffect(() => {
     if (user) navigate("/dashboard");
   });
-
 
   return (
     <Container
@@ -72,13 +70,11 @@ export default function PageLogin() {
                 md: "sm",
               })}
             >
-              Log in to your account
+              Sign up for new account
             </Heading>
             <HStack spacing="1" justify="center">
-              <Text color="muted">Don't have an account?</Text>
-              <Button variant="link" colorScheme="blue">
-              <Link to="/register">Sign up now !</Link>
-              </Button>
+              
+              
             </HStack>
           </Stack>
         </Stack>
@@ -139,27 +135,16 @@ export default function PageLogin() {
               </FormControl>
             </Stack>
             <HStack justify="space-between">
-              <Checkbox defaultChecked>Remember me</Checkbox>
-              <Button variant="link" colorScheme="blue" size="sm">
-                Forgot password?
-              </Button>
+             
             </HStack>
             <Stack spacing="6">
               <Button
                 colorScheme="twitter"
                 variant="solid"
-                onClick={() => logInWithEmailAndPassword(email, password)}
+                onClick={() => registerWithEmailAndPassword(email, password)}
               >
-                Sign in
+                Sign up
               </Button>
-              <HStack>
-                <Divider />
-                <Text fontSize="sm" whiteSpace="nowrap" color="muted">
-                  or continue with
-                </Text>
-                <Divider />
-              </HStack>
-              <OAuthButtonGroup />
             </Stack>
           </Stack>
         </Box>
