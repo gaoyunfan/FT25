@@ -1,5 +1,6 @@
 import { useAuth } from "../hooks/useAuth";
 import OAuthButtonGroup from "./OAuthBtoonGroup";
+import { Link, useNavigate } from "react-router-dom";
 
 import {
   Box,
@@ -23,16 +24,23 @@ import {
 
 import { useAuthState } from "react-firebase-hooks/auth";
 
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { HiEye, HiEyeOff } from "react-icons/hi";
 
 export default function PageLogin() {
-  const { user, createUserWithEmailAndPassword } = useAuth(); 
+  const { user, registerWithEmailAndPassword } = useAuth(); 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const navigate = useNavigate();
+
   const [isOpen, setOpen] = useState(false);
   const onClickReveal = () => setOpen(!isOpen);
+
+
+  useEffect(() => {
+    if (user) navigate("/dashboard");
+  });
 
   return (
     <Container
@@ -133,7 +141,7 @@ export default function PageLogin() {
               <Button
                 colorScheme="twitter"
                 variant="solid"
-                onClick={() => createUserWithEmailAndPassword(email, password)}
+                onClick={() => registerWithEmailAndPassword(email, password)}
               >
                 Sign up
               </Button>
