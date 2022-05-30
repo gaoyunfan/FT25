@@ -10,10 +10,24 @@ export default function App() {
 
   return (
 
-    
     <div className="app">
+      <Navbar />
+    <Router>
+      <Routes>
+        <Route exact path="/" element={<PageLogin />} />
+        <Route exact path="/register" element={<PageSignup />} />
+
+        <Route exact path="/dashboard" element={<PageTodo />} />
+      </Routes>
+    </Router>
+  </div> );
+
+
+
+
+   /* <div className="app">
       <Navbar />
       {user ? <PageTodo /> : <><PageLogin /> <PageSignup /> </>}
     </div>
-  );
+  */
 }
