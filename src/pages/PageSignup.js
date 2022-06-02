@@ -1,6 +1,7 @@
 import { useAuth } from "../hooks/useAuth";
 import OAuthButtonGroup from "./OAuthBtoonGroup";
 import { Link, useNavigate } from "react-router-dom";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 
 import {
   Box,
@@ -28,7 +29,7 @@ import React, { useEffect, useState } from "react";
 import { HiEye, HiEyeOff } from "react-icons/hi";
 
 export default function PageLogin() {
-  const { user, registerWithEmailAndPassword } = useAuth(); 
+  const { user, registerWithEmailAndPassword } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -36,7 +37,6 @@ export default function PageLogin() {
 
   const [isOpen, setOpen] = useState(false);
   const onClickReveal = () => setOpen(!isOpen);
-
 
   useEffect(() => {
     if (user) navigate("/dashboard");
@@ -54,29 +54,29 @@ export default function PageLogin() {
         sm: "8",
       }}
     >
-      <Stack spacing="8">
-        <Stack spacing="6">
-          {/*<Logo />*/}
-          <Stack
-            spacing={{
-              base: "2",
-              md: "3",
-            }}
-            textAlign="center"
+      <Stack spacing="6">
+        <Stack
+          spacing={{
+            base: "2",
+            md: "3",
+          }}
+          textAlign="center"
+        >
+          <IconButton
+            variant="unstyled"
+            colorScheme="teal"
+            aria-label="back"
+            icon={<ArrowBackIcon />}
+            onClick={() => navigate(-1)}
+          />
+          <Heading
+            size={useBreakpointValue({
+              base: "xs",
+              md: "sm",
+            })}
           >
-            <Heading
-              size={useBreakpointValue({
-                base: "xs",
-                md: "sm",
-              })}
-            >
-              Sign up for new account
-            </Heading>
-            <HStack spacing="1" justify="center">
-              
-              
-            </HStack>
-          </Stack>
+            Sign up for new account
+          </Heading>
         </Stack>
         <Box
           py={{
@@ -134,9 +134,7 @@ export default function PageLogin() {
                 </InputGroup>
               </FormControl>
             </Stack>
-            <HStack justify="space-between">
-             
-            </HStack>
+            <HStack justify="space-between"></HStack>
             <Stack spacing="6">
               <Button
                 colorScheme="twitter"

@@ -23,7 +23,6 @@ import {
   IconButton,
 } from "@chakra-ui/react";
 
-import { useAuthState } from "react-firebase-hooks/auth";
 
 //import { useState } from "react";
 import { HiEye, HiEyeOff } from "react-icons/hi";
