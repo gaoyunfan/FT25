@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { db, useAuth } from "../hooks/useAuth";
 import ModManager from "./ModManager";
+import ModSearch from "./ModSearch";
 
 export default function Modules() {
   // Task state has to be lifted to be at the App level
@@ -31,9 +32,8 @@ export default function Modules() {
 
   return (
     <>
-      <main>
         <ModManager mods={mods} setMods={setMods} />
-      </main>
+        <ModSearch  mods={mods} />
     </>
   ); 
 }

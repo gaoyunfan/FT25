@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Checkbox, Button, Box, Input } from "@chakra-ui/react";
+import { Button, Box, Input } from "@chakra-ui/react";
 
 
 function ModManager(props) {
@@ -15,6 +15,7 @@ function ModManager(props) {
     // default behaviour here as we don't want to refresh
     event.preventDefault();
     addMod(newModText);
+    setNewModText("");
   }
 
   function addMod(description) {
@@ -25,8 +26,7 @@ function ModManager(props) {
       // See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax
       ...mods,
       {
-        description: description,
-        isComplete: false
+        name: description,
       }
     ];
     setMods(newMods);
@@ -70,7 +70,7 @@ function ModList(props) {
       <thead>
         <tr>
           <th>No.</th>
-          <th>Task</th>
+          <th>Mod Name</th>
         </tr>
       </thead>
       <tbody>
@@ -78,9 +78,9 @@ function ModList(props) {
           // We should specify key here to help react identify
           // what has updated
           // https://reactjs.org/docs/lists-and-keys.html#keys
-          <tr key={mod.description}>
+          <tr key={mod.name}>
             <td>{index + 1}</td>
-            <td>{mod.description}</td>
+            <td>{mod.name}</td>
           </tr>
         ))}
       </tbody>
