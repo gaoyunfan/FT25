@@ -15,6 +15,7 @@ import {
   HStack,
   Input,
   Stack,
+  Flex,
   Text,
   useBreakpointValue,
   useColorModeValue,
@@ -55,12 +56,7 @@ export default function PageLogin() {
       }}
     >
       <Stack spacing="6">
-        <Stack
-          spacing={{
-            base: "2",
-            md: "3",
-          }}
-          textAlign="center"
+        <Flex alignItems="center"
         >
           <IconButton
             variant="unstyled"
@@ -69,7 +65,7 @@ export default function PageLogin() {
             icon={<ArrowBackIcon />}
             onClick={() => navigate(-1)}
           />
-          <Heading
+          <Heading margin="auto"
             size={useBreakpointValue({
               base: "xs",
               md: "sm",
@@ -77,7 +73,7 @@ export default function PageLogin() {
           >
             Sign up for new account
           </Heading>
-        </Stack>
+        </Flex>
         <Box
           py={{
             base: "0",

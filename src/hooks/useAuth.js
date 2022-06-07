@@ -20,7 +20,7 @@ const app = initializeApp(firebaseConfig);
 // Initialize Firebase Authentication and get a reference to the service
 const firebaseAuth = getAuth(app);
 
-const db = getFirestore(app);
+export const db = getFirestore(app);
 
 const googleAuthProvider = new GoogleAuthProvider();
 
@@ -162,6 +162,7 @@ function useProvideAuth() {
 
   // Return the user object and auth methods
   return {
+    db,
     user,
     signin,
     signup,
