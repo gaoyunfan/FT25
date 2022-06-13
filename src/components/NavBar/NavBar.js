@@ -14,7 +14,7 @@ import {
 import { CloseIcon, HamburgerIcon } from "@chakra-ui/icons";
 
 import { Link } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../../hooks/useAuth";
 import { useState } from "react";
 
 export default function Navbar() {
@@ -46,15 +46,15 @@ export default function Navbar() {
     >
 
       <Box p="2">
-        <Heading size="md">StudyTogether</Heading>
+        <Heading size="md">Study Together</Heading>
       </Box>
         <Button colorScheme="teal" variant="ghost">
-        <Link to="/modules">Modules</Link>
+        <Link to="/modules">odules</Link>
         </Button>
       {user && (
         <>
         <Button colorScheme="teal" variant="ghost">
-         Friends 
+        <Link to="/friends">Frien</Link>
         </Button>
       <Spacer />
         <Menu>

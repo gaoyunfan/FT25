@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { doc, setDoc, getDoc } from "firebase/firestore";
-import { db, useAuth } from "../hooks/useAuth";
+import { db, useAuth } from "../../hooks/useAuth";
 import ModManager from "./ModManager";
 import ModSearch from "./ModSearch";
 

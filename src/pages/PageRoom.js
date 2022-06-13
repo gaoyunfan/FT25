@@ -2,9 +2,10 @@ import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import OAuthButtonGroup from "./OAuthBtoonGroup";
+import ChatRooms from "../components/Rooms/chatRooms"
 
 
-export default function PageTodo() {
+export default function PageRoom() {
   const { user, logInWithEmailAndPassword } = useAuth();
   const navigate = useNavigate();
 
@@ -15,7 +16,7 @@ export default function PageTodo() {
 
   
 return (
-    <h1>Hello World !</h1>
+  <ChatRooms />
   )
 };
 

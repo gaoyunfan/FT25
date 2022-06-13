@@ -5,7 +5,7 @@ import {
  sendPasswordResetEmail, signOut,} from "firebase/auth"
 
 import {
-getFirestore,query,getDocs,collection,where,addDoc,} from "firebase/firestore";
+getFirestore,query,getDocs,collection,where,setDoc, doc} from "firebase/firestore";
 
 import React, { useState, useEffect, useContext, createContext } from "react";
 import { config as firebaseConfig } from "../config/firebaseConfig.js";
@@ -42,9 +42,10 @@ export const useAuth = () => {
 // Provider hook that creates auth object and handles state
 function useProvideAuth() {
   const [user, setUser] = useState(null);
-
+  const [friends_list, setFriends_list] = useState("");
   // Wrap any Firebase methods we want to use making sure ...
   // ... to save the user to state.
+  /*
   const signin = (email, password) => {
     return firebaseAuth
       .signInWithEmailAndPassword(email, password)
@@ -53,7 +54,6 @@ function useProvideAuth() {
         return response.user;
       });
   };
-
   const signup = (email, password) => {
     return firebaseAuth
       .createUserWithEmailAndPassword(email, password)
@@ -62,6 +62,7 @@ function useProvideAuth() {
         return response.user;
       });
   };
+  */
 
   const signout = () => {
     return firebaseAuth.signOut().then(() => {
@@ -81,29 +82,31 @@ function useProvideAuth() {
     });
   };
 
-  const signInWithGoogle = () => {
+  /*const signInWithGoogle = () => {
     return signInWithPopup(firebaseAuth, googleAuthProvider);
   };
+  */
 
- /* const signInWithGoogle = async () => {
+  const signInWithGoogle = async () => {
     try {
-      const res = await signInWithGoogle(firebaseAuth, googleAuthProvider);
+      const res = await signInWithPopup(firebaseAuth, googleAuthProvider);
       const user = res.user;
       const q = query(collection(db, "users"), where("uid", "==", user.uid));
       const docs = await getDocs(q);
       if (docs.docs.length === 0) {
-        await addDoc(collection(db, "users"), {
+        await setDoc(doc(db, "users", user.uid), {
           uid: user.uid,
           name: user.displayName,
           authProvider: "google",
+          photoURL: user.photoURL,
           email: user.email,
         });
       }
     } catch (err) {
       console.error(err);
       alert(err.message);
-    } 
-  }; */
+    }
+  };
 
   const logInWithEmailAndPassword = async (email, password) => {
     try {
@@ -116,12 +119,19 @@ function useProvideAuth() {
 
   const registerWithEmailAndPassword = async (email, password) => {
     try {
-      const res = await createUserWithEmailAndPassword(firebaseAuth, email, password);
+      const res = await createUserWithEmailAndPassword(
+        firebaseAuth,
+        email,
+        password
+      );
       const user = res.user;
-      await addDoc(collection(db, "users"), {
+      //await addDoc(collection(db, "users"), {
+      await setDoc(doc(db, "users", user.uid), {
         uid: user.uid,
         authProvider: "local",
-        email,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        email: email,
       });
     } catch (err) {
       console.error(err);
@@ -141,7 +151,21 @@ function useProvideAuth() {
 
   const logout = () => {
     signOut(firebaseAuth);
-  }
+  };
+
+  useEffect(() => {
+    async function fetchData(user) {
+
+      const q = query(collection(db, "friends_list"), where("uid", "==", user.uid));
+      const querySnapshot = await getDocs(q);
+      if (querySnapshot.docs.length === 0) {
+        setFriends_list(querySnapshot.data());
+      } else {
+        setFriends_list([]);
+      }
+    }
+    fetchData();
+  }, []);
 
   // Subscribe to user on mount
   // Because this sets state in the callback it will cause any ...
@@ -164,8 +188,8 @@ function useProvideAuth() {
   return {
     db,
     user,
-    signin,
-    signup,
+    //signin,
+    //signup,
     signout,
     sendPassResetEmail,
     confirmPasswordReset,
@@ -173,6 +197,7 @@ function useProvideAuth() {
     logInWithEmailAndPassword,
     registerWithEmailAndPassword,
     sendPasswordReset,
-    logout
+    logout,
+    friends_list,
   };
 }
