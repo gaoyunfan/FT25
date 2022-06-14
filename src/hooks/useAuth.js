@@ -42,7 +42,6 @@ export const useAuth = () => {
 // Provider hook that creates auth object and handles state
 function useProvideAuth() {
   const [user, setUser] = useState(null);
-  const [friends_list, setFriends_list] = useState("");
   // Wrap any Firebase methods we want to use making sure ...
   // ... to save the user to state.
   /*
@@ -101,6 +100,8 @@ function useProvideAuth() {
           photoURL: user.photoURL,
           email: user.email,
         });
+        await setDoc(doc(db, "friends", user.uid), {
+        })
       }
     } catch (err) {
       console.error(err);
@@ -133,6 +134,7 @@ function useProvideAuth() {
         photoURL: user.photoURL,
         email: email,
       });
+      await setDoc(doc(db, "friends", user.uid), {});
     } catch (err) {
       console.error(err);
       alert(err.message);
@@ -153,19 +155,7 @@ function useProvideAuth() {
     signOut(firebaseAuth);
   };
 
-  useEffect(() => {
-    async function fetchData(user) {
 
-      const q = query(collection(db, "friends_list"), where("uid", "==", user.uid));
-      const querySnapshot = await getDocs(q);
-      if (querySnapshot.docs.length === 0) {
-        setFriends_list(querySnapshot.data());
-      } else {
-        setFriends_list([]);
-      }
-    }
-    fetchData();
-  }, []);
 
   // Subscribe to user on mount
   // Because this sets state in the callback it will cause any ...
@@ -198,6 +188,5 @@ function useProvideAuth() {
     registerWithEmailAndPassword,
     sendPasswordReset,
     logout,
-    friends_list,
   };
 }

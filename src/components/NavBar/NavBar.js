@@ -46,6 +46,7 @@ export default function Navbar() {
     >
 
       <Box p="2">
+        <div>Hi</div>
         <Heading size="md">Study Together</Heading>
       </Box>
         <Button colorScheme="teal" variant="ghost">

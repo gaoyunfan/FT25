@@ -62,7 +62,7 @@ export default function Navbar() {
       {user && (
         <>
           <Button colorScheme="teal" variant="ghost">
-            Friends
+        <Link to="/friends">Friends</Link>
           </Button>
           <Spacer />
           <Menu>
