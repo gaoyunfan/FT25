@@ -96,9 +96,9 @@ function useProvideAuth() {
         await setDoc(doc(db, "users", user.uid), {
           uid: user.uid,
           name: user.displayName,
-          authProvider: "google",
-          photoURL: user.photoURL,
           email: user.email,
+          photoURL: user.photoURL,
+          authProvider: "google",
         });
         await setDoc(doc(db, "friends", user.uid), {
         })
@@ -129,10 +129,10 @@ function useProvideAuth() {
       //await addDoc(collection(db, "users"), {
       await setDoc(doc(db, "users", user.uid), {
         uid: user.uid,
-        authProvider: "local",
-        displayName: user.displayName,
-        photoURL: user.photoURL,
+        Name: user.displayName,
         email: email,
+        photoURL: user.photoURL,
+        authProvider: "local",
       });
       await setDoc(doc(db, "friends", user.uid), {});
     } catch (err) {

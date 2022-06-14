@@ -1,13 +1,13 @@
 import { useAuth } from "../../hooks/useAuth";
 import { useEffect, useState } from "react";
 import { getDoc, doc } from "firebase/firestore";
-import { Box } from "@chakra-ui/react";
+import { Box, Avatar, Text, Flex } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
 export default function Friends() {
   const { user, db } = useAuth();
   const [friends_list, setFriends_list] = useState([]);
-  const [friendsInfo, setFriendsInfo] = useState("");
+  const [friendsInfo, setFriendsInfo] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -42,7 +42,7 @@ export default function Friends() {
   */
   useEffect(() => {
     async function fetch_friends_info() {
-      let newobject = [];
+      setFriendsInfo([]);
       friends_list.forEach(async (element) => {
         console.log("uid");
         console.log(element);
@@ -52,17 +52,15 @@ export default function Friends() {
           // eslint-disable-next-line no-const-assign
           console.log("data");
           console.log(docSnap.data());
-          newobject = newobject.concat(docSnap.data());
-          console.log("new friend");
-          console.log(newobject);
+          setFriendsInfo((friendsInfo) => [...friendsInfo, docSnap.data()]);
+        } else {
+          console.log("error");
         }
       });
-      console.log("final:");
-      console.log(newobject);
-      setFriendsInfo(newobject);
     }
     fetch_friends_info();
   }, [db, friends_list]);
+
   console.log("friendInfo:");
   console.log(friendsInfo);
   const listLength = friends_list.length;
@@ -75,7 +73,39 @@ export default function Friends() {
           {listLength} friend{listLength === 1 ? "" : "s"}
         </div>
       )}
-      <Box></Box>
+      <Box width="400px">
+        {friendsInfo.map((person) => (
+          <Flex
+            cursor="pointer"
+            bg="#E8E8E8"
+            _hover={{
+              background: "#38B2AC",
+              color: "white",
+            }}
+            alignItems="center"
+            color="black"
+            px={3}
+            py={2}
+            mb={2}
+            borderRadius="lg"
+          >
+            <Avatar
+              mr={2}
+              size="sm"
+              cursor="pointer"
+              name={person.name}
+              src={person.photoURL}
+            />
+            <Box>
+              <Text>{person.name == null ? "No display name" : person.name}</Text>
+              <Text fontSize="xs">
+                <b>Email : </b>
+                {person.email}
+              </Text>
+            </Box>
+          </Flex>
+        ))}
+      </Box>
     </>
   );
 }
