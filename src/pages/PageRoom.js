@@ -1,12 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
-import OAuthButtonGroup from "./OAuthBtoonGroup";
-import ChatRooms from "../components/Rooms/chatRooms"
+import ChatRooms from "../components/ChatRooms/chatRooms";
 
 
 export default function PageRoom() {
-  const { user, logInWithEmailAndPassword } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
