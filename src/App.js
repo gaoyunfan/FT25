@@ -1,6 +1,6 @@
 import Navbar from "./NavBar";
 import PageLogin from "./pages/PageLogin";
-import PageRoom from "./pages/PageRoom";
+import PageRoom from "./components/Rooms/PageRoom"
 import PageSignup from "./pages/PageSignup";
 import PageReset from "./pages/PageReset";
 import Modules from "./components/modules/Modules";

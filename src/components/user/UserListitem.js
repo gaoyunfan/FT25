@@ -1,13 +1,12 @@
 import { Avatar } from "@chakra-ui/avatar";
-import { Button, Box, Text } from '@chakra-ui/react'
+import { Flex, Box, Text } from '@chakra-ui/react'
 import { useAuth } from "../../hooks/useAuth";
 
 export default function UserListItem (props) {
   const { u, handleGroup } = props;
   return (
-    <Button 
-      display='flex'
-      onClick={handleGroup(u)}
+    <Flex 
+      onClick={handleGroup}
       cursor="pointer"
       bg="#E8E8E8"
       _hover={{
@@ -36,6 +35,6 @@ export default function UserListItem (props) {
           {u.email}
         </Text>
       </Box>
-    </Button>
+    </Flex>
   );
 };
