@@ -99,6 +99,7 @@ function useProvideAuth() {
           email: user.email,
           photoURL: user.photoURL,
           authProvider: "google",
+          rooms: []
         });
         await setDoc(doc(db, "friends", user.uid), {
         })
@@ -133,6 +134,7 @@ function useProvideAuth() {
         email: email,
         photoURL: user.photoURL,
         authProvider: "local",
+        rooms: [],
       });
       await setDoc(doc(db, "friends", user.uid), {});
     } catch (err) {

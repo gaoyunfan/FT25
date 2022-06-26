@@ -1,5 +1,5 @@
 import { useAuth } from "../../hooks/useAuth";
-import { setDoc, doc, query, collection, where, onSnapshot } from "firebase/firestore";
+import { setDoc, doc, query, collection, where, onSnapshot, updateDoc, arrayUnion } from "firebase/firestore";
 
 import {
   Box,
@@ -23,6 +23,7 @@ import { useEffect, useState } from "react";
 import { AddIcon } from "@chakra-ui/icons";
 import UserBadgeItem from "../user/UserBadgeItem";
 import UserListItem from "../user/UserListitem";
+import { async } from "@firebase/util";
 
 export default function RoomModal() {
   const { user, db } = useAuth();
@@ -83,16 +84,24 @@ export default function RoomModal() {
     }
     try {
       const docRef = doc(collection(db, "groups"));
+      const all_members = selectedUsers.map(u => u.uid).concat(user.uid); 
       const group = {
         createdAt: new Date(),
         createdBy: user.uid,
-        members: selectedUsers.map(u => u.uid).concat(user.uid),
+        members: all_members, 
         id:docRef.id,
         admin: user.uid,
         name:focusRoomName,
         private:isprivateRoom
       };
       await setDoc(docRef, group);
+      all_members.forEach(async (u) => {
+        const ref = doc(db, "users", u);
+        console.log("u",u);
+        await updateDoc(ref, {
+          rooms: arrayUnion(docRef.id)
+        });
+      }) 
       onClose();
       toast({
         title: "New Group Chat Created!",

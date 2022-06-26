@@ -31,6 +31,12 @@ export default function FocusRoom() {
     FetchRoom();
   }, []);
   */
+ useEffect(()=> {
+  if (!user)
+  {
+    navigate("/");
+  }
+ },[user])
 
   const [room] = useDocumentData(doc(db, "groups", r_id));
   console.log("romm", room);
@@ -40,7 +46,6 @@ export default function FocusRoom() {
     const q = query(
       colRef,
       orderBy("createdAt"),
-      limit(12)
     );
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const allMessages = [];
@@ -67,6 +72,7 @@ export default function FocusRoom() {
       text: newMessage,
       createdAt: serverTimestamp(),
       sentBy: user.uid,
+      email: user.email,
     });
     setNewMessage("");
   };
@@ -116,10 +122,11 @@ export default function FocusRoom() {
 , [messages])
 
 const getMessages = () =>
-    messages?.map(msg => {
-      const sender = msg.sender === user.email;
+    messages?.map((msg, index) => {
+      const sender = msg.sentBy === user.uid;
       return (
-        <Flex key={Math.random()} alignSelf={sender ? "flex-start" : "flex-end"} bg={sender ? "blue.100" : "green.100"} w="fit-content" minWidth="100px" borderRadius="lg" p={3} m={1}>
+        <Flex key={index+1} alignSelf={sender ? "flex-end" : "flex-start"} bg={sender ? "green.100" : "blue.100"} direction="column" w="fit-content" minWidth="100px" borderRadius="lg" p={2} m={1}>
+          <Text mb={1} color="orange.700">{msg.email}</Text>
           <Text>{msg.text}</Text>
         </Flex>
       )
@@ -141,7 +148,6 @@ const getMessages = () =>
       </Flex>
   {bottomBar()}
   </Flex>
-
 
   );
 }
