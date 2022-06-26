@@ -21,6 +21,8 @@ import {
   InputGroup,
   InputRightElement,
   IconButton,
+  FormHelperText,
+  FormErrorMessage,
 } from "@chakra-ui/react";
 
 
@@ -32,14 +34,18 @@ export default function PageLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+
   const [isOpen, setOpen] = useState(false);
   const onClickReveal = () => setOpen(!isOpen);
 
   const navigate = useNavigate();
 
-
   useEffect(() => {
     if (user) navigate("/dashboard");
+    else
+    {
+      navigate("/")
+    }
   });
 
 

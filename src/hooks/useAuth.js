@@ -118,7 +118,7 @@ function useProvideAuth() {
     }
   };
 
-  const registerWithEmailAndPassword = async (email, password) => {
+  const registerWithEmailAndPassword = async (name, email, password) => {
     try {
       const res = await createUserWithEmailAndPassword(
         firebaseAuth,
@@ -129,7 +129,7 @@ function useProvideAuth() {
       //await addDoc(collection(db, "users"), {
       await setDoc(doc(db, "users", user.uid), {
         uid: user.uid,
-        Name: user.displayName,
+        Name: name,
         email: email,
         photoURL: user.photoURL,
         authProvider: "local",

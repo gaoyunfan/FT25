@@ -50,12 +50,12 @@ export default function Navbar() {
         <Heading size="md">Study Together</Heading>
       </Box>
         <Button colorScheme="teal" variant="ghost">
-        <Link to="/modules">odules</Link>
+        <Link to="/modules">Modules</Link>
         </Button>
       {user && (
         <>
         <Button colorScheme="teal" variant="ghost">
-        <Link to="/friends">Frien</Link>
+        <Link to="/friends">Friends</Link>
         </Button>
       <Spacer />
         <Menu>

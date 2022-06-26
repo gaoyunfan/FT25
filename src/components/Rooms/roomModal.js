@@ -1,5 +1,5 @@
 import { useAuth } from "../../hooks/useAuth";
-import { doc, addDoc, query, getDocs, collection, where, setDoc } from "firebase/firestore";
+import { setDoc, doc, query, collection, where, onSnapshot } from "firebase/firestore";
 
 import {
   Box,
@@ -112,20 +112,24 @@ export default function RoomModal() {
       });
     }
   };
-
   useEffect(() => {
-    async function fetch_user() {
-      const q = query(collection(db, "users"), where("uid", "!=", user.uid));
-      setEndUser([]);
-      const querySnapshot = await getDocs(q);
-      querySnapshot.forEach((doc) => {
-        if (!endUser.includes(doc.data())) {
-          setEndUser((endUser) => [...endUser, doc.data()]);
-        }
+      setLoading(true);
+    const q = query(collection(db, "users"), where("uid", "!=", user.uid));
+    const unsubscribe = onSnapshot(q, (documentSnapShot) => {
+      const allUsers = [];
+      documentSnapShot.forEach((doc) => {
+        allUsers.push(doc.data());
       });
-    }
-    fetch_user();
-  }, [db, user.uid]);
+      setEndUser(allUsers);
+    });
+
+      setLoading(false);
+    /**
+     * unsubscribe listener
+     */
+    return () => unsubscribe();
+  }, [db, user?.uid]);
+
   console.log("endUser", endUser);
   console.log("selectedUser ", selectedUsers);
   return (
