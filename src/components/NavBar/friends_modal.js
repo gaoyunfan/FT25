@@ -31,6 +31,7 @@ export default function FirendsModal(props) {
   const toast = useToast();
 
   const {users_list, user, db} = props;
+
   const handleSearch = (e) => {
     setQuery(e.target.value);
     if (!query) {
@@ -77,13 +78,15 @@ export default function FirendsModal(props) {
       });
       return;
     }
-    selectedUsers.forEach(async(u) => {
-      const ref = doc(db, "friends", u);
-        console.log("u",u);
-        await updateDoc(ref, {
-          friend_request: arrayUnion(user?.uid) 
-    })})
-    onClose();
+    console.log("selected",selectedUsers)
+    selectedUsers.forEach(async (u) => {
+      const ref = doc(db, "friends", u.uid);
+      console.log("u",u.uid);
+      await updateDoc(ref, {
+        friendRequest: arrayUnion(user.uid)
+      });
+    }) 
+
     toast({
       title: "Request submitted!",
       status: "success",
@@ -95,7 +98,7 @@ export default function FirendsModal(props) {
 
   return (
     <>
-      <Button
+      <Button 
         d="flex"
         fontSize={{ base: "17px", md: "10px", lg: "17px" }}
         rightIcon={<AddIcon />}

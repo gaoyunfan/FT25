@@ -1,10 +1,11 @@
 import { useAuth } from "../../hooks/useAuth";
 import { useEffect, useState } from "react";
 import { getDoc, doc, query, collection } from "firebase/firestore";
-import { Box, Avatar, Text, Flex, Heading, Stack } from "@chakra-ui/react";
+import { Box, Avatar, Text, Flex, Heading, Stack, Button } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useCollectionData, useDocumentData } from 'react-firebase-hooks/firestore';
 import FirendsModal from "./friends_modal";
+import FriendRequest from "./friendRequest";
 
 export default function Friends() {
   const { user, db } = useAuth();
@@ -70,8 +71,8 @@ export default function Friends() {
   const listLength = friends_list?.friends.length;
   return (
     <Box p={3}>
-    <Stack direction="row">
-    <Heading mb={2}>
+    <Stack direction="row" spacing='20px'>
+    <Heading mb={3}>
       {listLength === 0 ? (
         <div>Number of friend: 0</div>
       ) : (
@@ -80,6 +81,7 @@ export default function Friends() {
         </div>
       )}</Heading>
       <FirendsModal users_list={users_list} user={user} db={db}/>
+      <FriendRequest users_list={users_list} user={user} db={db}/>
 </Stack>
       <Box width= "500px" overflowY="scroll" sx={{scrollbarWidth: "none"}}>
         {friendsInfo?.map((person, index) => (

@@ -103,7 +103,7 @@ function useProvideAuth() {
         });
         await setDoc(doc(db, "friends", user.uid), {
           friends: [],
-          friend_request: [],
+          friendRequest: [],
         });
       }
     } catch (err) {
@@ -138,7 +138,7 @@ function useProvideAuth() {
         authProvider: "local",
         rooms: [],
       });
-      await setDoc(doc(db, "friends", user.uid), {friends:[], friend_request:[]});
+      await setDoc(doc(db, "friends", user.uid), {friends:[], friendRequest:[]});
     } catch (err) {
       console.error(err);
       alert(err.message);
