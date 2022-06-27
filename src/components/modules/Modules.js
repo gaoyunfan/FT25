@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-
-import { useAuth } from "../../hooks/useAuth";
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import 'firebase/compat/firestore';
 import {
   FormControl,
   FormLabel,
@@ -23,12 +24,16 @@ import {
 } from '@chakra-ui/react'
 
 
-
-
+//import { config as firebaseConfig } from "../config/firebaseConfig.js";
+import { config as firebaseConfig }  from "../../config/firebaseConfig"
 
   
 function Modules() {
-  const {db} = useAuth();
+  const firebaseApp = firebase.initializeApp(firebaseConfig);
+
+// Use these for db & auth
+const db = firebaseApp.firestore();
+const auth = firebase.auth();
   const [moduleCode, setmoduleCode] = useState("");
   const [moduleTitle, setmoduleTitle] = useState("");
   const [user_modList, setuser_modList] = useState([]);
