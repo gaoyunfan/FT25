@@ -72,7 +72,7 @@ export default function RoomModal() {
   };
 
   const handleSubmit = async () => {
-    if (!focusRoomName || !selectedUsers) {
+    if (!focusRoomName || selectedUsers?.length === 0) {
       toast({
         title: "Please fill all the feilds",
         status: "warning",
