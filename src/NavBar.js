@@ -23,6 +23,7 @@ import { CloseIcon, HamburgerIcon } from "@chakra-ui/icons";
 
 import { useAuth } from "./hooks/useAuth";
 import { useState } from "react";
+import React, { Component }  from "react";
 
 export default function Navbar() {
   const { user, signout } = useAuth();
@@ -64,6 +65,13 @@ export default function Navbar() {
           <Button colorScheme="teal" variant="ghost">
         <Link to="/friends">Friends</Link>
           </Button>
+
+
+          <Button colorScheme="teal" variant="ghost">
+        <Link to="/timer">Timer</Link>
+          </Button>
+
+
           <Spacer />
           <Menu>
             <MenuButton mr={5}>
