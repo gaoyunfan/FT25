@@ -21,9 +21,10 @@ import {
   InputGroup,
   InputRightElement,
   IconButton,
+  FormHelperText,
+  FormErrorMessage,
 } from "@chakra-ui/react";
 
-import { useAuthState } from "react-firebase-hooks/auth";
 
 //import { useState } from "react";
 import { HiEye, HiEyeOff } from "react-icons/hi";
@@ -33,14 +34,18 @@ export default function PageLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+
   const [isOpen, setOpen] = useState(false);
   const onClickReveal = () => setOpen(!isOpen);
 
   const navigate = useNavigate();
 
-
   useEffect(() => {
     if (user) navigate("/dashboard");
+    else
+    {
+      navigate("/")
+    }
   });
 
 

@@ -1,6 +1,7 @@
 import { useAuth } from "../hooks/useAuth";
 import OAuthButtonGroup from "./OAuthBtoonGroup";
 import { Link, useNavigate } from "react-router-dom";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 
 import {
   Box,
@@ -14,33 +15,54 @@ import {
   HStack,
   Input,
   Stack,
+  Flex,
   Text,
   useBreakpointValue,
   useColorModeValue,
   InputGroup,
   InputRightElement,
   IconButton,
+  FormHelperText,
+  FormErrorMessage,
+  useToast,
 } from "@chakra-ui/react";
 
-import { useAuthState } from "react-firebase-hooks/auth";
 
 import React, { useEffect, useState } from "react";
 import { HiEye, HiEyeOff } from "react-icons/hi";
 
 export default function PageLogin() {
-  const { user, registerWithEmailAndPassword } = useAuth(); 
+  const { user, registerWithEmailAndPassword } = useAuth();
   const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
+  const isErrorName = name === "";
+  const isErrorEmail = email === "";
+  const isErrorPassword = password === "";
 
+  const toast = useToast();
   const navigate = useNavigate();
 
   const [isOpen, setOpen] = useState(false);
   const onClickReveal = () => setOpen(!isOpen);
 
-
   useEffect(() => {
     if (user) navigate("/dashboard");
-  });
+  },[user]);
+
+  const handleRegister = () => {
+    if (isErrorName) {
+      toast({
+        title: "Invalid name",
+        status: "warning",
+        duration: 4000,
+        isClosable: true,
+        position: "top",
+      });
+    } else {
+      registerWithEmailAndPassword(name, email, password);
+    }
+  };
 
   return (
     <Container
@@ -51,33 +73,28 @@ export default function PageLogin() {
       }}
       px={{
         base: "0",
-        sm: "8",
+        sm: "5",
       }}
     >
-      <Stack spacing="8">
-        <Stack spacing="6">
-          {/*<Logo />*/}
-          <Stack
-            spacing={{
-              base: "2",
-              md: "3",
-            }}
-            textAlign="center"
+      <Stack spacing="5">
+        <Flex alignItems="center">
+          <IconButton
+            variant="unstyled"
+            colorScheme="teal"
+            aria-label="back"
+            icon={<ArrowBackIcon />}
+            onClick={() => navigate(-1)}
+          />
+          <Heading
+            margin="auto"
+            size={useBreakpointValue({
+              base: "xs",
+              md: "sm",
+            })}
           >
-            <Heading
-              size={useBreakpointValue({
-                base: "xs",
-                md: "sm",
-              })}
-            >
-              Sign up for new account
-            </Heading>
-            <HStack spacing="1" justify="center">
-              
-              
-            </HStack>
-          </Stack>
-        </Stack>
+            Sign up for new account
+          </Heading>
+        </Flex>
         <Box
           py={{
             base: "0",
@@ -102,7 +119,22 @@ export default function PageLogin() {
         >
           <Stack spacing="6">
             <Stack spacing="5">
-              <FormControl>
+              <FormControl isInvalid={isErrorName}>
+                <FormLabel htmlFor="name">Name</FormLabel>
+                <Input
+                  vaule={name}
+                  type={"text"}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+                {!isErrorPassword ? (
+                  <FormHelperText>Enter display name</FormHelperText>
+                ) : (
+                  <FormErrorMessage>Name is required.</FormErrorMessage>
+                )}
+              </FormControl>
+
+              <FormControl isInvalid={isErrorEmail}>
                 <FormLabel htmlFor="email">Email</FormLabel>
                 <Input
                   id="email"
@@ -110,9 +142,15 @@ export default function PageLogin() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
+                {!isErrorEmail ? (
+                  <FormHelperText>
+                    Enter the email to receive the password reset email.
+                  </FormHelperText>
+                ) : (
+                  <FormErrorMessage>Email is required.</FormErrorMessage>
+                )}
               </FormControl>
-              {/*<PasswordField />*/}
-              <FormControl>
+              <FormControl isInvalid={isErrorPassword}>
                 <FormLabel htmlFor="password">Password</FormLabel>
                 <InputGroup>
                   <InputRightElement>
@@ -132,16 +170,19 @@ export default function PageLogin() {
                     required
                   />
                 </InputGroup>
+                {!isErrorPassword ? (
+                  <FormHelperText></FormHelperText>
+                ) : (
+                  <FormErrorMessage>Password is required.</FormErrorMessage>
+                )}
               </FormControl>
             </Stack>
-            <HStack justify="space-between">
-             
-            </HStack>
+            <HStack justify="space-between"></HStack>
             <Stack spacing="6">
               <Button
                 colorScheme="twitter"
                 variant="solid"
-                onClick={() => registerWithEmailAndPassword(email, password)}
+                onClick={() => handleRegister()}
               >
                 Sign up
               </Button>

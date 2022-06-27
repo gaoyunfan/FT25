@@ -5,7 +5,7 @@ import {
  sendPasswordResetEmail, signOut,} from "firebase/auth"
 
 import {
-getFirestore,query,getDocs,collection,where,addDoc,} from "firebase/firestore";
+getFirestore,query,getDocs,collection,where,setDoc, doc} from "firebase/firestore";
 
 import React, { useState, useEffect, useContext, createContext } from "react";
 import { config as firebaseConfig } from "../config/firebaseConfig.js";
@@ -20,7 +20,7 @@ const app = initializeApp(firebaseConfig);
 // Initialize Firebase Authentication and get a reference to the service
 const firebaseAuth = getAuth(app);
 
-const db = getFirestore(app);
+export const db = getFirestore(app);
 
 const googleAuthProvider = new GoogleAuthProvider();
 
@@ -42,9 +42,9 @@ export const useAuth = () => {
 // Provider hook that creates auth object and handles state
 function useProvideAuth() {
   const [user, setUser] = useState(null);
-
   // Wrap any Firebase methods we want to use making sure ...
   // ... to save the user to state.
+  /*
   const signin = (email, password) => {
     return firebaseAuth
       .signInWithEmailAndPassword(email, password)
@@ -53,7 +53,6 @@ function useProvideAuth() {
         return response.user;
       });
   };
-
   const signup = (email, password) => {
     return firebaseAuth
       .createUserWithEmailAndPassword(email, password)
@@ -62,6 +61,7 @@ function useProvideAuth() {
         return response.user;
       });
   };
+  */
 
   const signout = () => {
     return firebaseAuth.signOut().then(() => {
@@ -81,29 +81,36 @@ function useProvideAuth() {
     });
   };
 
-  const signInWithGoogle = () => {
+  /*const signInWithGoogle = () => {
     return signInWithPopup(firebaseAuth, googleAuthProvider);
   };
+  */
 
- /* const signInWithGoogle = async () => {
+  const signInWithGoogle = async () => {
     try {
-      const res = await signInWithGoogle(firebaseAuth, googleAuthProvider);
+      const res = await signInWithPopup(firebaseAuth, googleAuthProvider);
       const user = res.user;
       const q = query(collection(db, "users"), where("uid", "==", user.uid));
       const docs = await getDocs(q);
       if (docs.docs.length === 0) {
-        await addDoc(collection(db, "users"), {
+        await setDoc(doc(db, "users", user.uid), {
           uid: user.uid,
           name: user.displayName,
-          authProvider: "google",
           email: user.email,
+          photoURL: user.photoURL,
+          authProvider: "google",
+          rooms: []
+        });
+        await setDoc(doc(db, "friends", user.uid), {
+          friends: [],
+          friendRequest: [],
         });
       }
     } catch (err) {
       console.error(err);
       alert(err.message);
-    } 
-  }; */
+    }
+  };
 
   const logInWithEmailAndPassword = async (email, password) => {
     try {
@@ -114,15 +121,25 @@ function useProvideAuth() {
     }
   };
 
-  const registerWithEmailAndPassword = async (email, password) => {
+  const registerWithEmailAndPassword = async (name, email, password) => {
     try {
-      const res = await createUserWithEmailAndPassword(firebaseAuth, email, password);
-      const user = res.user;
-      await addDoc(collection(db, "users"), {
-        uid: user.uid,
-        authProvider: "local",
+      const res = await createUserWithEmailAndPassword(
+        firebaseAuth,
         email,
+        password
+      );
+      const user = res.user;
+      //await addDoc(collection(db, "users"), {
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        name: name,
+        email: email,
+        photoURL: user.photoURL,
+        authProvider: "local",
+        rooms: [],
       });
+
+      await setDoc(doc(db, "friends", user.uid), {friends:[], friendRequest:[]});
     } catch (err) {
       console.error(err);
       alert(err.message);
@@ -141,7 +158,9 @@ function useProvideAuth() {
 
   const logout = () => {
     signOut(firebaseAuth);
-  }
+  };
+
+
 
   // Subscribe to user on mount
   // Because this sets state in the callback it will cause any ...
@@ -162,9 +181,10 @@ function useProvideAuth() {
 
   // Return the user object and auth methods
   return {
+    db,
     user,
-    signin,
-    signup,
+    //signin,
+    //signup,
     signout,
     sendPassResetEmail,
     confirmPasswordReset,
@@ -172,6 +192,6 @@ function useProvideAuth() {
     logInWithEmailAndPassword,
     registerWithEmailAndPassword,
     sendPasswordReset,
-    logout
+    logout,
   };
 }
