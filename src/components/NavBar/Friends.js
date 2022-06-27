@@ -15,7 +15,7 @@ export default function Friends() {
 
   useEffect(() => {
     if (!user) navigate("/");
-  });
+  },[navigate, user]);
 
   const [friends_list] = useDocumentData(doc(db, "friends", user?.uid));
   console.log("friends_info", friends_list?.friends);
