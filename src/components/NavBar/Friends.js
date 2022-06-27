@@ -71,7 +71,6 @@ export default function Friends() {
   const listLength = friends_list?.friends.length;
   return (
     <Box p={3}>
-    <Stack direction="row" spacing='20px'>
     <Heading mb={3}>
       {listLength === 0 ? (
         <div>Number of friend: 0</div>
@@ -80,6 +79,7 @@ export default function Friends() {
           Number of friends: {listLength}
         </div>
       )}</Heading>
+    <Stack direction="row" spacing='20px' mb={4}>
       <FirendsModal users_list={users_list} user={user} db={db}/>
       <FriendRequest users_list={users_list} user={user} db={db}/>
 </Stack>
