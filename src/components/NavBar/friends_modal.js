@@ -86,7 +86,7 @@ export default function FirendsModal(props) {
         friendRequest: arrayUnion(user.uid)
       });
     }) 
-
+    onClose();
     toast({
       title: "Request submitted!",
       status: "success",
@@ -147,5 +147,4 @@ export default function FirendsModal(props) {
       </>
       )
 }
-
 

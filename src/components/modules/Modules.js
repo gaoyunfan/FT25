@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import db from "../../config/firebase";
+import { useAuth } from "../../hooks/useAuth";
 import {
   FormControl,
   FormLabel,
@@ -28,6 +28,7 @@ import {
 
   
 function Modules() {
+  const {db} = useAuth();
   const [moduleCode, setmoduleCode] = useState("");
   const [moduleTitle, setmoduleTitle] = useState("");
   const [user_modList, setuser_modList] = useState([]);

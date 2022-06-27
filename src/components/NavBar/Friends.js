@@ -1,13 +1,15 @@
 import { useAuth } from "../../hooks/useAuth";
 import { useEffect, useState } from "react";
-import { getDoc, doc } from "firebase/firestore";
-import { Box, Avatar, Text, Flex } from "@chakra-ui/react";
+import { getDoc, doc, query, collection } from "firebase/firestore";
+import { Box, Avatar, Text, Flex, Heading, Stack, Button } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import React, { Component }  from "react";
+import { useCollectionData, useDocumentData } from 'react-firebase-hooks/firestore';
+import FirendsModal from "./friends_modal";
+import FriendRequest from "./friendRequest";
 
 export default function Friends() {
   const { user, db } = useAuth();
-  const [friends_list, setFriends_list] = useState([]);
+  //const [friends_list, setFriends_list] = useState([]);
   const [friendsInfo, setFriendsInfo] = useState([]);
   const navigate = useNavigate();
 
@@ -15,6 +17,13 @@ export default function Friends() {
     if (!user) navigate("/");
   });
 
+  const [friends_list] = useDocumentData(doc(db, "friends", user?.uid));
+  console.log("friends_info", friends_list?.friends);
+  const q = query(collection(db, "users"));
+  const [allUsers] = useCollectionData(q);
+  const users_list = allUsers?.filter((u) => u.uid !== user.uid);
+
+  /*
   useEffect(() => {
     async function fetchData() {
       const docRef = doc(db, "friends", user.uid);
@@ -27,7 +36,6 @@ export default function Friends() {
     }
     fetchData();
   }, [db, user.uid]);
-  /*
   async function test() {
   let element = friends_list[0];
   console.log("uid")
@@ -44,39 +52,43 @@ export default function Friends() {
   useEffect(() => {
     async function fetch_friends_info() {
       setFriendsInfo([]);
-      friends_list.forEach(async (element) => {
-        console.log("uid");
-        console.log(element);
-        const docRef = doc(db, "users", element);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          // eslint-disable-next-line no-const-assign
-          console.log("data");
-          console.log(docSnap.data());
-          setFriendsInfo((friendsInfo) => [...friendsInfo, docSnap.data()]);
-        } else {
-          console.log("error");
-        }
-      });
+        friends_list.friends?.forEach(async (element) => {
+          console.log("uid");
+          console.log(element);
+          const docRef = doc(db, "users", element);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            // eslint-disable-next-line no-const-assign
+            console.log("data");
+            console.log(docSnap.data());
+            setFriendsInfo((friendsInfo) => [...friendsInfo, docSnap.data()]);
+          } else {
+            console.log("error");
+          }
+        });
     }
     fetch_friends_info();
   }, [db, friends_list]);
 
-  console.log("friendInfo:");
-  console.log(friendsInfo);
-  const listLength = friends_list.length;
+  const listLength = friends_list?.friends.length;
   return (
-    <>
+    <Box p={3}>
+    <Heading mb={3}>
       {listLength === 0 ? (
-        <div>no friends</div>
+        <div>Number of friend: 0</div>
       ) : (
         <div>
-          {listLength} friend{listLength === 1 ? "" : "s"}
+          Number of friends: {listLength}
         </div>
-      )}
-      <Box width="400px">
-        {friendsInfo.map((person) => (
+      )}</Heading>
+    <Stack direction="row" spacing='20px' mb={4}>
+      <FirendsModal users_list={users_list} user={user} db={db}/>
+      <FriendRequest users_list={users_list} user={user} db={db}/>
+</Stack>
+      <Box width= "500px" overflowY="scroll" sx={{scrollbarWidth: "none"}}>
+        {friendsInfo?.map((person, index) => (
           <Flex
+            key={index + 1}
             cursor="pointer"
             bg="#E8E8E8"
             _hover={{
@@ -98,7 +110,9 @@ export default function Friends() {
               src={person.photoURL}
             />
             <Box>
-              <Text>{person.name == null ? "No display name" : person.name}</Text>
+              <Text>
+                {person.name == null ? "No display name" : person.name}
+              </Text>
               <Text fontSize="xs">
                 <b>Email : </b>
                 {person.email}
@@ -107,6 +121,6 @@ export default function Friends() {
           </Flex>
         ))}
       </Box>
-    </>
+    </Box>
   );
 }
