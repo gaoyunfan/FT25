@@ -7,6 +7,17 @@ import { query, onSnapshot, orderBy,limit,collection, getDoc, doc, addDoc, serve
 import { useCollectionData, useDocumentData } from 'react-firebase-hooks/firestore';
 
 import { useAuth } from "../../hooks/useAuth";
+
+
+import Stopwatch from "./RMstopWatch";
+
+
+
+
+
+
+
+
 export default function FocusRoom() {
   const { state } = useLocation();
   const navigate = useNavigate();
@@ -91,7 +102,7 @@ export default function FocusRoom() {
         <Flex flex={1}>
           <Center  w="100%" h="100%">
             <Avatar size="sm" src="" marginEnd={4} />
-            <Heading size="lg">{room?.name}</Heading>
+            <Heading size="lg">{room?.name}  </Heading>
           </Center>
         </Flex>
       </Flex>
@@ -135,6 +146,21 @@ const getMessages = () =>
   return (
   <Flex h="93vh" direction="column">
   {topBar()}
+  <Flex bg="blue.100" h="71px" w="110%" align="center" p={2}>
+       
+        <Flex flex={1}>
+          <Center  w="100%" h="100%">
+            
+            <Heading size="lg"><Stopwatch />  </Heading>
+          </Center>
+        </Flex>
+      </Flex>
+
+  
+
+  
+
+
   <Flex
         flex={1}
         direction="column"

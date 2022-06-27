@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import React, { Component }  from "react";
 
 export default function ModSearch(props) {
   const {mods} = props;

@@ -23,6 +23,7 @@ import { useEffect, useState } from "react";
 import { AddIcon } from "@chakra-ui/icons";
 import UserBadgeItem from "../user/UserBadgeItem";
 import UserListItem from "../user/UserListitem";
+import { async } from "@firebase/util";
 
 export default function RoomModal() {
   const { user, db } = useAuth();
@@ -186,7 +187,7 @@ export default function RoomModal() {
               <div>Loading...</div>
             ) : searchResult.length > 0 ? (
               searchResult
-                .slice(0, 5)
+                .slice(0, 4)
                 .map((u) => (
                   <UserListItem u={u} handleGroup={() => handleGroup(u)} />
                 ))
