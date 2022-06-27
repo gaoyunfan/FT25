@@ -13,7 +13,7 @@ export default function Friends() {
 
   useEffect(() => {
     if (!user) navigate("/");
-  },[navigate, user]);
+  });
 
   useEffect(() => {
     async function fetchData() {
