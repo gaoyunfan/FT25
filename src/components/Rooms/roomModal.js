@@ -74,7 +74,7 @@ export default function RoomModal() {
   const handleSubmit = async () => {
     if (!focusRoomName || selectedUsers?.length === 0) {
       toast({
-        title: "Please fill all the feilds",
+        title: "Please fill all the fields",
         status: "warning",
         duration: 5000,
         isClosable: true,
