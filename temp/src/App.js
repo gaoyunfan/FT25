@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import React from "react";
+import React , { Component }  from "react";
 
 import Navbar from "./NavBar";
 import PrivateRoute from "./components/user/PrivateRoute";
