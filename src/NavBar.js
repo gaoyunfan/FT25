@@ -25,8 +25,9 @@ export default function Navbar() {
     await signout();
     navigate("/login");
   };
-  const routeChange = () => {
-    navigate("/friends");
+  const routeChange = (e, path) => {
+    e.preventDefault();
+    navigate(path);
   }
 
   return (
@@ -45,23 +46,12 @@ export default function Navbar() {
 
       {user && (
         <>
-        {/*
-          <Button colorScheme="teal" variant="ghost">
-            <Link to="/modules">Modules</Link>
-          </Button>
-          <Button colorScheme="teal" variant="ghost">
-            <Link to="/friends">Friends</Link>
-          </Button>
-
-          <Button colorScheme="teal" variant="ghost">
-            <Link to="/timer">Timer</Link>
-          </Button>
-          */}
-
-          <Button colorScheme="teal" variant="ghost">Modules</Button>
-          <Button colorScheme="teal" variant="ghost" onClick={routeChange}>
+          <Button colorScheme="teal" variant="ghost" onClick={(e) => routeChange(e, "/modules")}>Modules</Button>
+          <Button colorScheme="teal" variant="ghost" onClick={(e) => routeChange(e, "/friends")}>
           Friends
           </Button>
+          <Button colorScheme="teal" variant="ghost" onClick={(e) => routeChange(e, "/timer")}>Timer</Button>
+
           <Spacer />
           <Menu>
             <MenuButton mr={5}>

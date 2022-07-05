@@ -1,5 +1,5 @@
 import { useAuth } from "../hooks/useAuth";
-import GoogleLogIn from "../components/GoogleLogIn";
+import GoogleLogIn from "../components/user/GoogleLogIn";
 import React, { useState } from "react";
 
 import {

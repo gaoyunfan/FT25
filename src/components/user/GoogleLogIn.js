@@ -1,6 +1,6 @@
 import { Button, ButtonGroup, VisuallyHidden } from '@chakra-ui/react';
-import { GoogleIcon } from '../components/ProvidersIcon';
-import { useAuth } from '../hooks/useAuth';
+import { GoogleIcon } from './ProvidersIcon';
+import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 
  export default function GoogleLogIn() {
