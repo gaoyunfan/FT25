@@ -11,6 +11,7 @@ import PageFriends from "./pages/PageFriends";
 import Modules from "./components/modules/Modules";
 import Stopwatch from "./components/timer/Stopwatch";
 import Countdown from "./components/timer/Countdown";
+import FocusRoom from "./components/rooms/FocusRoom";
 
 
 export default function App() {
@@ -26,6 +27,7 @@ export default function App() {
           <Route exact path="/friends" element={<PageFriends />} />
           <Route exact path="/modules" element={<Modules />} />
           <Route exact path="/timer" element={<><Stopwatch/><Countdown/></>} />
+          <Route exact path="/focusroom" element={<FocusRoom />} />
           
           <Route
             path="*"
