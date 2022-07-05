@@ -1,5 +1,5 @@
 import { createIcon } from '@chakra-ui/react'
-import React, { Component }  from "react";
+import React from "react";
 
 export const GoogleIcon = createIcon({
   displayName: 'GoogleIcon',

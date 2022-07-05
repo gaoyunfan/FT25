@@ -1,4 +1,4 @@
-import { setDoc, doc, query, collection, updateDoc, arrayUnion } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 
 import {
   Box,
@@ -18,8 +18,8 @@ import {
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import { useState } from "react";
-import UserListItem from "../user/UserListitem";
-import UserBadgeItem from "../user/UserBadgeItem";
+import UserListItem from "../user/UserListItem";
+import UserBadgeItem from "../user/UserBadgeItem"
 
 export default function FirendsModal(props) {
 
@@ -147,4 +147,3 @@ export default function FirendsModal(props) {
       </>
       )
 }
-

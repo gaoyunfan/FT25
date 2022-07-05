@@ -1,21 +1,15 @@
-import { useAuth } from "../../hooks/useAuth";
 import { useEffect, useState } from "react";
+import { useAuth } from "../hooks/useAuth";
 import { getDoc, doc, query, collection } from "firebase/firestore";
-import { Box, Avatar, Text, Flex, Heading, Stack, Button } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { Box, Avatar, Text, Flex, Heading, Stack } from "@chakra-ui/react";
 import { useCollectionData, useDocumentData } from 'react-firebase-hooks/firestore';
-import FirendsModal from "./friends_modal";
-import FriendRequest from "./friendRequest";
+import FriendRequest from "../components/friends/FriendsRequest";
+import FirendsModal from "../components/friends/FriendsModal";
 
-export default function Friends() {
+export default function PageFriends() {
   const { user, db } = useAuth();
   //const [friends_list, setFriends_list] = useState([]);
   const [friendsInfo, setFriendsInfo] = useState([]);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!user) navigate("/");
-  });
 
   const [friends_list] = useDocumentData(doc(db, "friends", user?.uid));
   console.log("friends_info", friends_list?.friends);

@@ -1,45 +1,26 @@
 import { useAuth } from "../hooks/useAuth";
-import OAuthButtonGroup from "./OAuthBtoonGroup";
-import { Link, useNavigate } from "react-router-dom";
 
 import {
+  Stack,
   Box,
   Button,
-  Checkbox,
   Container,
-  Divider,
   FormControl,
   FormLabel,
-  Heading,
   HStack,
   Input,
-  Stack,
-  Text,
   useBreakpointValue,
   useColorModeValue,
-  InputGroup,
-  InputRightElement,
-  IconButton,
 } from "@chakra-ui/react";
 
-import { useAuthState } from "react-firebase-hooks/auth";
 
-import React, { useEffect, useState } from "react";
-import { HiEye, HiEyeOff } from "react-icons/hi";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function PageReset () {
-  const { user, sendPasswordReset } = useAuth(); 
+  const { sendPasswordReset } = useAuth(); 
   const [email, setEmail] = useState("");
-
-  const navigate = useNavigate();
-
-  const [isOpen, setOpen] = useState(false);
-  const onClickReveal = () => setOpen(!isOpen);
-
-
-  useEffect(() => {
-    if (user) navigate("/dashboard");
-  });
+  let navigate = useNavigate();
 
   return (
     <Container
@@ -89,17 +70,18 @@ export default function PageReset () {
               </FormControl>
             </Stack>
             <HStack justify="space-between">
-             
-            </HStack>
-            <Stack spacing="6">
               <Button
+                w="30%"
                 colorScheme="twitter"
                 variant="solid"
                 onClick={() => sendPasswordReset(email)}
               >
               Reset
+              </Button >
+              <Button w="30%" onClick={()=> navigate("/login")}>
+                Cancel
               </Button>
-            </Stack>
+            </HStack>
           </Stack>
         </Box>
       </Stack>

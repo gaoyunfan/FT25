@@ -1,5 +1,5 @@
-import { useAuth } from "../../hooks/useAuth";
-import RoomModal from "./roomModal";
+import { useAuth } from "../hooks/useAuth";
+import RoomModal from "../components/rooms/RoomModal"
 import { Text, Box, Flex, Stack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
@@ -11,12 +11,7 @@ export default function PageRoom() {
   const [groups, setGroups] = useState([]);
   const [selectedRoom, setSelectRoom] = useState("");
   const navigate = useNavigate();
-  useEffect(() => {
-    if (!user)
-    {
-      navigate("/");
-    }
-  },[navigate, user]);
+
   useEffect(() => {
     const q = query(
       collection(db, "groups"),

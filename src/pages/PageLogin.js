@@ -1,12 +1,10 @@
 import { useAuth } from "../hooks/useAuth";
-import OAuthButtonGroup from "./OAuthBtoonGroup";
-import { Link, useNavigate } from "react-router-dom";
-import React, { useEffect, useState } from "react";
+import GoogleLogIn from "../components/user/GoogleLogIn";
+import React, { useState } from "react";
 
 import {
   Box,
   Button,
-  Checkbox,
   Container,
   Divider,
   FormControl,
@@ -21,33 +19,25 @@ import {
   InputGroup,
   InputRightElement,
   IconButton,
-  FormHelperText,
-  FormErrorMessage,
 } from "@chakra-ui/react";
 
 
-//import { useState } from "react";
 import { HiEye, HiEyeOff } from "react-icons/hi";
+import { useNavigate } from "react-router-dom";
 
 export default function PageLogin() {
-  const { user, logInWithEmailAndPassword } = useAuth();
+  const { logInWithEmailAndPassword } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-
   const [isOpen, setOpen] = useState(false);
   const onClickReveal = () => setOpen(!isOpen);
+  let navigate = useNavigate();
 
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (user) navigate("/dashboard");
-    else
-    {
-      navigate("/")
-    }
-  });
-
+  const handleSignIn = async(e) => {
+    e.preventDefault()
+    await logInWithEmailAndPassword(email, password);
+    navigate("/");
+  };
 
   return (
     <Container
@@ -80,9 +70,9 @@ export default function PageLogin() {
             </Heading>
             <HStack spacing="1" justify="center">
               <Text color="muted">Don't have an account?</Text>
-              <Button variant="link" colorScheme="blue">
-              <Link to="/register">Sign up now !</Link>
-              </Button>
+            <Button color='blue' variant='link' onClick={() => navigate("/register")}>
+            Sign up now !
+            </Button>
             </HStack>
           </Stack>
         </Stack>
@@ -119,7 +109,6 @@ export default function PageLogin() {
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </FormControl>
-              {/*<PasswordField />*/}
               <FormControl>
                 <FormLabel htmlFor="password">Password</FormLabel>
                 <InputGroup>
@@ -143,17 +132,15 @@ export default function PageLogin() {
               </FormControl>
             </Stack>
             <HStack justify="space-between">
-              <Checkbox defaultChecked>Remember me</Checkbox>
-              <Button variant="link" colorScheme="blue" size="sm">
-              <Link to="/resetPassword">Forgot password?</Link>
-                
-              </Button>
+            <Button color='blue' variant='link' onClick={() => navigate("/reset")}>
+              Forgot password?
+            </Button>
             </HStack>
             <Stack spacing="6">
               <Button
                 colorScheme="twitter"
                 variant="solid"
-                onClick={() => logInWithEmailAndPassword(email, password)}
+                onClick={(e) => handleSignIn(e)}
               >
                 Sign in
               </Button>
@@ -164,7 +151,7 @@ export default function PageLogin() {
                 </Text>
                 <Divider />
               </HStack>
-              <OAuthButtonGroup />
+              <GoogleLogIn />
             </Stack>
           </Stack>
         </Box>

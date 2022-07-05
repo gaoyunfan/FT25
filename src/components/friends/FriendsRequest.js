@@ -1,6 +1,6 @@
-import { setDoc, doc, query, collection, updateDoc, arrayUnion, connectFirestoreEmulator, arrayRemove } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 import { useDocumentData } from 'react-firebase-hooks/firestore';
-import UserListItem from "../user/UserListitem";
+import UserListItem from "../user/UserListItem";
 
 import {
   Box,
@@ -13,14 +13,9 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-  FormControl,
-  FormLabel,
-  Input,
-  useToast,
   Flex,
   IconButton,
 } from "@chakra-ui/react";
-import { useState } from "react";
 import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
 
 export default function FriendRequest(props) {

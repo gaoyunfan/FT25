@@ -1,5 +1,5 @@
-import { useAuth } from "../../hooks/useAuth";
 import { setDoc, doc, query, collection, where, onSnapshot, updateDoc, arrayUnion } from "firebase/firestore";
+import { useAuth } from "../../hooks/useAuth";
 
 import {
   Box,
@@ -21,9 +21,8 @@ import {
 
 import { useEffect, useState } from "react";
 import { AddIcon } from "@chakra-ui/icons";
+import UserListItem from "../user/UserListItem";
 import UserBadgeItem from "../user/UserBadgeItem";
-import UserListItem from "../user/UserListitem";
-import { async } from "@firebase/util";
 
 export default function RoomModal() {
   const { user, db } = useAuth();
@@ -54,9 +53,11 @@ export default function RoomModal() {
     setSearchResult(result);
     setLoading(false);
   };
+
   const handleDelete = (delUser) => {
     setSelectedUsers(selectedUsers.filter((sel) => sel.uid !== delUser.uid));
   };
+
   const handleGroup = (userToAdd) => {
     if (selectedUsers.includes(userToAdd)) {
       toast({
@@ -94,6 +95,7 @@ export default function RoomModal() {
         name:focusRoomName,
         private:isprivateRoom
       };
+
       await setDoc(docRef, group);
       all_members.forEach(async (u) => {
         const ref = doc(db, "users", u);

@@ -1,24 +1,57 @@
-import { Avatar, Box, Button, Center, Flex, FormLabel, Heading, InputRightElement, Menu, MenuButton, MenuIcon, MenuItem, MenuList, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, useDisclosure } from "@chakra-ui/react";
+import {
+  Avatar,
+  Box,
+  Button,
+  Center,
+  Flex,
+  FormLabel,
+  Heading,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AddIcon, ArrowBackIcon, HamburgerIcon } from "@chakra-ui/icons";
-import { FormControl ,Input, useToast, HStack, Stack, IconButton } from "@chakra-ui/react";
-import { query, onSnapshot, orderBy,limit,collection, getDoc, doc, addDoc, serverTimestamp, updateDoc, arrayUnion } from "firebase/firestore";
-import { useCollectionData, useDocumentData } from 'react-firebase-hooks/firestore';
-
+import {
+  FormControl,
+  Input,
+  useToast,
+  Stack,
+  IconButton,
+} from "@chakra-ui/react";
+import {
+  query,
+  onSnapshot,
+  orderBy,
+  collection,
+  doc,
+  addDoc,
+  serverTimestamp,
+  updateDoc,
+  arrayUnion,
+} from "firebase/firestore";
+import {
+  useCollectionData,
+  useDocumentData,
+} from "react-firebase-hooks/firestore";
 import { useAuth } from "../../hooks/useAuth";
 
 
 import Stopwatch from "./RMstopWatch";
 
-
-
-
-
-
-  import UserListItem from "../user/UserListitem";
+import UserListItem from "../user/UserListItem";
 import UserBadgeItem from "../user/UserBadgeItem";
-
 
 export default function FocusRoom() {
   const { state } = useLocation();
@@ -32,7 +65,6 @@ export default function FocusRoom() {
   const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const [typing, setTyping] = useState(false);
-  const [istyping, setIsTyping] = useState(false);
   const toast = useToast();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -104,12 +136,12 @@ export default function FocusRoom() {
       const ref = doc(db, "users", u.uid);
       console.log("u", u.uid);
       await updateDoc(ref, {
-        rooms: arrayUnion(r_id)
+        rooms: arrayUnion(r_id),
       });
       const room_ref = doc(db, "groups", r_id);
       await updateDoc(room_ref, {
-        members: arrayUnion(u.uid)
-      })
+        members: arrayUnion(u.uid),
+      });
     });
     onClose();
     toast({
@@ -120,12 +152,6 @@ export default function FocusRoom() {
       position: "bottom",
     });
   };
-
-  useEffect(() => {
-    if (!user) {
-      navigate("/");
-    }
-  }, [user]);
 
   const [room] = useDocumentData(doc(db, "groups", r_id));
   console.log("romm", room);
@@ -202,14 +228,14 @@ export default function FocusRoom() {
               <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
                 <ModalContent>
-                  <ModalHeader>Add friend</ModalHeader>
+                  <ModalHeader>Add member</ModalHeader>
                   <ModalCloseButton />
                   <ModalBody>
                     <FormControl mt={2}>
-                      <FormLabel>Add user</FormLabel>
+                      <FormLabel>Search user</FormLabel>
                       <Input
                         value={queryres}
-                        placeholder="Add users"
+                        placeholder="name"
                         mb={3}
                         onChange={handleSearch}
                       />

@@ -1,14 +1,11 @@
 import { useAuth } from "../hooks/useAuth";
-import OAuthButtonGroup from "./OAuthBtoonGroup";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 
 import {
   Box,
   Button,
-  Checkbox,
   Container,
-  Divider,
   FormControl,
   FormLabel,
   Heading,
@@ -16,7 +13,6 @@ import {
   Input,
   Stack,
   Flex,
-  Text,
   useBreakpointValue,
   useColorModeValue,
   InputGroup,
@@ -28,11 +24,11 @@ import {
 } from "@chakra-ui/react";
 
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { HiEye, HiEyeOff } from "react-icons/hi";
 
-export default function PageLogin() {
-  const { user, registerWithEmailAndPassword } = useAuth();
+export default function PageRegister() {
+  const { registerWithEmailAndPassword } = useAuth();
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
@@ -46,11 +42,9 @@ export default function PageLogin() {
   const [isOpen, setOpen] = useState(false);
   const onClickReveal = () => setOpen(!isOpen);
 
-  useEffect(() => {
-    if (user) navigate("/dashboard");
-  },[user]);
 
-  const handleRegister = () => {
+
+  const handleRegister = async(e) => {
     if (isErrorName) {
       toast({
         title: "Invalid name",
@@ -60,7 +54,8 @@ export default function PageLogin() {
         position: "top",
       });
     } else {
-      registerWithEmailAndPassword(name, email, password);
+      await registerWithEmailAndPassword(name, email, password);
+      navigate("/");
     }
   };
 
@@ -182,7 +177,7 @@ export default function PageLogin() {
               <Button
                 colorScheme="twitter"
                 variant="solid"
-                onClick={() => handleRegister()}
+                onClick={(e) => handleRegister(e)}
               >
                 Sign up
               </Button>

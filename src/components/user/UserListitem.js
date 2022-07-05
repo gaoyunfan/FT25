@@ -1,6 +1,5 @@
 import { Avatar } from "@chakra-ui/avatar";
 import { Flex, Box, Text } from '@chakra-ui/react'
-import { useAuth } from "../../hooks/useAuth";
 
 export default function UserListItem (props) {
   const { u, handleGroup } = props;
