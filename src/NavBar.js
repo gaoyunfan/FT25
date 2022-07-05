@@ -1,49 +1,34 @@
 import {
   Avatar,
-  AVatarBadge,
   Menu,
   MenuButton,
   MenuList,
   MenuItem,
-  MenuItemOption,
   MenuGroup,
-  MenuOptionGroup,
-  MenuDivider,
-  Text,
   Flex,
   Box,
   Spacer,
   Heading,
   Button,
-  ButtonGroup,
 } from "@chakra-ui/react";
 
-import { Link } from "react-router-dom";
-import { CloseIcon, HamburgerIcon } from "@chakra-ui/icons";
+import { Link, useNavigate} from "react-router-dom";
 
 import { useAuth } from "./hooks/useAuth";
-import { useState } from "react";
-import React, { Component }  from "react";
+import React from "react";
 
 export default function Navbar() {
   const { user, signout } = useAuth();
-  const [anchorEl, setAnchorEl] = useState(null);
+  let navigate = useNavigate();
 
-  const handleLogout = () => {
-    handleClose();
-    signout();
+  const handleLogout = async () => {
+    await signout();
+    navigate("/login");
   };
+  const routeChange = () => {
+    navigate("/friends");
+  }
 
-  const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const [show, setShow] = useState(false);
-  const toggleMenu = () => setShow(!show);
   return (
     <Flex
       minWidth="max-content"
@@ -57,21 +42,26 @@ export default function Navbar() {
           <Link to="/">StudyTogether</Link>
         </Heading>
       </Box>
-      <Button colorScheme="teal" variant="ghost">
-        <Link to="/modules">Modules</Link>
-      </Button>
+
       {user && (
         <>
+        {/*
           <Button colorScheme="teal" variant="ghost">
-        <Link to="/friends">Friends</Link>
+            <Link to="/modules">Modules</Link>
+          </Button>
+          <Button colorScheme="teal" variant="ghost">
+            <Link to="/friends">Friends</Link>
           </Button>
 
-
           <Button colorScheme="teal" variant="ghost">
-        <Link to="/timer">Timer</Link>
+            <Link to="/timer">Timer</Link>
           </Button>
+          */}
 
-
+          <Button colorScheme="teal" variant="ghost">Modules</Button>
+          <Button colorScheme="teal" variant="ghost" onClick={routeChange}>
+          Friends
+          </Button>
           <Spacer />
           <Menu>
             <MenuButton mr={5}>
@@ -80,8 +70,7 @@ export default function Navbar() {
             <MenuList>
               <MenuGroup title="Profile">
                 <MenuItem>My Account</MenuItem>
-                <MenuItem>Settings</MenuItem>
-                <MenuItem onClick={() => signout()}>Sign out</MenuItem>
+                <MenuItem onClick={() => handleLogout()}>Sign out</MenuItem>
               </MenuGroup>
             </MenuList>
           </Menu>
