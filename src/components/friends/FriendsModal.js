@@ -68,7 +68,7 @@ export default function FirendsModal(props) {
     
   };
   const handleAddFriends = () => {
-    if (!selectedUsers) {
+    if (!selectedUsers || selectedUsers.length === 0) {
       toast({
         title: "No user to add",
         status: "warning",
