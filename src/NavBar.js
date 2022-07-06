@@ -59,7 +59,7 @@ export default function Navbar() {
             </MenuButton>
             <MenuList>
               <MenuGroup title="Profile">
-                <MenuItem>My Account</MenuItem>
+                <MenuItem onClick={(e) => routeChange(e, "/profile")}>My Account</MenuItem>
                 <MenuItem onClick={() => handleLogout()}>Sign out</MenuItem>
               </MenuGroup>
             </MenuList>
