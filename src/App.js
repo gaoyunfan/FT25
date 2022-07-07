@@ -13,6 +13,7 @@ import Stopwatch from "./components/timer/Stopwatch";
 import Countdown from "./components/timer/Countdown";
 import FocusRoom from "./components/rooms/FocusRoom";
 import ProfilePage from "./pages/ProfilePage";
+import PageVerification from "./pages/PageVerification";
 
 
 export default function App() {
@@ -25,17 +26,18 @@ export default function App() {
           <Route exact path="/login" element={<PageLogin />} />
           <Route exact path="/reset" element={<PageReset />} />
           <Route exact path="/register" element={<PageRegister />} />
-          <Route exact path="/friends" element={<PageFriends />} />
-          <Route exact path="/modules" element={<Modules />} />
-          <Route exact path="/timer" element={<><Stopwatch/><Countdown/></>} />
-          <Route exact path="/focusroom" element={<FocusRoom />} />
-          <Route exact path="/profile" element={<ProfilePage />} />
+          <Route exact path="/friends" element={<PrivateRoute><PageFriends /></PrivateRoute>} />
+          <Route exact path="/modules" element={<PrivateRoute><Modules /></PrivateRoute>} />
+          <Route exact path="/timer" element={<PrivateRoute><><Stopwatch/><Countdown/></></PrivateRoute>} />
+          <Route exact path="/focusroom" element={<PrivateRoute><FocusRoom /></PrivateRoute>} />
+          <Route exact path="/profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
+          <Route exact path="/email-verification" element={<PageVerification /> } />
           
           <Route
             path="*"
             element={
               <div style={{ padding: "1rem" }}>
-                <p>There's nothing here!</p>{" "}
+                <p>No page found</p>{" "}
               </div>
             }
           />

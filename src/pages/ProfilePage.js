@@ -18,6 +18,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { useDocumentData } from 'react-firebase-hooks/firestore';
 
 export default function ProfilePage() {
+
   const { db, user, updateDisplayName, changePassword, updateProfilePic } =
     useAuth();
   const [userName, setUserName] = useState(user.displayName);

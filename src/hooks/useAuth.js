@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import {
  GoogleAuthProvider, getAuth, signInWithPopup,signInWithEmailAndPassword,createUserWithEmailAndPassword,
- sendPasswordResetEmail, signOut, updateProfile, updatePassword,} from "firebase/auth"
+ sendPasswordResetEmail, signOut, updateProfile, updatePassword, sendEmailVerification,} from "firebase/auth"
 
 import {
 getFirestore,query,getDocs,collection,where,setDoc, doc, updateDoc} from "firebase/firestore";
@@ -140,6 +140,9 @@ export function ProvideAuth({ children }) {
       alert(err.message);
     }
     updateProfile(firebaseAuth.currentUser, {displayName: name}).then(() => console.log("displayName updated")).catch((error) => {alert(error.message)});
+    sendEmailVerification(firebaseAuth.currentUser).then(() => {
+      console.log("Email vertification sent!");
+    })
   };
 
   const sendPasswordReset = async (email) => {

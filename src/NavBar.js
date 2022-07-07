@@ -25,6 +25,7 @@ export default function Navbar() {
     await signout();
     navigate("/login");
   };
+
   const routeChange = (e, path) => {
     e.preventDefault();
     navigate(path);
@@ -44,7 +45,7 @@ export default function Navbar() {
         </Heading>
       </Box>
 
-      {user && (
+      {user && user.emailVerified && (
         <>
           <Button colorScheme="teal" variant="ghost" onClick={(e) => routeChange(e, "/modules")}>Modules</Button>
           <Button colorScheme="teal" variant="ghost" onClick={(e) => routeChange(e, "/friends")}>
