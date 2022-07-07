@@ -1,4 +1,3 @@
-import { Alert } from "@chakra-ui/react";
 import { initializeApp } from "firebase/app";
 import {
  GoogleAuthProvider, getAuth, signInWithPopup,signInWithEmailAndPassword,createUserWithEmailAndPassword,

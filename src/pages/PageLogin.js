@@ -36,6 +36,8 @@ export default function PageLogin() {
   const handleSignIn = async(e) => {
     e.preventDefault()
     await logInWithEmailAndPassword(email, password);
+    setEmail("");
+    setPassword("");
     navigate("/");
   };
 
