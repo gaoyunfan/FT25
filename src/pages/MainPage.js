@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function PageRoom() {
   const { user, db } = useAuth();
+  console.log("user", user);
   const [loading, setLoading] = useState(false);
   const [groups, setGroups] = useState([]);
   const [selectedRoom, setSelectRoom] = useState("");

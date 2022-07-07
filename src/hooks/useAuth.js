@@ -1,10 +1,11 @@
+import { Alert } from "@chakra-ui/react";
 import { initializeApp } from "firebase/app";
 import {
  GoogleAuthProvider, getAuth, signInWithPopup,signInWithEmailAndPassword,createUserWithEmailAndPassword,
- sendPasswordResetEmail, signOut, updateProfile,} from "firebase/auth"
+ sendPasswordResetEmail, signOut, updateProfile, updatePassword,} from "firebase/auth"
 
 import {
-getFirestore,query,getDocs,collection,where,setDoc, doc} from "firebase/firestore";
+getFirestore,query,getDocs,collection,where,setDoc, doc, updateDoc} from "firebase/firestore";
 
 import React, { useState, useEffect, useContext, createContext } from "react";
 import { config as firebaseConfig } from "../config/firebaseConfig.js";
@@ -156,7 +157,23 @@ export function ProvideAuth({ children }) {
     signOut(firebaseAuth);
   };
 
+  const updateDisplayName = async (name) => {
+    await updateProfile(firebaseAuth.currentUser, {displayName: name});
+    const userRef = doc(db, "users", user.uid);
+    await updateDoc(userRef, {"name": name});
+  }
 
+  const changePassword = async (newPassword) => {
+    await updatePassword(firebaseAuth.currentUser, newPassword)
+  }
+
+  const updateProfilePic = async (url) => {
+    updateProfile(firebaseAuth.currentUser, {
+      photoURL: url 
+    })
+   const userRef = doc(db, "users", user.uid);
+   await updateDoc(userRef, { photoURL: url });
+  }
 
   // Subscribe to user on mount
   // Because this sets state in the callback it will cause any ...
@@ -188,6 +205,9 @@ export function ProvideAuth({ children }) {
     registerWithEmailAndPassword,
     sendPasswordReset,
     logout,
+    updateDisplayName,
+    changePassword,
+    updateProfilePic
   };
   return (
     <authContext.Provider value={value}>

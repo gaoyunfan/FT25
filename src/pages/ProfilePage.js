@@ -1,15 +1,71 @@
-import { Flex, Center, FormControl, FormLabel, Input, Button, Alert, AlertIcon, AlertDescription, Stack, HStack, Box, Text } from "@chakra-ui/react";
+import { Flex, Center, FormControl, FormLabel, Input, Button, Alert, AlertIcon, AlertDescription, Stack, HStack, Box, Text, Toast, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const { user, updateDisplayName, changePassword, updateProfilePic } =
+    useAuth();
   const [userName, setUserName] = useState(user.displayName);
-  const [password, setPassword] = useState();
-  const [passwordCfm, setPasswordCfm] = useState();
+  const [password, setPassword] = useState("");
+  const [passwordCfm, setPasswordCfm] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const toast = useToast();
   let navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (password !== passwordCfm) {
+      setError("Password do not match");
+      return;
+    }
+    if (userName.length === 0) {
+      setUserName(user.displayName);
+      return setError("User name cannot be empty");
+    }
+    if (password.length < 8) {
+      return setError("Password must contain at least 8 numbers / characters")
+    }
+
+    const promises = [];
+    setLoading(true);
+
+    if (userName !== user.displayName) {
+      promises.push(updateDisplayName(userName));
+    }
+    if (password.length !== 0) {
+      promises.push(changePassword(password));
+    }
+    if (promises.length !== 0) {
+      Promise.all(promises)
+        .then(() => {
+          toast({
+            title: " Profile updated.",
+            status: "success",
+            duration: 6000,
+            isClosable: true,
+          });
+          //navigate("/");
+        })
+        .catch((e) => {
+          alert(e);
+          setError("Failed to update account");
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+    else {
+      toast({
+        title: " Nothing to update.",
+        status: "warning",
+        duration: 6000,
+        isClosable: true,
+      });
+      setLoading(false);
+    }
+  };
 
   return (
     <Center h="92vh">
@@ -26,7 +82,9 @@ export default function ProfilePage() {
             <AlertIcon /> <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
-        <Text fontWeight="bold" size="xl" mb="10px">Email: {user.email}</Text>
+        <Text fontWeight="bold" size="xl" mb="10px">
+          Email: {user.email}
+        </Text>
         <FormControl mb="10px">
           <FormLabel htmlFor="name">Name</FormLabel>
           <Input
@@ -45,7 +103,7 @@ export default function ProfilePage() {
             onChange={(e) => setPassword(e.target.value)}
           />
         </FormControl>
-        <FormControl mb="15px">
+        <FormControl mb="20px">
           <FormLabel htmlFor="passwordCfm">Password Confirmation</FormLabel>
           <Input
             id="name"
@@ -54,7 +112,12 @@ export default function ProfilePage() {
             onChange={(e) => setPasswordCfm(e.target.value)}
           />
         </FormControl>
-        <Button mb="20px" colorScheme="blue">
+        <Button
+          onClick={handleSubmit}
+          disabled={loading}
+          mb="20px"
+          colorScheme="blue"
+        >
           Save
         </Button>
         <Button onClick={() => navigate("/")}>Cancel</Button>
