@@ -10,29 +10,34 @@ import {
   AlertDescription,
   Text,
   useToast,
+  Avatar,
+  Stack,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { doc, getDoc } from "firebase/firestore";
+import { doc } from "firebase/firestore";
 import { useDocumentData } from 'react-firebase-hooks/firestore';
+import ChangeProfilePic from "../components/user/ChangeProfilePic";
 
 export default function ProfilePage() {
 
-  const { db, user, updateDisplayName, changePassword, updateProfilePic } =
+  const { db, user, updateDisplayName, changePassword } =
     useAuth();
   const [userName, setUserName] = useState(user.displayName);
   const [password, setPassword] = useState("");
   const [passwordCfm, setPasswordCfm] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  
   const toast = useToast();
   let navigate = useNavigate();
 
   const [userData] = useDocumentData(doc(db, "users", user.uid));
-  console.log("userData", userData);
 
-  console.log("check", userData?.authProvider === 'local');
+  console.log("userData", userData);
+  console.log("user", user)
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (password !== passwordCfm) {
@@ -100,9 +105,13 @@ export default function ProfilePage() {
             <AlertIcon /> <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
-        <Text fontWeight="bold" size="xl" mb="10px">
-          Email: {user.email}
-        </Text>
+        <Stack margin="auto" spacing="3px" w="200px" mb="10px">
+          <Avatar ml="35%" name={userData?.name} src={userData?.photoURL} />
+          <Text ml="5%" fontWeight="bold" size="xl" mb="10px">
+            {user.email}
+          </Text>
+        </Stack>
+        <ChangeProfilePic />
         <FormControl mb="10px">
           <FormLabel htmlFor="name">Name</FormLabel>
           <Input
@@ -112,25 +121,28 @@ export default function ProfilePage() {
             onChange={(e) => setUserName(e.target.value)}
           />
         </FormControl>
-          { (userData?.authProvider === 'local') && (<>
-        <FormControl mb="10px">
-          <FormLabel htmlFor="password">Password</FormLabel>
-          <Input
-            id="name"
-            type="password"
-            placeholder="Leave blank to keep the same"
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </FormControl>
-        <FormControl mb="20px">
-          <FormLabel htmlFor="passwordCfm">Password Confirmation</FormLabel>
-          <Input
-            id="name"
-            type="password"
-            placeholder="Leave blank to keep the same"
-            onChange={(e) => setPasswordCfm(e.target.value)}
-          />
-        </FormControl></>)}
+        {userData?.authProvider === "local" && (
+          <>
+            <FormControl mb="10px">
+              <FormLabel htmlFor="password">Password</FormLabel>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Leave blank to keep the same"
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </FormControl>
+            <FormControl mb="20px">
+              <FormLabel htmlFor="passwordCfm">Password Confirmation</FormLabel>
+              <Input
+                id="passwordcfm"
+                type="password"
+                placeholder="Leave blank to keep the same"
+                onChange={(e) => setPasswordCfm(e.target.value)}
+              />
+            </FormControl>
+          </>
+        )}
 
         <Button
           onClick={handleSubmit}

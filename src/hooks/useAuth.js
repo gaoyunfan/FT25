@@ -1,4 +1,3 @@
-import { initializeApp } from "firebase/app";
 import {
  GoogleAuthProvider, getAuth, signInWithPopup,signInWithEmailAndPassword,createUserWithEmailAndPassword,
  sendPasswordResetEmail, signOut, updateProfile, updatePassword, sendEmailVerification,} from "firebase/auth"
@@ -7,14 +6,13 @@ import {
 getFirestore,query,getDocs,collection,where,setDoc, doc, updateDoc} from "firebase/firestore";
 
 import React, { useState, useEffect, useContext, createContext } from "react";
-import { config as firebaseConfig } from "../config/firebaseConfig.js";
+import { app } from "../config/firebaseConfig.js";
 
 // Code edited from https://usehooks.com/useAuth/ and
 // https://firebase.google.com/docs/auth/web/start#add-initialize-sdk
 // Not my original work.
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+
 
 // Initialize Firebase Authentication and get a reference to the service
 const firebaseAuth = getAuth(app);
@@ -23,14 +21,12 @@ export const db = getFirestore(app);
 
 const googleAuthProvider = new GoogleAuthProvider();
 
-
 const authContext = createContext();
 // Hook for child components to get the auth object ...
 // ... and re-render when it changes.
 export const useAuth = () => {
   return useContext(authContext);
 };
-
 
 
 // Provider hook that creates auth object and handles state
@@ -174,7 +170,7 @@ export function ProvideAuth({ children }) {
       photoURL: url 
     })
    const userRef = doc(db, "users", user.uid);
-   await updateDoc(userRef, { photoURL: url });
+   await updateDoc(userRef, { "photoURL" : url });
   }
 
   // Subscribe to user on mount
