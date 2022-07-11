@@ -10,12 +10,14 @@ import {
   Spacer,
   Heading,
   Button,
+  AvatarBadge,
 } from "@chakra-ui/react";
 
 import { Link, useNavigate} from "react-router-dom";
 
 import { useAuth } from "./hooks/useAuth";
 import React from "react";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 
 export default function Navbar() {
   const { user, signout } = useAuth();
@@ -55,8 +57,9 @@ export default function Navbar() {
 
           <Spacer />
           <Menu>
-            <MenuButton mr={5}>
-              <Avatar size="sm" />
+            <MenuButton as={Avatar} mr={5} src={user.photoURL} size="sm" _hover={{ 
+              cursor: "pointer"
+               }}>
             </MenuButton>
             <MenuList>
               <MenuGroup title="Profile">
