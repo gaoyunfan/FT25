@@ -1,9 +1,9 @@
 import {
  GoogleAuthProvider, getAuth, signInWithPopup,signInWithEmailAndPassword,createUserWithEmailAndPassword,
- sendPasswordResetEmail, signOut, updateProfile, updatePassword, sendEmailVerification,} from "firebase/auth"
+ sendPasswordResetEmail, signOut, updateProfile, updatePassword, sendEmailVerification, deleteUser,} from "firebase/auth"
 
 import {
-getFirestore,query,getDocs,collection,where,setDoc, doc, updateDoc} from "firebase/firestore";
+getFirestore,query,getDocs,collection,where,setDoc, doc, updateDoc, deleteDoc} from "firebase/firestore";
 
 import React, { useState, useEffect, useContext, createContext } from "react";
 import { app } from "../config/firebaseConfig.js";
@@ -173,6 +173,14 @@ export function ProvideAuth({ children }) {
    await updateDoc(userRef, { "photoURL" : url });
   }
 
+  const deleteAccount = ()=> {
+    deleteUser(firebaseAuth.currentUser).then(() => {
+      console.log("user deleted");
+    }).catch((error) => {
+      alert(error);
+    })
+  }
+
   // Subscribe to user on mount
   // Because this sets state in the callback it will cause any ...
   // ... component that utilizes this hook to re-render with the ...
@@ -205,7 +213,8 @@ export function ProvideAuth({ children }) {
     logout,
     updateDisplayName,
     changePassword,
-    updateProfilePic
+    updateProfilePic,
+    deleteAccount
   };
   return (
     <authContext.Provider value={value}>

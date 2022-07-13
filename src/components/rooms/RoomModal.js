@@ -54,6 +54,10 @@ export default function RoomModal() {
     setLoading(false);
   };
 
+  const handleSearchModule = (e) => {
+    
+  }
+
   const handleDelete = (delUser) => {
     setSelectedUsers(selectedUsers.filter((sel) => sel.uid !== delUser.uid));
   };
@@ -168,10 +172,10 @@ export default function RoomModal() {
                 isRequired
               />
             </FormControl>
-
             <FormControl mt={2}>
               <FormLabel>Add user</FormLabel>
-              <Input placeholder="Add users" mb={3} onChange={handleSearch} />
+              <Input placeholder="Enter module code" mb={3} onChange={handleSearchModule} />
+              <Input placeholder="Input user name" mb={3} onChange={handleSearch} />
             </FormControl>
             <FormControl display="flex" alignItems="center">
               <FormLabel htmlFor="public-private" mb="0">

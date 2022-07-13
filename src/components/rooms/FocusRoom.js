@@ -22,7 +22,7 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { AddIcon, ArrowBackIcon, HamburgerIcon } from "@chakra-ui/icons";
+import { AddIcon, ArrowBackIcon, DeleteIcon, HamburgerIcon } from "@chakra-ui/icons";
 import {
   FormControl,
   Input,
@@ -46,12 +46,11 @@ import {
   useDocumentData,
 } from "react-firebase-hooks/firestore";
 import { useAuth } from "../../hooks/useAuth";
+import AddUser from "./AddUser";
 
 
 import Stopwatch from "./RMstopWatch";
 
-import UserListItem from "../user/UserListItem";
-import UserBadgeItem from "../user/UserBadgeItem";
 
 export default function FocusRoom() {
   const { state } = useLocation();
@@ -62,16 +61,10 @@ export default function FocusRoom() {
   const bottomOfChat = useRef();
 
   const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const [typing, setTyping] = useState(false);
-  const toast = useToast();
-
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [selectedUsers, setSelectedUsers] = useState([]);
-  const [searchResult, setSearchResult] = useState([]);
-  const [queryres, setQueryres] = useState("");
   const q = query(collection(db, "users"));
+  const [room] = useDocumentData(doc(db, "groups", r_id));
   const [allUsers] = useCollectionData(q);
   const users_list = allUsers?.filter((u) => u.uid !== user.uid);
 
@@ -86,75 +79,8 @@ export default function FocusRoom() {
   }, []);
   */
 
-  const handleSearch = (e) => {
-    setQueryres(e.target.value);
-    if (!query) {
-      return;
-    }
-    console.log("query", queryres);
-    setLoading(true);
-    if (queryres === "" || queryres === null) {
-      return;
-    }
-    const result = users_list.filter((person) => {
-      return person.name?.toLowerCase().startsWith(queryres.toLowerCase());
-    });
-    console.log("result", result);
-    setSearchResult(result);
-    setLoading(false);
-  };
-  const handleDelete = (delUser) => {
-    setSelectedUsers(selectedUsers.filter((sel) => sel.uid !== delUser.uid));
-  };
-  const handleGroup = (userToAdd) => {
-    if (selectedUsers.includes(userToAdd)) {
-      toast({
-        title: "User already selected",
-        status: "warning",
-        duration: 5000,
-        isClosable: true,
-        position: "top",
-      });
-    } else {
-      setSelectedUsers([...selectedUsers, userToAdd]);
-      setQueryres("");
-    }
-  };
-  const handleAddFriends = () => {
-    if (!selectedUsers.length) {
-      toast({
-        title: "No user to add",
-        status: "warning",
-        duration: 5000,
-        isClosable: true,
-        position: "top",
-      });
-      return;
-    }
-    console.log("selected", selectedUsers);
-    selectedUsers.forEach(async (u) => {
-      const ref = doc(db, "users", u.uid);
-      console.log("u", u.uid);
-      await updateDoc(ref, {
-        rooms: arrayUnion(r_id),
-      });
-      const room_ref = doc(db, "groups", r_id);
-      await updateDoc(room_ref, {
-        members: arrayUnion(u.uid),
-      });
-    });
-    onClose();
-    toast({
-      title: "User added!",
-      status: "success",
-      duration: 5000,
-      isClosable: true,
-      position: "bottom",
-    });
-  };
 
-  const [room] = useDocumentData(doc(db, "groups", r_id));
-  console.log("romm", room);
+  console.log("room", room);
 
   useEffect(() => {
     const colRef = collection(db, `messages/${room?.id}/msg`);
@@ -217,68 +143,10 @@ export default function FocusRoom() {
             variant="outline"
           />
           <MenuList>
-            <>
-              <MenuItem
-                icon={<AddIcon />}
-                command="⌘T"
-                onClick={(e) => onOpen()}
-              >
-                Add member
-              </MenuItem>{" "}
-              <Modal isOpen={isOpen} onClose={onClose}>
-                <ModalOverlay />
-                <ModalContent>
-                  <ModalHeader>Add member</ModalHeader>
-                  <ModalCloseButton />
-                  <ModalBody>
-                    <FormControl mt={2}>
-                      <FormLabel>Search user</FormLabel>
-                      <Input
-                        value={queryres}
-                        placeholder="name"
-                        mb={3}
-                        onChange={handleSearch}
-                      />
-                    </FormControl>
-                    <Box w="100%" d="flex" flexWrap="wrap">
-                      {selectedUsers.map((u) => (
-                        <UserBadgeItem
-                          u={u}
-                          handleDelete={() => handleDelete(u)}
-                        />
-                      ))}
-                    </Box>
-                    {loading ? (
-                      // <ChatLoading />
-                      <div>Loading...</div>
-                    ) : searchResult.length > 0 ? (
-                      searchResult
-                        .slice(0, 5)
-                        .map((u) => (
-                          <UserListItem
-                            u={u}
-                            handleGroup={() => handleGroup(u)}
-                          />
-                        ))
-                    ) : (
-                      <Box mt="15px" ml="20px">
-                        No user found
-                      </Box>
-                    )}
-                  </ModalBody>
-
-                  <ModalFooter>
-                    <Button
-                      colorScheme="blue"
-                      mr={3}
-                      onClick={() => handleAddFriends()}
-                    >
-                      Add
-                    </Button>
-                  </ModalFooter>
-                </ModalContent>
-              </Modal>
-            </>
+            <AddUser users_list={users_list} r_id={r_id} roomMembers={room?.members}/>
+            <MenuItem icon={<DeleteIcon /> } color="red">
+            Leave room
+            </MenuItem>
           </MenuList>
         </Menu>
       </Flex>
