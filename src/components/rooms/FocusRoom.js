@@ -12,13 +12,13 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ArrowBackIcon, DeleteIcon, HamburgerIcon, WarningTwoIcon } from "@chakra-ui/icons";
 import {
-  FormControl,
-  Input,
-  Stack,
-  IconButton,
-} from "@chakra-ui/react";
+  ArrowBackIcon,
+  DeleteIcon,
+  HamburgerIcon,
+  WarningTwoIcon,
+} from "@chakra-ui/icons";
+import { FormControl, Input, Stack, IconButton } from "@chakra-ui/react";
 import {
   query,
   onSnapshot,
@@ -30,6 +30,7 @@ import {
   updateDoc,
   arrayRemove,
   arrayUnion,
+  deleteDoc,
 } from "firebase/firestore";
 import {
   useCollectionData,
@@ -38,9 +39,7 @@ import {
 import { useAuth } from "../../hooks/useAuth";
 import AddUser from "./AddUser";
 
-
 import Stopwatch from "./RMstopWatch";
-
 
 export default function FocusRoom() {
   const { state } = useLocation();
@@ -106,8 +105,7 @@ export default function FocusRoom() {
 
   const handleLeave = async (e) => {
     if (room.members.length === 1) {
-      handleDelete();
-      return;
+      return handleDelete();
     }
     if (admin) {
       await updateDoc(roomRef, {
@@ -129,7 +127,12 @@ export default function FocusRoom() {
   };
 
   const handleDelete = async (e) => {
-    e.preventDefault();
+    room.members.forEach(async (memb) => {
+      const memberRef = doc(db, "users", memb);
+      await updateDoc(memberRef, { rooms: arrayRemove(r_id) });
+    });
+    await deleteDoc(roomRef);
+    navigate("/");
   };
 
   const typingHandler = (e) => {
@@ -171,7 +174,9 @@ export default function FocusRoom() {
               Leave room
             </MenuItem>
             {admin && (
-              <MenuItem icon={<WarningTwoIcon />}>Delete group</MenuItem>
+              <MenuItem icon={<WarningTwoIcon />} onClick={handleDelete}>
+                Delete group
+              </MenuItem>
             )}
           </MenuList>
         </Menu>
