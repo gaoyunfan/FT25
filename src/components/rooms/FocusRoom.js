@@ -1,32 +1,21 @@
 import {
   Avatar,
-  Box,
   Button,
   Center,
   Flex,
-  FormLabel,
   Heading,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   Text,
-  useDisclosure,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { AddIcon, ArrowBackIcon, DeleteIcon, HamburgerIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, DeleteIcon, HamburgerIcon } from "@chakra-ui/icons";
 import {
   FormControl,
   Input,
-  useToast,
   Stack,
   IconButton,
 } from "@chakra-ui/react";
@@ -39,6 +28,7 @@ import {
   addDoc,
   serverTimestamp,
   updateDoc,
+  arrayRemove,
   arrayUnion,
 } from "firebase/firestore";
 import {
@@ -55,7 +45,7 @@ import Stopwatch from "./RMstopWatch";
 export default function FocusRoom() {
   const { state } = useLocation();
   const navigate = useNavigate();
-  const { u_id, r_id } = state;
+  const { r_id } = state;
   const { db, user } = useAuth();
   //const [room, setRoom] = useState("");
   const bottomOfChat = useRef();
@@ -64,7 +54,9 @@ export default function FocusRoom() {
   const [newMessage, setNewMessage] = useState("");
   const [typing, setTyping] = useState(false);
   const q = query(collection(db, "users"));
-  const [room] = useDocumentData(doc(db, "groups", r_id));
+  const roomRef = doc(db, "groups", r_id);
+  const userRef = doc(db, "users", user.uid);
+  const [room] = useDocumentData(roomRef);
   const [allUsers] = useCollectionData(q);
   const users_list = allUsers?.filter((u) => u.uid !== user.uid);
 
@@ -113,6 +105,32 @@ export default function FocusRoom() {
     setNewMessage("");
   };
 
+  const handleLeave = async (e) => {
+    if (room.members.length === 1)
+    {
+      handleDelete();
+      return;
+    }
+    if (room.admin.length === 1 && room.admin[0] === user.uid) {
+      const index = room.members.findIndex((m) => m !== user.uid)
+      await updateDoc(roomRef, {
+        admin: arrayUnion(room.members[index])
+      });
+      await updateDoc(roomRef, {
+        admin: arrayRemove(user.uid)
+      });
+      console.log("Change admin to:",room.members[index]);
+    }
+    await updateDoc(userRef, {rooms: arrayRemove(r_id)});
+    console.log("remove from user groups");
+    await updateDoc(roomRef, {members: arrayRemove(user.uid)});
+    navigate("/");
+  };
+
+  const handleDelete = async(e) => {
+    e.preventDefault();
+  }
+
   const typingHandler = (e) => {
     setNewMessage(e.target.value);
     if (!typing) {
@@ -144,7 +162,7 @@ export default function FocusRoom() {
           />
           <MenuList>
             <AddUser users_list={users_list} r_id={r_id} roomMembers={room?.members}/>
-            <MenuItem icon={<DeleteIcon /> } color="red">
+            <MenuItem icon={<DeleteIcon /> } color="red" onClick={handleLeave}>
             Leave room
             </MenuItem>
           </MenuList>

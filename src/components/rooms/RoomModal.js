@@ -95,7 +95,7 @@ export default function RoomModal() {
         createdBy: user.uid,
         members: all_members, 
         id:docRef.id,
-        admin: user.uid,
+        admin: [user.uid],
         name:focusRoomName,
         private:isprivateRoom
       };
