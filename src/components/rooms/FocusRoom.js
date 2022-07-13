@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ArrowBackIcon, DeleteIcon, HamburgerIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, DeleteIcon, HamburgerIcon, WarningTwoIcon } from "@chakra-ui/icons";
 import {
   FormControl,
   Input,
@@ -57,22 +57,21 @@ export default function FocusRoom() {
   const roomRef = doc(db, "groups", r_id);
   const userRef = doc(db, "users", user.uid);
   const [room] = useDocumentData(roomRef);
+  const [admin, setAdmin] = useState(false);
   const [allUsers] = useCollectionData(q);
   const users_list = allUsers?.filter((u) => u.uid !== user.uid);
 
-  /*
   useEffect(() => {
-    async function FetchRoom() {
-      const docRef = doc(db, "groups", r_id);
-      const docSnap = await getDoc(docRef);
-      setRoom(docSnap.data());
-    }
-    FetchRoom();
-  }, []);
-  */
-
-
-  console.log("room", room);
+    setAdmin(false);
+    room?.admin.forEach((m) => {
+      if (m === user.uid) {
+        console.log("is admin", m);
+        setAdmin(true);
+        return;
+      }
+    });
+    console.log("admin = ", admin);
+  }, [admin, room, user.uid]);
 
   useEffect(() => {
     const colRef = collection(db, `messages/${room?.id}/msg`);
@@ -106,30 +105,32 @@ export default function FocusRoom() {
   };
 
   const handleLeave = async (e) => {
-    if (room.members.length === 1)
-    {
+    if (room.members.length === 1) {
       handleDelete();
       return;
     }
-    if (room.admin.length === 1 && room.admin[0] === user.uid) {
-      const index = room.members.findIndex((m) => m !== user.uid)
+    if (admin) {
       await updateDoc(roomRef, {
-        admin: arrayUnion(room.members[index])
+        admin: arrayRemove(user.uid),
       });
-      await updateDoc(roomRef, {
-        admin: arrayRemove(user.uid)
-      });
-      console.log("Change admin to:",room.members[index]);
+      if (room.admin.length === 0) {
+        const index = room.members.findIndex((m) => m !== user.uid);
+        await updateDoc(roomRef, {
+          admin: arrayUnion(room.members[index]),
+        });
+
+        console.log("Change admin to:", room.members[index]);
+      }
     }
-    await updateDoc(userRef, {rooms: arrayRemove(r_id)});
+    await updateDoc(userRef, { rooms: arrayRemove(r_id) });
     console.log("remove from user groups");
-    await updateDoc(roomRef, {members: arrayRemove(user.uid)});
+    await updateDoc(roomRef, { members: arrayRemove(user.uid) });
     navigate("/");
   };
 
-  const handleDelete = async(e) => {
+  const handleDelete = async (e) => {
     e.preventDefault();
-  }
+  };
 
   const typingHandler = (e) => {
     setNewMessage(e.target.value);
@@ -161,10 +162,17 @@ export default function FocusRoom() {
             variant="outline"
           />
           <MenuList>
-            <AddUser users_list={users_list} r_id={r_id} roomMembers={room?.members}/>
-            <MenuItem icon={<DeleteIcon /> } color="red" onClick={handleLeave}>
-            Leave room
+            <AddUser
+              users_list={users_list}
+              r_id={r_id}
+              roomMembers={room?.members}
+            />
+            <MenuItem icon={<DeleteIcon />} onClick={handleLeave}>
+              Leave room
             </MenuItem>
+            {admin && (
+              <MenuItem icon={<WarningTwoIcon />}>Delete group</MenuItem>
+            )}
           </MenuList>
         </Menu>
       </Flex>
