@@ -111,7 +111,7 @@ export default function ProfilePage() {
             {user.email}
           </Text>
         </Stack>
-        <ChangeProfilePic />
+        <ChangeProfilePic userData={userData} />
         <FormControl mb="10px">
           <FormLabel htmlFor="name">Name</FormLabel>
           <Input
