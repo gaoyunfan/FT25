@@ -3,12 +3,13 @@ import { useRef, useState } from "react";
 import ProgressBar from "./ProgressBar";
 
 
-export default function ChangeProfilePic() {
+export default function ChangeProfilePic(props) {
   const [file, setFile] = useState(null);
   const [error, setError] = useState(null);
   const [isUpload, setIsUpload] = useState(false);
   const [disable, setDisable] = useState(false);
   const imageInputRef = useRef();
+  const { userData } = props;
 
   const types = ["image/png", "image/jpeg"];
 
@@ -43,7 +44,7 @@ export default function ChangeProfilePic() {
       <Button w="100" colorScheme="teal" variant="solid" isDisabled={disable} onClick={handleSubmit}>
         Upload
       </Button>
-      {file && isUpload && (<ProgressBar file={file} setFile={setFile} isUpload={isUpload} setIsUpload={setIsUpload} imageInputRef={imageInputRef}/>)}
+      {file && isUpload && (<ProgressBar file={file} setFile={setFile} isUpload={isUpload} setIsUpload={setIsUpload} imageInputRef={imageInputRef} userData={userData}/>)}
     </Flex>
 </>
   );

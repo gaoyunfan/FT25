@@ -106,7 +106,7 @@ export default function ProfilePage() {
           </Alert>
         )}
         <Stack margin="auto" spacing="3px" w="200px" mb="10px">
-          <Avatar ml="35%" name={user.photoURL} src={user.photoURL} />
+          <Avatar ml="35%" name={userData?.name} src={userData?.photoURL} />
           <Text ml="5%" fontWeight="bold" size="xl" mb="10px">
             {user.email}
           </Text>

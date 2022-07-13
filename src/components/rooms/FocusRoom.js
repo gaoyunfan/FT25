@@ -9,6 +9,7 @@ import {
   MenuItem,
   MenuList,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -44,6 +45,7 @@ import Stopwatch from "./RMstopWatch";
 export default function FocusRoom() {
   const { state } = useLocation();
   const navigate = useNavigate();
+  const toast = useToast();
   const { r_id } = state;
   const { db, user } = useAuth();
   //const [room, setRoom] = useState("");
@@ -123,6 +125,12 @@ export default function FocusRoom() {
     await updateDoc(userRef, { rooms: arrayRemove(r_id) });
     console.log("remove from user groups");
     await updateDoc(roomRef, { members: arrayRemove(user.uid) });
+    toast({
+      title: 'Room quitted.',
+      status: 'success',
+      duration: 4000,
+      isClosable: true,
+    })
     navigate("/");
   };
 
@@ -132,6 +140,12 @@ export default function FocusRoom() {
       await updateDoc(memberRef, { rooms: arrayRemove(r_id) });
     });
     await deleteDoc(roomRef);
+    toast({
+      title: 'Room deleted.',
+      status: 'success',
+      duration: 4000,
+      isClosable: true,
+    })
     navigate("/");
   };
 

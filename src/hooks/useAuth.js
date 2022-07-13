@@ -126,6 +126,7 @@ export function ProvideAuth({ children }) {
         name: name,
         email: email,
         photoURL: user.photoURL,
+        photoName: "",
         authProvider: "local",
         rooms: [],
       });

@@ -150,8 +150,8 @@ export default function AddUser(props) {
             ) : searchResult.length > 0 ? (
               searchResult
                 .slice(0, 5)
-                .map((u) => (
-                  <UserListItem u={u} handleGroup={() => handleGroup(u)} />
+                .map((u, key) => (
+                  <UserListItem key={key+1} u={u} handleGroup={() => handleGroup(u)} />
                 ))
             ) : (
               <Box mt="15px" ml="20px">
