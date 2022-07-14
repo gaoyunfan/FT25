@@ -11,16 +11,16 @@ import {
   Text,
   useToast,
   Image,
+  Box,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   ArrowBackIcon,
   DeleteIcon,
   HamburgerIcon,
   WarningTwoIcon,
 } from "@chakra-ui/icons";
-
 
 import { FormControl, Input, Stack, IconButton } from "@chakra-ui/react";
 
@@ -224,7 +224,11 @@ export default function FocusRoom() {
           <Button type="submit" hidden>
             Submit
           </Button>
-          <SendImage newMessage={newMessage} setNewMessage={setNewMessage} sendMessage={sendMessage}/>
+          <SendImage
+            newMessage={newMessage}
+            setNewMessage={setNewMessage}
+            sendMessage={sendMessage}
+          />
         </Flex>
       </FormControl>
     );
@@ -251,6 +255,7 @@ export default function FocusRoom() {
           direction="column"
           w="fit-content"
           minWidth="100px"
+          maxWidth="45%"
           borderRadius="lg"
           p={2}
           m={1}
@@ -259,7 +264,9 @@ export default function FocusRoom() {
             {msg.email}
           </Text>
           {msg.imageUrl && (
-            <Image boxSize="150px" objectFit="cover" src={msg.imageUrl} />
+            <a href={msg.imageUrl} target="_blank" rel="noreferrer">
+              <Image boxSize="320px" objectFit="contain" src={msg.imageUrl} />
+            </a>
           )}
           <Text>{msg.text}</Text>
         </Flex>
