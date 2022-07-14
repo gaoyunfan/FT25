@@ -10,17 +10,16 @@ import { useRef, useState } from "react";
 import ProgressBar from "./ProgressBar";
 import { projectStorage } from "../../config/firebaseConfig";
 import { deleteObject, ref } from "firebase/storage";
-import { doc, getDoc } from "firebase/firestore";
 import { useAuth } from "../../hooks/useAuth";
 
 export default function ChangeProfilePic(props) {
   const [file, setFile] = useState(null);
   const [error, setError] = useState(null);
   const [isUpload, setIsUpload] = useState(false);
-  const [disable, setDisable] = useState(false);
+  const [disable, setDisable] = useState(true);
   const imageInputRef = useRef();
   const { userData } = props;
-  const { user, db } = useAuth();
+  const { user } = useAuth();
 
   const types = ["image/png", "image/jpeg"];
 
@@ -72,6 +71,7 @@ export default function ChangeProfilePic(props) {
           <Input
             type="file"
             variant="unstyled"
+            accept="image/png, image/jpeg"
             onChange={handleChange}
             ref={imageInputRef}
           />

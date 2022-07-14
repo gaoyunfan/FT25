@@ -10,6 +10,7 @@ import {
   MenuList,
   Text,
   useToast,
+  Image,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -19,7 +20,10 @@ import {
   HamburgerIcon,
   WarningTwoIcon,
 } from "@chakra-ui/icons";
+
+
 import { FormControl, Input, Stack, IconButton } from "@chakra-ui/react";
+
 import {
   query,
   onSnapshot,
@@ -33,12 +37,14 @@ import {
   arrayUnion,
   deleteDoc,
 } from "firebase/firestore";
+
 import {
   useCollectionData,
   useDocumentData,
 } from "react-firebase-hooks/firestore";
 import { useAuth } from "../../hooks/useAuth";
 import AddUser from "./AddUser";
+import SendImage from "./SendImage";
 
 import Stopwatch from "./RMstopWatch";
 
@@ -54,11 +60,13 @@ export default function FocusRoom() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [typing, setTyping] = useState(false);
+  const [admin, setAdmin] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+
   const q = query(collection(db, "users"));
   const roomRef = doc(db, "groups", r_id);
   const userRef = doc(db, "users", user.uid);
   const [room] = useDocumentData(roomRef);
-  const [admin, setAdmin] = useState(false);
   const [allUsers] = useCollectionData(q);
   const users_list = allUsers?.filter((u) => u.uid !== user.uid);
 
@@ -92,17 +100,21 @@ export default function FocusRoom() {
     return () => unsubscribe();
   }, [db, room?.id]);
 
-  const sendMessage = async (e) => {
+  const sendMessage = async (e, url) => {
     e.preventDefault();
+
     console.log("newmessage:", newMessage);
+    console.log("newurl", url);
     const colRef = collection(db, `messages/${room.id}/msg`);
     await addDoc(colRef, {
+      imageUrl: url,
       text: newMessage,
       createdAt: serverTimestamp(),
       sentBy: user.uid,
       email: user.email,
     });
     setNewMessage("");
+    setInputValue("");
   };
 
   const handleLeave = async (e) => {
@@ -126,11 +138,11 @@ export default function FocusRoom() {
     console.log("remove from user groups");
     await updateDoc(roomRef, { members: arrayRemove(user.uid) });
     toast({
-      title: 'Room quitted.',
-      status: 'success',
+      title: "Room quitted.",
+      status: "success",
       duration: 4000,
       isClosable: true,
-    })
+    });
     navigate("/");
   };
 
@@ -141,16 +153,17 @@ export default function FocusRoom() {
     });
     await deleteDoc(roomRef);
     toast({
-      title: 'Room deleted.',
-      status: 'success',
+      title: "Room deleted.",
+      status: "success",
       duration: 4000,
       isClosable: true,
-    })
+    });
     navigate("/");
   };
 
   const typingHandler = (e) => {
     setNewMessage(e.target.value);
+    setInputValue(e.target.value);
     if (!typing) {
       setTyping(true);
     }
@@ -199,16 +212,20 @@ export default function FocusRoom() {
   }
   function bottomBar() {
     return (
-      <FormControl p={3} onSubmit={sendMessage} as="form">
-        <Input
-          placeholder="Type a message..."
-          autoComplete="off"
-          onChange={(e) => typingHandler(e)}
-          value={newMessage}
-        />
-        <Button type="submit" hidden>
-          Submit
-        </Button>
+      <FormControl p={2} onSubmit={(e) => sendMessage(e, "")} as="form">
+        <Flex>
+          <Input
+            size="lg"
+            placeholder="Type a message and hit enter to send"
+            autoComplete="off"
+            onChange={(e) => typingHandler(e)}
+            value={inputValue}
+          />
+          <Button type="submit" hidden>
+            Submit
+          </Button>
+          <SendImage newMessage={newMessage} setNewMessage={setNewMessage} sendMessage={sendMessage}/>
+        </Flex>
       </FormControl>
     );
   }
@@ -241,17 +258,20 @@ export default function FocusRoom() {
           <Text mb={1} color="orange.700">
             {msg.email}
           </Text>
+          {msg.imageUrl && (
+            <Image boxSize="150px" objectFit="cover" src={msg.imageUrl} />
+          )}
           <Text>{msg.text}</Text>
         </Flex>
       );
     });
 
   return (
-    <Flex h="93vh" direction="column">
+    <Flex h="92vh" direction="column">
       {topBar()}
-      <Flex bg="blue.100" h="71px" w="110%" align="center" p={2}>
+      <Flex bg="blue.100" h="71px" w="100%" align="center" p={2}>
         <Flex flex={1}>
-          <Center w="100%" h="100%">
+          <Center w="98%" h="100%">
             <Heading size="lg">
               <Stopwatch />{" "}
             </Heading>
