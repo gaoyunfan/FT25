@@ -85,6 +85,9 @@ export default function FirendsModal(props) {
       await updateDoc(ref, {
         friendRequest: arrayUnion(user.uid)
       });
+      await updateDoc(doc(db, "friends", user.uid), {
+        sendRequest: arrayUnion(u.uid)
+      });
     }) 
     onClose();
     toast({

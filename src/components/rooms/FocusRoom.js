@@ -11,9 +11,19 @@ import {
   Text,
   useToast,
   Image,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  ButtonGroup,
+  Box,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   ArrowBackIcon,
   DeleteIcon,
@@ -46,13 +56,13 @@ import AddUser from "./AddUser";
 import SendImage from "./SendImage";
 
 import Stopwatch from "./RMstopWatch";
+import RoomInfo from "./RoomInfo";
 
 export default function FocusRoom() {
   const { state } = useLocation();
+  const { r_id } = state;
   const navigate = useNavigate();
   const toast = useToast();
-  const { r_id } = state;
-  console.log("r_id", r_id);
   const { db, user } = useAuth();
   //const [room, setRoom] = useState("");
   const bottomOfChat = useRef();
@@ -68,18 +78,20 @@ export default function FocusRoom() {
   const userRef = doc(db, "users", user.uid);
   const [room] = useDocumentData(roomRef);
   const [allUsers] = useCollectionData(q);
+  const members_list = allUsers?.filter((u) => room.members.includes(u.uid));
   const users_list = allUsers?.filter((u) => u.uid !== user.uid);
+  console.log("members_list", members_list);
+  console.log("users_list", users_list);
+
 
   useEffect(() => {
     setAdmin(false);
     room?.admin.forEach((m) => {
       if (m === user.uid) {
-        console.log("is admin", m);
         setAdmin(true);
         return;
       }
     });
-    console.log("admin = ", admin);
   }, [admin, room, user.uid]);
 
   useEffect(() => {
@@ -87,14 +99,10 @@ export default function FocusRoom() {
     const q = query(colRef, orderBy("createdAt"));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const allMessages = [];
-      console.log("snap", querySnapshot);
       querySnapshot.forEach((doc) => {
-        console.log("q_data", doc.data());
         allMessages.push(doc.data());
       });
       setMessages(allMessages);
-      console.log("allMessages", allMessages);
-      console.log("messages", messages);
     });
 
     return () => unsubscribe();
@@ -103,8 +111,6 @@ export default function FocusRoom() {
   const sendMessage = async (e, url) => {
     e.preventDefault();
 
-    console.log("newmessage:", newMessage);
-    console.log("newurl", url);
     const colRef = collection(db, `messages/${room.id}/msg`);
     await addDoc(colRef, {
       imageUrl: url,
@@ -169,24 +175,13 @@ export default function FocusRoom() {
     }
   };
 
-  const handleNavigate = (e) => {
-    e.preventDefault();
-    navigate(`/room/${r_id}/info`, {state:{ r_id: r_id}});
-  }
+  
 
   function topBar() {
     return (
-      <Flex bg="gray.100" h="71px" w="100%" align="center" p={2}>
+      <Flex gap="25px" bg="gray.100" h="71px" w="100%" align="center" p={2}>
         <IconButton icon={<ArrowBackIcon />} onClick={() => navigate(-1)} />
-        <Flex
-          flexGrow={1}
-          justifyContent="center"
-          _hover={{ cursor: "pointer" }}
-          onClick={handleNavigate}
-        >
-          <Avatar size="sm" src="" marginEnd={3} />
-          <Heading size="lg">{room?.name} </Heading>
-        </Flex>
+        <RoomInfo room={room} members_list={members_list}/>
         <Menu>
           <MenuButton
             as={IconButton}

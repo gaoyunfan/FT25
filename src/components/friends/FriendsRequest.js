@@ -35,16 +35,19 @@ export default function FriendRequest(props) {
     await updateDoc(ownRef, {
       friends: arrayUnion(u.uid)
     });
-    const friend_ref  = doc(db, "friends", u.uid);
-    await updateDoc(friend_ref, {
-      friends: arrayUnion(user.uid)
-    });
+  const friend_ref = doc(db, "friends", u.uid);
+  await updateDoc(friend_ref, {
+    friends: arrayUnion(user.uid),
+  });
     handleReject(u);
   };
 
   const handleReject = async (u) => {
     await updateDoc(ownRef, {
       friendRequest: arrayRemove(u.uid)
+    });
+    await updateDoc(doc(db, "friends", u.uid), {
+      sendRequest: arrayRemove(user.uid)
     });
   };
 

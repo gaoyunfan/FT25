@@ -30,6 +30,12 @@ export default function AddUser(props) {
   const toast = useToast();
   const [loading, setLoading] = useState(false);
 
+  const {
+    isOpen: isAddOpen,
+    onOpen: onAddOpen,
+    onClose: onAddClose,
+  } = useDisclosure();
+
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [searchResult, setSearchResult] = useState([]);
   const [queryres, setQueryres] = useState("");
@@ -69,6 +75,7 @@ export default function AddUser(props) {
     }
   };
   const handleAddFriends = () => {
+    setError(false);
     if (!selectedUsers.length) {
       toast({
         title: "No user to add",
@@ -79,23 +86,22 @@ export default function AddUser(props) {
       });
       return;
     }
-    selectedUsers.forEach((element) => {
-      roomMembers.forEach((member) => {
-        if (element.uid === member) {
-          toast({
-            title: "User already added",
-            status: "warning",
-            duration: 5000,
-            isClosable: true,
-            position: "top",
-          });
-          setError(true);
-          return;
-        }
-      });
+    selectedUsers.forEach((u) => {
+      if (roomMembers.includes(u.uid)) {
+        toast({
+          title: "User already added",
+          status: "warning",
+          duration: 5000,
+          isClosable: true,
+          position: "top",
+        });
+        setError(true);
+        return;
+      }
     });
-    console.log("selected", selectedUsers);
     if (!error) {
+      console.log("error", error);
+      console.log("selected", selectedUsers);
       selectedUsers.forEach(async (u) => {
         const ref = doc(db, "users", u.uid);
         console.log("u", u.uid);
@@ -107,7 +113,8 @@ export default function AddUser(props) {
           members: arrayUnion(u.uid),
         });
       });
-      onClose();
+      onAddClose();
+      setSelectedUsers("");
       toast({
         title: "User added!",
         status: "success",
@@ -118,13 +125,12 @@ export default function AddUser(props) {
     }
   };
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <>
-      <MenuItem icon={<AddIcon />} onClick={(e) => onOpen()}>
+      <MenuItem icon={<AddIcon />} onClick={(e) => onAddOpen()}>
         Add member
       </MenuItem>{" "}
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isAddOpen} onClose={onAddClose}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Add member</ModalHeader>
@@ -140,8 +146,12 @@ export default function AddUser(props) {
               />
             </FormControl>
             <Box w="100%" d="flex" flexWrap="wrap">
-              {selectedUsers.map((u) => (
-                <UserBadgeItem u={u} handleDelete={() => handleDelete(u)} />
+              {selectedUsers.map((u, key) => (
+                <UserBadgeItem
+                  u={u}
+                  key={key + 1}
+                  handleDelete={() => handleDelete(u)}
+                />
               ))}
             </Box>
             {loading ? (
@@ -151,7 +161,11 @@ export default function AddUser(props) {
               searchResult
                 .slice(0, 5)
                 .map((u, key) => (
-                  <UserListItem key={key+1} u={u} handleGroup={() => handleGroup(u)} />
+                  <UserListItem
+                    key={key + 1}
+                    u={u}
+                    handleGroup={() => handleGroup(u)}
+                  />
                 ))
             ) : (
               <Box mt="15px" ml="20px">

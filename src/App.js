@@ -14,7 +14,6 @@ import Countdown from "./components/timer/Countdown";
 import FocusRoom from "./components/rooms/FocusRoom";
 import ProfilePage from "./pages/ProfilePage";
 import PageVerification from "./pages/PageVerification";
-import RoomInfo from "./components/rooms/RoomInfo";
 
 export default function App() {
   return (
@@ -69,14 +68,6 @@ export default function App() {
             element={
               <PrivateRoute>
                 <FocusRoom />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="room/:id/info"
-            element={
-              <PrivateRoute>
-                <RoomInfo />
               </PrivateRoute>
             }
           />

@@ -95,6 +95,7 @@ export function ProvideAuth({ children }) {
         await setDoc(doc(db, "friends", user.uid), {
           friends: [],
           friendRequest: [],
+          sendRequest:[]
         });
       }
     } catch (err) {
@@ -131,7 +132,7 @@ export function ProvideAuth({ children }) {
         rooms: [],
       });
 
-      await setDoc(doc(db, "friends", user.uid), {friends:[], friendRequest:[]});
+      await setDoc(doc(db, "friends", user.uid), {friends:[], friendRequest:[], sendRequest:[]});
     } catch (err) {
       console.error(err);
       alert(err.message);
