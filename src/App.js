@@ -14,7 +14,7 @@ import Countdown from "./components/timer/Countdown";
 import FocusRoom from "./components/rooms/FocusRoom";
 import ProfilePage from "./pages/ProfilePage";
 import PageVerification from "./pages/PageVerification";
-
+import RoomInfo from "./components/rooms/RoomInfo";
 
 export default function App() {
   return (
@@ -22,17 +22,79 @@ export default function App() {
       <Router>
         <Navbar />
         <Routes>
-          <Route exact path="/" element={<PrivateRoute><MainPage /></PrivateRoute>} />
+          <Route
+            exact
+            path="/"
+            element={
+              <PrivateRoute>
+                <MainPage />
+              </PrivateRoute>
+            }
+          />
           <Route exact path="/login" element={<PageLogin />} />
           <Route exact path="/reset" element={<PageReset />} />
           <Route exact path="/register" element={<PageRegister />} />
-          <Route exact path="/friends" element={<PrivateRoute><PageFriends /></PrivateRoute>} />
-          <Route exact path="/modules" element={<PrivateRoute><Modules /></PrivateRoute>} />
-          <Route exact path="/timer" element={<PrivateRoute><><Stopwatch/><Countdown/></></PrivateRoute>} />
-          <Route exact path="/focusroom" element={<PrivateRoute><FocusRoom /></PrivateRoute>} />
-          <Route exact path="/profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
-          <Route exact path="/email-verification" element={<PageVerification /> } />
-          
+          <Route
+            exact
+            path="/friends"
+            element={
+              <PrivateRoute>
+                <PageFriends />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            exact
+            path="/modules"
+            element={
+              <PrivateRoute>
+                <Modules />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            exact
+            path="/timer"
+            element={
+              <PrivateRoute>
+                <>
+                  <Stopwatch />
+                  <Countdown />
+                </>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="room/:id"
+            element={
+              <PrivateRoute>
+                <FocusRoom />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="room/:id/info"
+            element={
+              <PrivateRoute>
+                <RoomInfo />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            exact
+            path="/profile"
+            element={
+              <PrivateRoute>
+                <ProfilePage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            exact
+            path="/email-verification"
+            element={<PageVerification />}
+          />
+
           <Route
             path="*"
             element={
@@ -45,6 +107,4 @@ export default function App() {
       </Router>
     </div>
   );
-
-
 }

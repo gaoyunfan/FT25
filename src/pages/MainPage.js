@@ -38,7 +38,7 @@ export default function PageRoom() {
 
   const handleSelectRoom = (room) => {
     setSelectRoom(room);
-    navigate("/focusroom", {state:{r_id:room.id, u_id:user.uid}});
+    navigate(`/room/${room.id}`, {state:{r_id:room.id}});
   }
   
   return (

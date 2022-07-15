@@ -11,10 +11,9 @@ import {
   Text,
   useToast,
   Image,
-  Box,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   ArrowBackIcon,
   DeleteIcon,
@@ -22,7 +21,7 @@ import {
   WarningTwoIcon,
 } from "@chakra-ui/icons";
 
-import { FormControl, Input, Stack, IconButton } from "@chakra-ui/react";
+import { FormControl, Input, IconButton } from "@chakra-ui/react";
 
 import {
   query,
@@ -53,6 +52,7 @@ export default function FocusRoom() {
   const navigate = useNavigate();
   const toast = useToast();
   const { r_id } = state;
+  console.log("r_id", r_id);
   const { db, user } = useAuth();
   //const [room, setRoom] = useState("");
   const bottomOfChat = useRef();
@@ -169,21 +169,24 @@ export default function FocusRoom() {
     }
   };
 
+  const handleNavigate = (e) => {
+    e.preventDefault();
+    navigate(`/room/${r_id}/info`, {state:{ r_id: r_id}});
+  }
+
   function topBar() {
     return (
-      <Flex
-        bg="gray.100"
-        h="71px"
-        w="100%"
-        align="center"
-        p={2}
-        justifyContent="space-between"
-      >
+      <Flex bg="gray.100" h="71px" w="100%" align="center" p={2}>
         <IconButton icon={<ArrowBackIcon />} onClick={() => navigate(-1)} />
-        <Stack direction="row">
+        <Flex
+          flexGrow={1}
+          justifyContent="center"
+          _hover={{ cursor: "pointer" }}
+          onClick={handleNavigate}
+        >
           <Avatar size="sm" src="" marginEnd={3} />
           <Heading size="lg">{room?.name} </Heading>
-        </Stack>
+        </Flex>
         <Menu>
           <MenuButton
             as={IconButton}
