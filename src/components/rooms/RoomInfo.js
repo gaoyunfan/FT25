@@ -19,6 +19,7 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  FormLabel,
 } from "@chakra-ui/react";
 import { arrayRemove, arrayUnion, doc, updateDoc } from "firebase/firestore";
 import { useDocumentData } from "react-firebase-hooks/firestore";
@@ -28,10 +29,11 @@ import { MdCancel } from "react-icons/md";
 import { TbFriends } from "react-icons/tb";
 import { useEffect, useState } from "react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
+import AddMember from "./AddMember";
 
 export default function RoomInfo(props) {
   const { user, db } = useAuth();
-  const { room, members_list, roomRef} = props;
+  const { room, members_list, allUsers } = props;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [friends_list] = useDocumentData(doc(db, "friends", user.uid));
   const [isAdmin, setIsAdmin] = useState(false);
@@ -97,13 +99,12 @@ export default function RoomInfo(props) {
       isClosable: true,
       position: "bottom",
     });
-
-  }
+  };
 
   const removeAdmin = async (u) => {
-      await updateDoc(doc(db, "groups", room?.id), {
-        admin: arrayRemove(u.uid),
-      });
+    await updateDoc(doc(db, "groups", room?.id), {
+      admin: arrayRemove(u.uid),
+    });
     toast({
       title: "Admin removed!",
       status: "success",
@@ -111,7 +112,7 @@ export default function RoomInfo(props) {
       isClosable: true,
       position: "bottom",
     });
-  }
+  };
 
   const addAdmin = async (u) => {
     await updateDoc(doc(db, "groups", room?.id), {
@@ -124,15 +125,18 @@ export default function RoomInfo(props) {
       isClosable: true,
       position: "bottom",
     });
-  }
+  };
 
   return (
     <>
       <Flex
         flexGrow={1}
         justifyContent="center"
-        _hover={{ cursor: "pointer" }}
+        _hover={{ cursor: "pointer",
+        bg: '#ebedf0' }}
         onClick={onOpen}
+        h="100%"
+        alignItems="center"
       >
         <Avatar size="sm" src="" marginEnd={3} />
         <Heading size="lg">{room?.name} </Heading>
@@ -146,10 +150,11 @@ export default function RoomInfo(props) {
       >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Room members</ModalHeader>
+          <ModalHeader>Room Info</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Flex flexDirection="column" overflowY="auto">
+            <FormLabel>Members</FormLabel>
+            <Flex flexDirection="column" overflowY="auto" mb="10px">
               {members_list?.map((u, key) => {
                 let isFriend = false;
                 let isRequestSend = false;
@@ -236,8 +241,18 @@ export default function RoomInfo(props) {
                           icon={<ChevronDownIcon />}
                         />
                         <MenuList>
-                          <MenuItem onClick={() => removeMember(u)}>Remove member</MenuItem>
-                          {displayAdmin ? <MenuItem onClick={() => removeAdmin(u)}>Remove admin</MenuItem> : <MenuItem onClick={() => addAdmin(u)}>Add admin</MenuItem>}
+                          <MenuItem onClick={() => removeMember(u)}>
+                            Remove member
+                          </MenuItem>
+                          {displayAdmin ? (
+                            <MenuItem onClick={() => removeAdmin(u)}>
+                              Remove admin
+                            </MenuItem>
+                          ) : (
+                            <MenuItem onClick={() => addAdmin(u)}>
+                              Add admin
+                            </MenuItem>
+                          )}
                         </MenuList>
                       </Menu>
                     ) : (
@@ -247,6 +262,10 @@ export default function RoomInfo(props) {
                 );
               })}
             </Flex>
+            <AddMember
+              room={room}
+              allUsers={allUsers}
+            />
           </ModalBody>
           <ModalFooter mt="15px">
             <Button onClick={onClose}>Close</Button>

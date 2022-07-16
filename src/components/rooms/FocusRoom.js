@@ -1,5 +1,4 @@
 import {
-  Avatar,
   Button,
   Center,
   Flex,
@@ -11,16 +10,6 @@ import {
   Text,
   useToast,
   Image,
-  useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  ButtonGroup,
-  Box,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -52,7 +41,6 @@ import {
   useDocumentData,
 } from "react-firebase-hooks/firestore";
 import { useAuth } from "../../hooks/useAuth";
-import AddUser from "./AddUser";
 import SendImage from "./SendImage";
 
 import Stopwatch from "./RMstopWatch";
@@ -181,7 +169,7 @@ export default function FocusRoom() {
     return (
       <Flex gap="25px" bg="gray.100" h="71px" w="100%" align="center" p={2}>
         <IconButton icon={<ArrowBackIcon />} onClick={() => navigate(-1)} />
-        <RoomInfo room={room} members_list={members_list}/>
+        <RoomInfo room={room} members_list={members_list} allUsers={allUsers}/>
         <Menu>
           <MenuButton
             as={IconButton}
@@ -190,12 +178,7 @@ export default function FocusRoom() {
             variant="outline"
           />
           <MenuList>
-            <AddUser
-              users_list={users_list}
-              r_id={r_id}
-              roomMembers={room?.members}
-              roomRef={roomRef}
-            />
+            
             <MenuItem icon={<DeleteIcon />} onClick={handleLeave}>
               Leave room
             </MenuItem>
