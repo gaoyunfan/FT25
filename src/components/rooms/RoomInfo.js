@@ -14,7 +14,11 @@ import {
   IconButton,
   Text,
   Button,
-  Toast,
+  useToast,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from "@chakra-ui/react";
 import { arrayRemove, arrayUnion, doc, updateDoc } from "firebase/firestore";
 import { useDocumentData } from "react-firebase-hooks/firestore";
@@ -23,16 +27,19 @@ import { AiOutlineUserAdd } from "react-icons/ai";
 import { MdCancel } from "react-icons/md";
 import { TbFriends } from "react-icons/tb";
 import { useEffect, useState } from "react";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 
 export default function RoomInfo(props) {
   const { user, db } = useAuth();
-  const { room, members_list } = props;
+  const { room, members_list, roomRef} = props;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [friends_list] = useDocumentData(doc(db, "friends", user.uid));
   const [isAdmin, setIsAdmin] = useState(false);
   console.log("friends_list", friends_list);
   console.log("friends", friends_list?.friends);
   console.log("sendRequest", friends_list?.sendRequest);
+
+  const toast = useToast();
 
   useEffect(() => {
     setIsAdmin(false);
@@ -42,17 +49,15 @@ export default function RoomInfo(props) {
   }, [room, user?.uid]);
   console.log("admin = ", isAdmin);
 
-
   const handleAddFriends = async (u) => {
     const ref = doc(db, "friends", u.uid);
-    console.log("u", u.uid);
     await updateDoc(ref, {
       friendRequest: arrayUnion(user.uid),
     });
     await updateDoc(doc(db, "friends", user.uid), {
       sendRequest: arrayUnion(u.uid),
     });
-    Toast({
+    toast({
       title: "Request submitted!",
       status: "success",
       duration: 5000,
@@ -62,7 +67,6 @@ export default function RoomInfo(props) {
   };
 
   const handleCancelRequest = async (u) => {
-
     const ref = doc(db, "friends", u.uid);
     await updateDoc(ref, {
       friendRequest: arrayRemove(user.uid),
@@ -70,8 +74,51 @@ export default function RoomInfo(props) {
     await updateDoc(doc(db, "friends", user.uid), {
       sendRequest: arrayRemove(u.uid),
     });
-    Toast({
+    toast({
       title: "Request cancelled!",
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+      position: "bottom",
+    });
+  };
+
+  const removeMember = async (u) => {
+    await updateDoc(doc(db, "groups", room?.id), {
+      members: arrayRemove(u.uid),
+    });
+    await updateDoc(doc(db, "users", u.uid), {
+      rooms: arrayRemove(room.id),
+    });
+    toast({
+      title: "Member removed!",
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+      position: "bottom",
+    });
+
+  }
+
+  const removeAdmin = async (u) => {
+      await updateDoc(doc(db, "groups", room?.id), {
+        admin: arrayRemove(u.uid),
+      });
+    toast({
+      title: "Admin removed!",
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+      position: "bottom",
+    });
+  }
+
+  const addAdmin = async (u) => {
+    await updateDoc(doc(db, "groups", room?.id), {
+      admin: arrayUnion(u.uid),
+    });
+    toast({
+      title: "Admin added!",
       status: "success",
       duration: 5000,
       isClosable: true,
@@ -106,16 +153,23 @@ export default function RoomInfo(props) {
               {members_list?.map((u, key) => {
                 let isFriend = false;
                 let isRequestSend = false;
-                let isUser = false; 
+                let isUser = false;
                 let b_g = "#E8E8E8";
+                let displayAdmin = false;
+                if (room?.admin.includes(u.uid)) {
+                  displayAdmin = true;
+                }
                 if (u.uid === user.uid) {
                   isUser = true;
                   b_g = "#38B2AC";
                 }
-                if (friends_list?.friends?.includes(u.uid)) {
-                  isFriend = true;
-                } else if (friends_list?.sendRequest?.includes(u.uid)) {
+                if (room?.admin.includes(u.uid))
+                  if (friends_list?.friends?.includes(u.uid)) {
+                    isFriend = true;
+                  }
+                if (friends_list?.sendRequest?.includes(u.uid)) {
                   isRequestSend = true;
+                  console.log("isRequestedSend:", isRequestSend);
                 }
                 return (
                   <Flex
@@ -127,32 +181,42 @@ export default function RoomInfo(props) {
                     px={3}
                     py={2}
                     mb={2}
+                    gap="4px"
                     borderRadius="lg"
                   >
                     <Avatar mr={2} size="md" name={u.name} src={u.photoURL} />
-                    <Box>
+                    <Box flexGrow={1}>
                       <Text>{u.name}</Text>
                       <Text fontSize="xs">
                         <b>Email : </b>
                         {u.email}
                       </Text>
                     </Box>
-                    {isUser ? "" : (isFriend ? 
-                    <IconButton
+                    {displayAdmin && (
+                      <Text ml="auto" fontSize="sm">
+                        Admin
+                      </Text>
+                    )}
+                    {isUser ? (
+                      ""
+                    ) : isFriend ? (
+                      <IconButton
                         ml="auto"
                         variant="outline"
                         size="lg"
                         aria-label="Add to friends"
                         icon={<TbFriends />}
                       />
-                    : (isRequestSend ? 
+                    ) : isRequestSend ? (
                       <IconButton
                         ml="auto"
                         variant="outline"
                         size="lg"
-                        aria-label="Add to friends"
+                        aria-label="Cancel friend request"
                         onClick={() => handleCancelRequest(u)}
-                        icon={<MdCancel />} /> : 
+                        icon={<MdCancel />}
+                      />
+                    ) : (
                       <IconButton
                         ml="auto"
                         variant="outline"
@@ -161,13 +225,30 @@ export default function RoomInfo(props) {
                         onClick={() => handleAddFriends(u)}
                         icon={<AiOutlineUserAdd />}
                       />
-                     ))}
+                    )}
+                    {isUser ? (
+                      ""
+                    ) : isAdmin ? (
+                      <Menu>
+                        <MenuButton
+                          variant="outline"
+                          as={IconButton}
+                          icon={<ChevronDownIcon />}
+                        />
+                        <MenuList>
+                          <MenuItem onClick={() => removeMember(u)}>Remove member</MenuItem>
+                          {displayAdmin ? <MenuItem onClick={() => removeAdmin(u)}>Remove admin</MenuItem> : <MenuItem onClick={() => addAdmin(u)}>Add admin</MenuItem>}
+                        </MenuList>
+                      </Menu>
+                    ) : (
+                      ""
+                    )}
                   </Flex>
                 );
               })}
             </Flex>
           </ModalBody>
-          <ModalFooter>
+          <ModalFooter mt="15px">
             <Button onClick={onClose}>Close</Button>
           </ModalFooter>
         </ModalContent>

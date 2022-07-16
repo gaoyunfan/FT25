@@ -80,7 +80,7 @@ export default function AddUser(props) {
       toast({
         title: "No user to add",
         status: "warning",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
         position: "top",
       });
@@ -91,7 +91,7 @@ export default function AddUser(props) {
         toast({
           title: "User already added",
           status: "warning",
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
           position: "top",
         });
@@ -118,7 +118,7 @@ export default function AddUser(props) {
       toast({
         title: "User added!",
         status: "success",
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
         position: "bottom",
       });
@@ -146,7 +146,7 @@ export default function AddUser(props) {
               />
             </FormControl>
             <Box w="100%" d="flex" flexWrap="wrap">
-              {selectedUsers.map((u, key) => (
+              {selectedUsers?.map((u, key) => (
                 <UserBadgeItem
                   u={u}
                   key={key + 1}

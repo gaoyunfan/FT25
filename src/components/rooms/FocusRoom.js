@@ -194,6 +194,7 @@ export default function FocusRoom() {
               users_list={users_list}
               r_id={r_id}
               roomMembers={room?.members}
+              roomRef={roomRef}
             />
             <MenuItem icon={<DeleteIcon />} onClick={handleLeave}>
               Leave room
