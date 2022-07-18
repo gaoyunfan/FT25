@@ -10,19 +10,31 @@ import {
   Spacer,
   Heading,
   Button,
-  AvatarBadge,
 } from "@chakra-ui/react";
 
 import { Link, useNavigate} from "react-router-dom";
 
 import { useAuth } from "./hooks/useAuth";
-import React from "react";
-import { ChevronDownIcon } from "@chakra-ui/icons";
+import React, { useEffect, useState } from "react";
+import { useDocumentData } from "react-firebase-hooks/firestore";
+import { doc, getDoc } from "firebase/firestore";
 
 export default function Navbar() {
-  const { user, signout } = useAuth();
-  let navigate = useNavigate();
+  const { user, db, signout } = useAuth();
+  const [userData, setUserData] = useState("");
 
+  useEffect(() => {
+    async function getUserData() {
+      const docRef = doc(db, "users", user?.uid);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setUserData(docSnap.data());
+      }
+    }
+    getUserData();
+  }, [db, user?.uid]);
+
+  let navigate = useNavigate();
   const handleLogout = async () => {
     await signout();
     navigate("/login");
@@ -31,7 +43,7 @@ export default function Navbar() {
   const routeChange = (e, path) => {
     e.preventDefault();
     navigate(path);
-  }
+  };
 
   return (
     <Flex
@@ -49,21 +61,44 @@ export default function Navbar() {
 
       {user && user.emailVerified && (
         <>
-          <Button colorScheme="teal" variant="ghost" onClick={(e) => routeChange(e, "/modules")}>Modules</Button>
-          <Button colorScheme="teal" variant="ghost" onClick={(e) => routeChange(e, "/friends")}>
-          Friends
+          <Button
+            colorScheme="teal"
+            variant="ghost"
+            onClick={(e) => routeChange(e, "/modules")}
+          >
+            Modules
           </Button>
-          <Button colorScheme="teal" variant="ghost" onClick={(e) => routeChange(e, "/timer")}>Timer</Button>
+          <Button
+            colorScheme="teal"
+            variant="ghost"
+            onClick={(e) => routeChange(e, "/friends")}
+          >
+            Friends
+          </Button>
+          <Button
+            colorScheme="teal"
+            variant="ghost"
+            onClick={(e) => routeChange(e, "/timer")}
+          >
+            Timer
+          </Button>
 
           <Spacer />
           <Menu>
-            <MenuButton as={Avatar} mr={5} src={user.photoURL} size="sm" _hover={{ 
-              cursor: "pointer"
-               }}>
-            </MenuButton>
+            <MenuButton
+              as={Avatar}
+              mr={5}
+              src={userData.photoURL}
+              size="sm"
+              _hover={{
+                cursor: "pointer",
+              }}
+            ></MenuButton>
             <MenuList>
               <MenuGroup title="Profile">
-                <MenuItem onClick={(e) => routeChange(e, "/profile")}>My Account</MenuItem>
+                <MenuItem onClick={(e) => routeChange(e, "/profile")}>
+                  My Account
+                </MenuItem>
                 <MenuItem onClick={() => handleLogout()}>Sign out</MenuItem>
               </MenuGroup>
             </MenuList>
