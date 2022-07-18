@@ -17,6 +17,9 @@ import {
   FormLabel,
   Input,
   useToast,
+  RadioGroup,
+  Stack,
+  Radio,
 } from "@chakra-ui/react";
 
 import { useEffect, useState } from "react";
@@ -34,7 +37,8 @@ export default function RoomModal() {
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const [endUser, setEndUser] = useState([]);
-  const [isprivateRoom, setIsPrivateRoom] = useState(true);
+  const [moduleCode, setModuleCode] = useState("");
+  const [value, setValue] = useState("");
 
   const handleSearch = (e) => {
     const query = e.target.value;
@@ -54,9 +58,7 @@ export default function RoomModal() {
     setLoading(false);
   };
 
-  const handleSearchModule = (e) => {
-    
-  }
+
 
   const handleDelete = (delUser) => {
     setSelectedUsers(selectedUsers.filter((sel) => sel.uid !== delUser.uid));
@@ -77,7 +79,7 @@ export default function RoomModal() {
   };
 
   const handleSubmit = async () => {
-    if (!focusRoomName || selectedUsers?.length === 0) {
+    if (!moduleCode || !focusRoomName || selectedUsers?.length === 0) {
       toast({
         title: "Please fill all the fields",
         status: "warning",
@@ -90,7 +92,6 @@ export default function RoomModal() {
     try {
       const docRef = doc(collection(db, "groups"));
       const all_members = selectedUsers.map(u => u.uid).concat(user.uid); 
-      const roomStatus = isprivateRoom ? "private" : "public";
       const group = {
         createdAt: new Date(),
         createdBy: user.uid,
@@ -98,9 +99,9 @@ export default function RoomModal() {
         id:docRef.id,
         admin: [user.uid],
         name:focusRoomName,
-        status: roomStatus,
+        status: value,
         photoURL: "",
-        moduleCode: ""
+        moduleCode: moduleCode,
       };
 
       await setDoc(docRef, group);
@@ -167,7 +168,6 @@ export default function RoomModal() {
           <ModalCloseButton />
           <ModalBody pb={6}>
             <FormControl>
-              <FormLabel>Room name</FormLabel>
               <Input
                 onChange={(e) => setFocusRoomName(e.target.value)}
                 placeholder="Room name"
@@ -176,16 +176,15 @@ export default function RoomModal() {
               />
             </FormControl>
             <FormControl mt={2}>
-              <FormLabel>Add user</FormLabel>
-              <Input placeholder="Enter module code" mb={3} onChange={handleSearchModule} />
-              <Input placeholder="Input user name" mb={3} onChange={handleSearch} />
+              <Input placeholder="Module code e.g. XX1234" mb={3} onChange={(e) => setModuleCode(e.target.value.toUpperCase())} />
+              <Input placeholder="Input user name e.g. John" mb={3} onChange={handleSearch} />
             </FormControl>
-            <FormControl display="flex" alignItems="center">
-              <FormLabel htmlFor="public-private" mb="0">
-                Enable private focus rooms?
-              </FormLabel>
-              <Switch id="public-private" defaultChecked onChange={()=>setIsPrivateRoom(!isprivateRoom)} />
-            </FormControl>
+            <RadioGroup onChange={setValue} value={value} mt={4}>
+                  <Stack direction="row">
+                    <Radio value="public">public</Radio>
+                    <Radio value="private">private</Radio>
+                  </Stack>
+                </RadioGroup> 
             <Box w="100%" d="flex" flexWrap="wrap">
               {selectedUsers.map((u) => (
                 <UserBadgeItem u={u} handleDelete={() => handleDelete(u)} />

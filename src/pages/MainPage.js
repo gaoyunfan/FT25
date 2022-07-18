@@ -1,6 +1,6 @@
 import { useAuth } from "../hooks/useAuth";
-import RoomModal from "../components/rooms/RoomModal"
-import { Text, Box, Flex, Stack } from "@chakra-ui/react";
+import RoomModal from "../components/rooms/RoomModal";
+import { Text, Box, Flex, Stack, SimpleGrid } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
@@ -38,9 +38,9 @@ export default function PageRoom() {
 
   const handleSelectRoom = (room) => {
     setSelectRoom(room);
-    navigate(`/room/${room.id}`, {state:{r_id:room.id}});
-  }
-  
+    navigate(`/room/${room.id}`, { state: { r_id: room.id } });
+  };
+
   return (
     <Flex
       flexDir="column"
@@ -67,20 +67,24 @@ export default function PageRoom() {
       {groups.length > 0 ? (
         <Stack overflowY="scroll">
           {groups.map((room, index) => (
-            <Box key={index + 1} 
+            <Box
+              key={index + 1}
               mb="3"
               onClick={() => handleSelectRoom(room)}
               cursor="pointer"
-              _hover={{background: "#38B2AC",color: "white"}}
-              bg= {"#E8E8E8"}
+              _hover={{ background: "#38B2AC", color: "white" }}
+              bg={"#E8E8E8"}
               color={"black"}
               px={3}
               py={2}
               borderRadius="lg"
             >
               <Text fontSize="4xl">{room.name}</Text>
-              <Text>Room size: {room.members?.length}</Text>
-              <Text>Room type: {room.stauts}</Text>
+              <SimpleGrid columns={2} spacingY='10px'>
+                <Text>Room size: {room.members?.length}</Text>
+                <Text>Room type: {room.status}</Text>
+                <Text>Module: {room.moduleCode}</Text>
+              </SimpleGrid>
             </Box>
           ))}
         </Stack>
