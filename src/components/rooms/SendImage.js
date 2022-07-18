@@ -20,7 +20,7 @@ import { projectStorage } from "../../config/firebaseConfig";
 import { useAuth } from "../../hooks/useAuth";
 
 export default function SendImage(props) {
-  const { newMessage, setNewMessage, sendMessage } = props;
+  const { newMessage, setNewMessage, sendMessage, roomId } = props;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [disable, setDisable] = useState(true);
   const [file, setFile] = useState();
@@ -41,7 +41,7 @@ export default function SendImage(props) {
     if (!file) {
       return;
     }
-    const storageRef = ref(projectStorage, `${user.uid}/messages/${file.name}`);
+    const storageRef = ref(projectStorage, `rooms/${roomId}/${user.uid}/${file.name}`);
     setNewMessage(textRef.current);
     const uploadTask = uploadBytesResumable(storageRef, file);
 

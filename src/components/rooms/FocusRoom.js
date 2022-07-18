@@ -45,6 +45,7 @@ import SendImage from "./SendImage";
 
 import Stopwatch from "./RMstopWatch";
 import RoomInfo from "./RoomInfo";
+import EditRoom from "./EditRoom";
 
 export default function FocusRoom() {
   const { state } = useLocation();
@@ -70,7 +71,6 @@ export default function FocusRoom() {
   const users_list = allUsers?.filter((u) => u.uid !== user.uid);
   console.log("members_list", members_list);
   console.log("users_list", users_list);
-
 
   useEffect(() => {
     setAdmin(false);
@@ -163,13 +163,11 @@ export default function FocusRoom() {
     }
   };
 
-  
-
   function topBar() {
     return (
       <Flex gap="25px" bg="gray.100" h="71px" w="100%" align="center" p={2}>
         <IconButton icon={<ArrowBackIcon />} onClick={() => navigate(-1)} />
-        <RoomInfo room={room} members_list={members_list} allUsers={allUsers}/>
+        <RoomInfo room={room} members_list={members_list} allUsers={allUsers} />
         <Menu>
           <MenuButton
             as={IconButton}
@@ -178,7 +176,7 @@ export default function FocusRoom() {
             variant="outline"
           />
           <MenuList>
-            
+            <EditRoom room={room} name={room?.name} admin={admin} setAdmin={setAdmin}/>
             <MenuItem icon={<DeleteIcon />} onClick={handleLeave}>
               Leave room
             </MenuItem>
@@ -210,6 +208,7 @@ export default function FocusRoom() {
             newMessage={newMessage}
             setNewMessage={setNewMessage}
             sendMessage={sendMessage}
+            roomId={room?.id}
           />
         </Flex>
       </FormControl>

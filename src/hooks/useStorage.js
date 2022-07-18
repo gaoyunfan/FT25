@@ -12,7 +12,7 @@ const useStorage = (file) => {
    
   useEffect(() => {
     // references
-    const storageRef = ref(projectStorage, `${user.uid}/${file.name}` );
+    const storageRef = ref(projectStorage, `users/${user.uid}/${file.name}` );
     const uploadTask = uploadBytesResumable(storageRef, file);
     uploadTask.on(
       "state_changed",

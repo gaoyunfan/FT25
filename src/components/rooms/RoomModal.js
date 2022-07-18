@@ -90,6 +90,7 @@ export default function RoomModal() {
     try {
       const docRef = doc(collection(db, "groups"));
       const all_members = selectedUsers.map(u => u.uid).concat(user.uid); 
+      const roomStatus = isprivateRoom ? "private" : "public";
       const group = {
         createdAt: new Date(),
         createdBy: user.uid,
@@ -97,7 +98,9 @@ export default function RoomModal() {
         id:docRef.id,
         admin: [user.uid],
         name:focusRoomName,
-        private:isprivateRoom
+        status: roomStatus,
+        photoURL: "",
+        moduleCode: ""
       };
 
       await setDoc(docRef, group);

@@ -43,7 +43,7 @@ export default function ChangeProfilePic(props) {
     if (userData.photoName) {
       const desertRef = ref(
         projectStorage,
-        `${user.uid}/${userData.photoName}`
+        `user/${user.uid}/${userData.photoName}`
       );
 
       // Delete the file

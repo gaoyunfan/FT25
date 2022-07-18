@@ -80,7 +80,7 @@ export default function PageRoom() {
             >
               <Text fontSize="4xl">{room.name}</Text>
               <Text>Room size: {room.members?.length}</Text>
-              <Text>Room type: {room.private ? "private" : "public"}</Text>
+              <Text>Room type: {room.stauts}</Text>
             </Box>
           ))}
         </Stack>
