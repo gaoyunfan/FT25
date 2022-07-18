@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import useStorage from "../../hooks/useStorage"
 
-export default function ProgressBar({ file, setFile, isUpload, setIsUpload, imageInputRef }) {
+export default function ProgressBar({ file, setFile, setIsUpload, imageInputRef }) {
   const { db, user, updateProfilePic } = useAuth();
   const { progress, url } = useStorage(file);
   
@@ -13,6 +13,7 @@ export default function ProgressBar({ file, setFile, isUpload, setIsUpload, imag
       setFile(null);
       setIsUpload(false);
       updateProfilePic(url);
+
       updateDoc(doc(db,"users", user.uid), {
         photoName: file.name
       }).then(() => {

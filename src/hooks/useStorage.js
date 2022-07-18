@@ -1,4 +1,4 @@
-import { getDownloadURL, ref, uploadBytes, uploadBytesResumable } from "firebase/storage";
+import { deleteObject, getDownloadURL, ref, uploadBytes, uploadBytesResumable } from "firebase/storage";
 import { useEffect, useState } from "react";
 import { projectStorage } from "../config/firebaseConfig";
 import { useAuth } from "./useAuth";
@@ -27,6 +27,16 @@ const useStorage = (file) => {
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          if (user.photoURL) {
+          const prevImageRef = ref(projectStorage, user.photoURL);
+          deleteObject(prevImageRef)
+          .then(() => {
+            console.log("prev image deleted");
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+          }
           setUrl(downloadURL);
         });
       }
