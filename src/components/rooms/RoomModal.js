@@ -38,7 +38,7 @@ export default function RoomModal() {
   const [loading, setLoading] = useState(false);
   const [endUser, setEndUser] = useState([]);
   const [moduleCode, setModuleCode] = useState("");
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState("public");
 
   const handleSearch = (e) => {
     const query = e.target.value;
@@ -79,7 +79,7 @@ export default function RoomModal() {
   };
 
   const handleSubmit = async () => {
-    if (!moduleCode || !focusRoomName || selectedUsers?.length === 0) {
+    if (!value || !moduleCode || !focusRoomName || selectedUsers?.length === 0) {
       toast({
         title: "Please fill all the fields",
         status: "warning",

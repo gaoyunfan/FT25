@@ -13,13 +13,22 @@ export const config = {
   measurementId: "G-2KPEY72G0Z",
   */
 
+  /*
+  friendlychat
   apiKey: "AIzaSyCwKjjAb52fKhw5AA8Hy_ODNfKAqRWcLhI",
   authDomain: "friendlychat-207d8.firebaseapp.com",
   projectId: "friendlychat-207d8",
   storageBucket: "friendlychat-207d8.appspot.com",
   messagingSenderId: "391541009774",
   appId: "1:391541009774:web:0f7b9038375b2579b3657f"
-
+  */
+  apiKey: "AIzaSyCOyksS_sp7GoFRZ_4I4ej9Gej2tbLLFHA",
+  authDomain: "neworbital-3f9a5.firebaseapp.com",
+  projectId: "neworbital-3f9a5",
+  storageBucket: "neworbital-3f9a5.appspot.com",
+  messagingSenderId: "977165520795",
+  appId: "1:977165520795:web:18fc224ceeee53a2d29b3e",
+  measurementId: "G-7XM4NNDMBG"
 };
 
 // Initialize Firebase

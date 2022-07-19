@@ -10,6 +10,7 @@ import {
   Text,
   useToast,
   Image,
+  Avatar,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -67,7 +68,7 @@ export default function FocusRoom() {
   const userRef = doc(db, "users", user.uid);
   const [room] = useDocumentData(roomRef);
   const [allUsers] = useCollectionData(q);
-  const members_list = allUsers?.filter((u) => room.members.includes(u.uid));
+  const members_list = allUsers?.filter((u) => room?.members.includes(u.uid));
   const users_list = allUsers?.filter((u) => u.uid !== user.uid);
   console.log("members_list", members_list);
   console.log("users_list", users_list);
@@ -176,7 +177,12 @@ export default function FocusRoom() {
             variant="outline"
           />
           <MenuList>
-            <EditRoom room={room} name={room?.name} admin={admin} setAdmin={setAdmin}/>
+            <EditRoom
+              room={room}
+              name={room?.name}
+              admin={admin}
+              setAdmin={setAdmin}
+            />
             <MenuItem icon={<DeleteIcon />} onClick={handleLeave}>
               Leave room
             </MenuItem>
@@ -228,28 +234,49 @@ export default function FocusRoom() {
   const getMessages = () =>
     messages?.map((msg, index) => {
       const sender = msg.sentBy === user.uid;
+      const senderInfo = allUsers.filter((u) => {
+        return msg.email === u.email;
+      });
+      const date = msg.createdAt?.toDate();
+      let time;
+      if (date) {
+        time = `${date.getHours()}:${date.getMinutes()} ${date.getDate()}/${
+          date.getMonth() + 1
+        }/${date.getFullYear()} `;
+      }
+      console.log("time", time);
+
       return (
         <Flex
           key={index + 1}
           alignSelf={sender ? "flex-end" : "flex-start"}
-          bg={sender ? "green.100" : "blue.100"}
-          direction="column"
-          w="fit-content"
-          minWidth="100px"
-          maxWidth="45%"
-          borderRadius="lg"
-          p={2}
-          m={1}
+          alignItems="flex-end"
+          flexDirection={sender ? "row" : "row-reverse"}
         >
-          <Text mb={1} color="orange.700">
-            {msg.email}
-          </Text>
-          {msg.imageUrl && (
-            <a href={msg.imageUrl} target="_blank" rel="noreferrer">
-              <Image boxSize="320px" objectFit="contain" src={msg.imageUrl} />
-            </a>
-          )}
-          <Text>{msg.text}</Text>
+          <Flex
+            bg={sender ? "green.100" : "blue.100"}
+            direction="column"
+            minWidth="255"
+            maxWidth="45%"
+            borderRadius="lg"
+            p={2}
+            mb={3}
+          >
+            <Flex width="fit-content" mb={2}>
+              <Text color="grey" mr={3}>
+                {senderInfo[0].name}
+              </Text>
+              <Text color="orange.700">{msg.email}</Text>
+            </Flex>
+            {msg.imageUrl && (
+              <a href={msg.imageUrl} target="_blank" rel="noreferrer">
+                <Image boxSize="240px" objectFit="contain" src={msg.imageUrl} />
+              </a>
+            )}
+            <Text mb={1}>{msg.text}</Text>
+            <Text ml="auto">{time}</Text>
+          </Flex>
+          <Avatar mb={3} src={senderInfo[0].photoURL} />
         </Flex>
       );
     });
