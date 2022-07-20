@@ -16,6 +16,7 @@ import {
   Button,
   useToast,
   Menu,
+  Tooltip,
   MenuButton,
   MenuList,
   MenuItem,
@@ -188,6 +189,7 @@ export default function RoomInfo(props) {
                     mb={2}
                     gap="4px"
                     borderRadius="lg"
+                    overflowY="auto"
                   >
                     <Avatar mr={2} size="md" name={u.name} src={u.photoURL} />
                     <Box flexGrow={1}>
@@ -213,6 +215,7 @@ export default function RoomInfo(props) {
                         icon={<TbFriends />}
                       />
                     ) : isRequestSend ? (
+                      <Tooltip label="Cancel friend request" aria-label='A tooltip'>
                       <IconButton
                         ml="auto"
                         variant="outline"
@@ -220,16 +223,17 @@ export default function RoomInfo(props) {
                         aria-label="Cancel friend request"
                         onClick={() => handleCancelRequest(u)}
                         icon={<MdCancel />}
-                      />
+                      /></Tooltip>
                     ) : (
+                      <Tooltip label="Add friends" aria-label='A tooltip'>
                       <IconButton
                         ml="auto"
                         variant="outline"
                         size="lg"
-                        aria-label="Add to friends"
+                        aria-label="Add to friend"
                         onClick={() => handleAddFriends(u)}
                         icon={<AiOutlineUserAdd />}
-                      />
+                      /></Tooltip>
                     )}
                     {isUser ? (
                       ""

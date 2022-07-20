@@ -10,6 +10,7 @@ import {
   Spacer,
   Heading,
   Button,
+  Tooltip,
 } from "@chakra-ui/react";
 
 import { Link, useNavigate} from "react-router-dom";
@@ -85,6 +86,7 @@ export default function Navbar() {
 
           <Spacer />
           <Menu>
+          <Tooltip label={user.displayName} aria-label='A tooltip'>
             <MenuButton
               as={Avatar}
               mr={5}
@@ -94,6 +96,7 @@ export default function Navbar() {
                 cursor: "pointer",
               }}
             ></MenuButton>
+</Tooltip>
             <MenuList>
               <MenuGroup title="Profile">
                 <MenuItem onClick={(e) => routeChange(e, "/profile")}>

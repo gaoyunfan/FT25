@@ -99,6 +99,8 @@ export default function ProfilePage() {
         direction="column"
         w="40%"
         minW="400px"
+        height="80vh"
+        overflowY="auto"
       >
         {error && (
           <Alert status="error" mb="10px">
