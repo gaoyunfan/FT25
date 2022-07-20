@@ -13,16 +13,16 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 
-import { Link, useNavigate} from "react-router-dom";
+import { Link, useLocation, useNavigate} from "react-router-dom";
 
 import { useAuth } from "./hooks/useAuth";
 import React, { useEffect, useState } from "react";
-import { useDocumentData } from "react-firebase-hooks/firestore";
 import { doc, getDoc } from "firebase/firestore";
 
 export default function Navbar() {
   const { user, db, signout } = useAuth();
   const [userData, setUserData] = useState("");
+  const [path, setPath] = useState("");
 
   useEffect(() => {
     async function getUserData() {
@@ -36,6 +36,21 @@ export default function Navbar() {
   }, [db, user?.uid]);
 
   let navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname === "/friends") {
+      setPath("friends");
+    }
+    else if (location.pathname === "/modules") {
+      setPath("modules");
+    }
+    else if (location.pathname === "/timer") {
+      setPath("timer");
+    }
+  }, [location.pathname])
+  console.log("pathName", path);
+  
   const handleLogout = async () => {
     await signout();
     navigate("/login");
@@ -54,7 +69,7 @@ export default function Navbar() {
       bg="teal.200"
       padding={2}
     >
-      <Box p="2">
+      <Box p="2" >
         <Heading size="md">
           <Link to="/">StudyTogether</Link>
         </Heading>
@@ -66,12 +81,14 @@ export default function Navbar() {
             colorScheme="teal"
             variant="ghost"
             onClick={(e) => routeChange(e, "/modules")}
+            bg={path === "modules" ? "whiteAlpha.800" : ""}
           >
             Modules
           </Button>
           <Button
             colorScheme="teal"
             variant="ghost"
+            bg={path === "friends" ? "whiteAlpha.800" : ""}
             onClick={(e) => routeChange(e, "/friends")}
           >
             Friends
@@ -79,6 +96,7 @@ export default function Navbar() {
           <Button
             colorScheme="teal"
             variant="ghost"
+            bg={path === "timer" ? "whiteAlpha.800" : ""}
             onClick={(e) => routeChange(e, "/timer")}
           >
             Timer
