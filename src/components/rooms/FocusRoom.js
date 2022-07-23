@@ -90,7 +90,7 @@ export default function FocusRoom() {
 
   useEffect(() => {
     setAdmin(false);
-    room?.admin.forEach((m) => {
+    room?.admin?.forEach((m) => {
       if (m === user.uid) {
         setAdmin(true);
         return;

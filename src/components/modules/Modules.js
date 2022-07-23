@@ -17,7 +17,9 @@ import {
 	addDoc,
 	endAt,
 	startAt,
-	where
+	where,
+	updateDoc,
+	arrayUnion
 } from "firebase/firestore";
 import {
 	useAuth
@@ -170,14 +172,20 @@ function Modules() {
 					id: doc.id,
 					moduleCode: doc.data().moduleCode,
 					name: doc.data().name,
-					private: doc.data().private
+					status: doc.data().status
 				})
 			})
 			setGroups_modList(arr);
 		});
 	};
-	const joinHandle = (id) => {
+	const joinHandle = async (id) => {
 		setId(id);
+		await updateDoc(doc(db, "groups", id), {
+      members: arrayUnion(user.uid),
+    });
+    await updateDoc(doc(db, "users", user.uid), {
+      rooms: arrayUnion(id),
+    });
 		onOpen();
 	};
 
@@ -233,7 +241,7 @@ function Modules() {
 			<Box w = {'50%'} flex = {1} style = {{overflow: 'scroll'}}>
 				<Center p={5} style={{fontWeight:'bold',fontSize:'20px'}}>Search Room</Center>
 				<Flex style = {{padding: '0 30px 30px 30px'}}>
-					<Input placeholder = "Room name" onChange = {(e) => setSearchKey(e.target.value)} className = "input" />
+					<Input placeholder = "Room name" onChange = {(e) => setSearchKey(e.target.value.toUpperCase())} className = "input" />
 					<Button className = "button" leftIcon = {<SearchIcon />} colorScheme = 'teal' onClick = {searchHandle}>Search</Button>
 				</Flex> 
 				<Center>{groups_modList.length > 0 ? ( 
@@ -252,7 +260,7 @@ function Modules() {
 							</Flex> 
 						<Box color = "#888">
 							{groups_modList?.map((item) => (
-								<Flex className = "flex" key = {item.id} style = {{'display': item.private ? 'none' : '','borderBottom': '1px solid #ededed',padding: '10px 0'}}>
+								<Flex className = "flex" key = {item.id} style = {{'display': item.status === "private" ? 'none' : '','borderBottom': '1px solid #ededed',padding: '10px 0'}}>
 									<Center flex = {1}>
 										<Text>{item.moduleCode}</Text> 
 									</Center> 
