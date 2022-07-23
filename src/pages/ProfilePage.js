@@ -105,9 +105,9 @@ export default function ProfilePage() {
             <AlertIcon /> <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
-        <Stack margin="auto" spacing="3px" w="200px" mb="10px">
+        <Stack margin="auto" spacing="3px" w="230px" mb="10px">
           <Avatar ml="35%" src={userData?.photoURL} name={userData?.name} />
-          <Text ml="5%" fontWeight="bold" size="xl" mb="10px">
+          <Text ml="4%" fontWeight="bold" size="xl" mb="10px">
             {user.email}
           </Text>
         </Stack>

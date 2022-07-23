@@ -183,12 +183,7 @@ function Modules() {
 
 	const JoinIn = () => {
 		onClose()
-		navigate("/focusroom", {
-			state: {
-				r_id: id,
-				u_id: user.uid
-			}
-		});
+    navigate(`/room/${id}`, { state: { r_id: id } });
 	}
 
 	return (<div>
