@@ -19,11 +19,12 @@ import {
   InputGroup,
   InputRightElement,
   IconButton,
+  Link,
 } from "@chakra-ui/react";
 
 
 import { HiEye, HiEyeOff } from "react-icons/hi";
-import { useNavigate } from "react-router-dom";
+import { Link as ReachLink, useNavigate } from "react-router-dom";
 
 export default function PageLogin() {
   const { logInWithEmailAndPassword } = useAuth();
@@ -34,7 +35,7 @@ export default function PageLogin() {
   let navigate = useNavigate();
 
   const handleSignIn = async(e) => {
-    e.preventDefault()
+    e.preventDefault();
     await logInWithEmailAndPassword(email, password);
     navigate("/");
   };
@@ -70,9 +71,9 @@ export default function PageLogin() {
             </Heading>
             <HStack spacing="1" justify="center">
               <Text color="muted">Don't have an account?</Text>
-            <Button color='blue' variant='link' onClick={() => navigate("/register")}>
-            Sign up now !
-            </Button>
+              <Link color="blue" as={ReachLink} to="/register">
+              Sign up now !
+              </Link>
             </HStack>
           </Stack>
         </Stack>
@@ -132,9 +133,9 @@ export default function PageLogin() {
               </FormControl>
             </Stack>
             <HStack justify="space-between">
-            <Button color='blue' variant='link' onClick={() => navigate("/reset")}>
-              Forgot password?
-            </Button>
+              <Link color="blue" as={ReachLink} to="/reset">
+                Forgot password?
+              </Link>
             </HStack>
             <Stack spacing="6">
               <Button
