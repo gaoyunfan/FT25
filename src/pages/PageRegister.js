@@ -54,7 +54,8 @@ export default function PageRegister() {
         position: "top",
       });
     } else {
-      registerWithEmailAndPassword(name, email, password).then(()=> navigate("/email-verification"));
+      await registerWithEmailAndPassword(name, email, password);
+      navigate("/");
     }
   };
 

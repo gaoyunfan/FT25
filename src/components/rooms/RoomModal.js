@@ -1,4 +1,4 @@
-import { setDoc, doc, query, collection, where, onSnapshot, updateDoc, arrayUnion } from "firebase/firestore";
+import { setDoc, doc, query, collection, where, onSnapshot, updateDoc, arrayUnion,getDocs} from "firebase/firestore";
 import { useAuth } from "../../hooks/useAuth";
 
 import {
@@ -17,36 +17,37 @@ import {
   FormLabel,
   Input,
   useToast,
-  RadioGroup,
-  Stack,
-  Radio,
+  Text,
+  Center
 } from "@chakra-ui/react";
 
 import { useEffect, useState } from "react";
 import { AddIcon } from "@chakra-ui/icons";
 import UserListItem from "../user/UserListItem";
 import UserBadgeItem from "../user/UserBadgeItem";
-
+import "./RoomModal.css";
 export default function RoomModal() {
   const { user, db } = useAuth();
 
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [codeList, setCodeList] = useState([]);
+  const [moduleCode, setModuleCode] = useState('');
   const [focusRoomName, setFocusRoomName] = useState();
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [searchResult, setSearchResult] = useState([]);
+  //const [static_modList, setstatic_modList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [endUser, setEndUser] = useState([]);
-  const [moduleCode, setModuleCode] = useState("");
-  const [value, setValue] = useState("public");
-
+  const [isprivateRoom, setIsPrivateRoom] = useState(false);
+	
+  const [display, setDisplay] = useState(true);
   const handleSearch = (e) => {
     const query = e.target.value;
     if (!query) {
       return;
-    }
-    console.log("query", query);
-    setLoading(true);
+    }    
+	setLoading(true);
     if (query === "" || query === null) {
       return;
     }
@@ -57,8 +58,21 @@ export default function RoomModal() {
     setSearchResult(result);
     setLoading(false);
   };
-
-
+  
+  const onInput = (value)=>{
+	  setModuleCode(value);
+	  let connect = collection(db, "static_modList");
+	  getDocs(connect).then(snapshot=>{
+		  setCodeList(
+			  snapshot.docs.map((doc) =>({
+			  	moduleCode:doc.data().moduleCode
+			  }))
+		  )
+	  });
+	 value&&codeList.length>0?setDisplay(false):setDisplay(true);
+  }
+  
+ 
 
   const handleDelete = (delUser) => {
     setSelectedUsers(selectedUsers.filter((sel) => sel.uid !== delUser.uid));
@@ -79,7 +93,7 @@ export default function RoomModal() {
   };
 
   const handleSubmit = async () => {
-    if (!value || !moduleCode || !focusRoomName || selectedUsers?.length === 0) {
+    if (!focusRoomName || selectedUsers?.length === 0) {
       toast({
         title: "Please fill all the fields",
         status: "warning",
@@ -91,17 +105,17 @@ export default function RoomModal() {
     }
     try {
       const docRef = doc(collection(db, "groups"));
+	  console.log(docRef)
       const all_members = selectedUsers.map(u => u.uid).concat(user.uid); 
       const group = {
         createdAt: new Date(),
         createdBy: user.uid,
         members: all_members, 
         id:docRef.id,
-        admin: [user.uid],
+        admin: user.uid,
         name:focusRoomName,
-        status: value,
-        photoURL: "",
-        moduleCode: moduleCode,
+        private:isprivateRoom,
+		moduleCode:moduleCode
       };
 
       await setDoc(docRef, group);
@@ -132,7 +146,7 @@ export default function RoomModal() {
     }
   };
   useEffect(() => {
-      setLoading(true);
+    setLoading(true);
     const q = query(collection(db, "users"), where("uid", "!=", user.uid));
     const unsubscribe = onSnapshot(q, (documentSnapShot) => {
       const allUsers = [];
@@ -151,6 +165,12 @@ export default function RoomModal() {
 
   console.log("endUser", endUser);
   console.log("selectedUser ", selectedUsers);
+  
+  const chooseCode = (item,e)=>{
+	e.preventDefault();
+	setModuleCode(item)
+	setDisplay(true)
+  }
   return (
     <>
       <Button
@@ -167,7 +187,25 @@ export default function RoomModal() {
           <ModalHeader>Create foucs room</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
+			  <FormControl>
+				<FormLabel>Module Code</FormLabel>
+				<Input
+				  onInput = {(e) => onInput(e.target.value)}
+				  placeholder="Module Code"
+				  value={moduleCode}
+				  mb={1}
+				  isRequired
+				/>
+				<Box className="box" style={{display:display?'none':''}}>
+					{codeList?.map((item,i) =>(
+						<Center style={{display:item.moduleCode?.indexOf(moduleCode)>-1?'':'none',}} key={i} className="center" onClick={(e)=>chooseCode(item.moduleCode,e)}>
+							<Text>{item.moduleCode}</Text>
+						</Center>)
+					)}
+				</Box>
+			  </FormControl>
             <FormControl>
+              <FormLabel>Room name</FormLabel>
               <Input
                 onChange={(e) => setFocusRoomName(e.target.value)}
                 placeholder="Room name"
@@ -175,16 +213,17 @@ export default function RoomModal() {
                 isRequired
               />
             </FormControl>
+
             <FormControl mt={2}>
-              <Input placeholder="Module code e.g. XX1234" mb={3} onChange={(e) => setModuleCode(e.target.value.toUpperCase())} />
-              <Input placeholder="Input user name e.g. John" mb={3} onChange={handleSearch} />
+              <FormLabel>Add user</FormLabel>
+              <Input placeholder="Add users" mb={3} onChange={handleSearch} />
             </FormControl>
-            <RadioGroup onChange={setValue} value={value} mt={4}>
-                  <Stack direction="row">
-                    <Radio value="public">public</Radio>
-                    <Radio value="private">private</Radio>
-                  </Stack>
-                </RadioGroup> 
+            <FormControl display="flex" alignItems="center">
+              <FormLabel htmlFor="public-private" mb="0">
+                Enable private focus rooms?
+              </FormLabel>
+              <Switch id="public-private" defaultChecked onChange={()=>setIsPrivateRoom(!isprivateRoom)} />
+            </FormControl>
             <Box w="100%" d="flex" flexWrap="wrap">
               {selectedUsers.map((u) => (
                 <UserBadgeItem u={u} handleDelete={() => handleDelete(u)} />

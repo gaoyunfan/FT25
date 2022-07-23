@@ -1,18 +1,20 @@
+import { initializeApp } from "firebase/app";
 import {
  GoogleAuthProvider, getAuth, signInWithPopup,signInWithEmailAndPassword,createUserWithEmailAndPassword,
- sendPasswordResetEmail, signOut, updateProfile, updatePassword, sendEmailVerification, deleteUser,} from "firebase/auth"
+ sendPasswordResetEmail, signOut,} from "firebase/auth"
 
 import {
-getFirestore,query,getDocs,collection,where,setDoc, doc, updateDoc, deleteDoc} from "firebase/firestore";
+getFirestore,query,getDocs,collection,where,setDoc, doc} from "firebase/firestore";
 
 import React, { useState, useEffect, useContext, createContext } from "react";
-import { app } from "../config/firebaseConfig.js";
+import { config as firebaseConfig } from "../config/firebaseConfig.js";
 
 // Code edited from https://usehooks.com/useAuth/ and
 // https://firebase.google.com/docs/auth/web/start#add-initialize-sdk
 // Not my original work.
 
-
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 
 // Initialize Firebase Authentication and get a reference to the service
 const firebaseAuth = getAuth(app);
@@ -21,12 +23,14 @@ export const db = getFirestore(app);
 
 const googleAuthProvider = new GoogleAuthProvider();
 
+
 const authContext = createContext();
 // Hook for child components to get the auth object ...
 // ... and re-render when it changes.
 export const useAuth = () => {
   return useContext(authContext);
 };
+
 
 
 // Provider hook that creates auth object and handles state
@@ -90,12 +94,12 @@ export function ProvideAuth({ children }) {
           email: user.email,
           photoURL: user.photoURL,
           authProvider: "google",
-          rooms: []
+          rooms: [],
+		  time:''
         });
         await setDoc(doc(db, "friends", user.uid), {
           friends: [],
           friendRequest: [],
-          sendRequest:[]
         });
       }
     } catch (err) {
@@ -127,20 +131,16 @@ export function ProvideAuth({ children }) {
         name: name,
         email: email,
         photoURL: user.photoURL,
-        photoName: "",
         authProvider: "local",
         rooms: [],
+		time:''
       });
 
-      await setDoc(doc(db, "friends", user.uid), {friends:[], friendRequest:[], sendRequest:[]});
+      await setDoc(doc(db, "friends", user.uid), {friends:[], friendRequest:[]});
     } catch (err) {
       console.error(err);
       alert(err.message);
     }
-    updateProfile(firebaseAuth.currentUser, {displayName: name}).then(() => console.log("displayName updated")).catch((error) => {alert(error.message)});
-    sendEmailVerification(firebaseAuth.currentUser).then(() => {
-      console.log("Email vertification sent!");
-    })
   };
 
   const sendPasswordReset = async (email) => {
@@ -157,31 +157,7 @@ export function ProvideAuth({ children }) {
     signOut(firebaseAuth);
   };
 
-  const updateDisplayName = async (name) => {
-    await updateProfile(firebaseAuth.currentUser, {displayName: name});
-    const userRef = doc(db, "users", user.uid);
-    await updateDoc(userRef, {"name": name});
-  }
 
-  const changePassword = async (newPassword) => {
-    await updatePassword(firebaseAuth.currentUser, newPassword)
-  }
-
-  const updateProfilePic = async (url) => {
-    updateProfile(firebaseAuth.currentUser, {
-      photoURL: url 
-    })
-   const userRef = doc(db, "users", user.uid);
-   await updateDoc(userRef, { "photoURL" : url });
-  }
-
-  const deleteAccount = ()=> {
-    deleteUser(firebaseAuth.currentUser).then(() => {
-      console.log("user deleted");
-    }).catch((error) => {
-      alert(error);
-    })
-  }
 
   // Subscribe to user on mount
   // Because this sets state in the callback it will cause any ...
@@ -213,10 +189,6 @@ export function ProvideAuth({ children }) {
     registerWithEmailAndPassword,
     sendPasswordReset,
     logout,
-    updateDisplayName,
-    changePassword,
-    updateProfilePic,
-    deleteAccount
   };
   return (
     <authContext.Provider value={value}>

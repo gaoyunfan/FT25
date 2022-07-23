@@ -2,9 +2,6 @@ import React, { Component } from "react";
 import "./App.css";
 
 class Countdown extends Component {
-
-
-  
   state = {
     timerOn: false,
     timerStart: 0,
@@ -73,24 +70,24 @@ class Countdown extends Component {
         <div className="Countdown-header">Countdown</div>
         <div className="Countdown-label">Hours : Minutes : Seconds</div>
         <div className="Countdown-display">
-          <button onClick={() => this.adjustTimer("incHours")}>&#8679;</button>
+          <button onClick={() => this.adjustTimer("incHours")}>+</button>
           <button onClick={() => this.adjustTimer("incMinutes")}>
-            &#8679;
+            +
           </button>
           <button onClick={() => this.adjustTimer("incSeconds")}>
-            &#8679;
+            +
           </button>
 
           <div className="Countdown-time">
             {hours} : {minutes} : {seconds}
           </div>
 
-          <button onClick={() => this.adjustTimer("decHours")}>&#8681;</button>
+          <button onClick={() => this.adjustTimer("decHours")}>-</button>
           <button onClick={() => this.adjustTimer("decMinutes")}>
-            &#8681;
+            -
           </button>
           <button onClick={() => this.adjustTimer("decSeconds")}>
-            &#8681;
+            -
           </button>
         </div>
 
