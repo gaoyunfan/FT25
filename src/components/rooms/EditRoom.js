@@ -19,6 +19,9 @@ import {
   Radio,
   RadioGroup,
   Stack,
+  FormControl,
+  Box,
+  Center,
 } from "@chakra-ui/react";
 import { useAuth } from "../../hooks/useAuth";
 import { projectStorage } from "../../config/firebaseConfig";
@@ -29,18 +32,38 @@ import {
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
-import { doc, updateDoc } from "firebase/firestore";
+import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 
 export default function EditRoom(props) {
   const { user, db } = useAuth();
   const { room, name, admin, setAdmin } = props;
   const [roomName, setRoomName] = useState(name);
-  const [roomModule, setRoomModule] = useState(room?.moduleCode);
+  const [moduleCode, setModuleCode] = useState(room?.moduleCode);
   const [value, setValue] = useState(room?.status);
   const toast = useToast();
 
+  const [codeList, setCodeList] = useState([]);
+  const [display, setDisplay] = useState(true);
+  const onInput = (value) => {
+    setModuleCode(value);
+    let connect = collection(db, "static_modList");
+    getDocs(connect).then((snapshot) => {
+      setCodeList(
+        snapshot.docs.map((doc) => ({
+          moduleCode: doc.data().moduleCode,
+        }))
+      );
+    });
+    value && codeList.length > 0 ? setDisplay(false) : setDisplay(true);
+  };
+  const chooseCode = (item, e) => {
+    e.preventDefault();
+    setModuleCode(item);
+    setDisplay(true);
+  };
+
   useEffect(() => {
-    setRoomModule(room?.moduleCode);
+    setModuleCode(room?.moduleCode);
     setValue(room?.status);
     setRoomName(room?.name);
     if (room?.admin.includes(user?.uid)) {
@@ -67,10 +90,7 @@ export default function EditRoom(props) {
   };
 
   const UploadPic = () => {
-    const storageRef = ref(
-      projectStorage,
-      `rooms/${room?.id}/${file.name}`
-    );
+    const storageRef = ref(projectStorage, `rooms/${room?.id}/${file.name}`);
     const uploadTask = uploadBytesResumable(storageRef, file);
 
     uploadTask.on(
@@ -123,7 +143,7 @@ export default function EditRoom(props) {
     if (
       !file &&
       roomName === room.name &&
-      room.moduleCode === roomModule &&
+      room.moduleCode === moduleCode &&
       room.status === value
     ) {
       toast({
@@ -134,7 +154,7 @@ export default function EditRoom(props) {
       });
       return;
     }
-    if (!roomModule || !roomName) {
+    if (!moduleCode || !roomName) {
       toast({
         title: "Empty field exists",
         status: "warning",
@@ -159,10 +179,10 @@ export default function EditRoom(props) {
         status: value,
       });
     }
-    if (room.moduleCode !== roomModule) {
+    if (room.moduleCode !== moduleCode) {
       console.log("change module code");
       await updateDoc(doc(db, "groups", room.id), {
-        moduleCode: roomModule,
+        moduleCode: moduleCode,
       });
     }
     onEditClose();
@@ -176,7 +196,7 @@ export default function EditRoom(props) {
 
   const handleClose = (e) => {
     setRoomName(room.name);
-    setRoomModule(room.moduleCode);
+    setModuleCode(room.moduleCode);
     setValue(room.status);
     onEditClose();
   };
@@ -204,7 +224,11 @@ export default function EditRoom(props) {
               <div id="image">SELECT FILES</div>
                 */}
               <Tooltip label="Click to upload photo" placement="right">
-                <Avatar src={room?.photoURL} name={room?.name} _hover={{ cursor: "pointer" }} />
+                <Avatar
+                  src={room?.photoURL}
+                  name={room?.name}
+                  _hover={{ cursor: "pointer" }}
+                />
               </Tooltip>
               {file && <Text>{file.name}</Text>}
             </label>
@@ -222,13 +246,37 @@ export default function EditRoom(props) {
             />
             {admin && (
               <>
-                <FormLabel mt={4}>Module</FormLabel>
-                <Input
-                  value={roomModule}
-                  onChange={(e) => {
-                    setRoomModule(e.target.value.toUpperCase());
-                  }}
-                />
+                <FormControl>
+                  <FormLabel>Module code</FormLabel>
+                  <Input
+                    onInput={(e) => onInput(e.target.value.toUpperCase())}
+                    placeholder="e.g. FT1234"
+                    value={moduleCode}
+                    mb={1}
+                    isRequired
+                  />
+                  <Box
+                    className="box"
+                    style={{ display: display ? "none" : "" }}
+                  >
+                    {codeList?.map((item, i) => (
+                      <Center
+                        style={{
+                          display:
+                            item.moduleCode?.indexOf(moduleCode) > -1
+                              ? ""
+                              : "none",
+                        }}
+                        key={i}
+                        className="center"
+                        onClick={(e) => chooseCode(item.moduleCode, e)}
+                      >
+                        <Text>{item.moduleCode}</Text>
+                      </Center>
+                    ))}
+                  </Box>
+                </FormControl>
+
                 <RadioGroup onChange={setValue} value={value} mt={4}>
                   <Stack direction="row">
                     <Radio value="public">public</Radio>
