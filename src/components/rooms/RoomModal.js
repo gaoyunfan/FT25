@@ -7,6 +7,7 @@ import {
   onSnapshot,
   updateDoc,
   arrayUnion,
+  getDocs,
 } from "firebase/firestore";
 import { useAuth } from "../../hooks/useAuth";
 
@@ -27,6 +28,9 @@ import {
   RadioGroup,
   Stack,
   Radio,
+  FormLabel,
+  Center,
+  Text,
 } from "@chakra-ui/react";
 
 import { useEffect, useState } from "react";
@@ -39,20 +43,22 @@ export default function RoomModal() {
 
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [codeList, setCodeList] = useState([]);
+  const [moduleCode, setModuleCode] = useState("");
   const [focusRoomName, setFocusRoomName] = useState();
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const [endUser, setEndUser] = useState([]);
-  const [moduleCode, setModuleCode] = useState("");
   const [value, setValue] = useState("public");
+
+  const [display, setDisplay] = useState(true);
 
   const handleSearch = (e) => {
     const query = e.target.value;
     if (!query) {
       return;
     }
-    console.log("query", query);
     setLoading(true);
     if (query === "" || query === null) {
       return;
@@ -60,9 +66,21 @@ export default function RoomModal() {
     const result = endUser.filter((person) => {
       return person.name?.toLowerCase().startsWith(query.toLowerCase());
     });
-    console.log("result", result);
     setSearchResult(result);
     setLoading(false);
+  };
+
+  const onInput = (value) => {
+    setModuleCode(value);
+    let connect = collection(db, "static_modList");
+    getDocs(connect).then((snapshot) => {
+      setCodeList(
+        snapshot.docs.map((doc) => ({
+          moduleCode: doc.data().moduleCode,
+        }))
+      );
+    });
+    value && codeList.length > 0 ? setDisplay(false) : setDisplay(true);
   };
 
   const handleDelete = (delUser) => {
@@ -161,6 +179,12 @@ export default function RoomModal() {
 
   console.log("endUser", endUser);
   console.log("selectedUser ", selectedUsers);
+
+  const chooseCode = (item, e) => {
+    e.preventDefault();
+    setModuleCode(item);
+    setDisplay(true);
+  };
   return (
     <>
       <Button
@@ -177,7 +201,33 @@ export default function RoomModal() {
           <ModalHeader>Create foucs room</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
+            <FormControl mb={3}>
+            <FormLabel>Module code</FormLabel>
+              <Input
+                onInput={(e) => onInput(e.target.value)}
+                placeholder="e.g. FT1234"
+                value={moduleCode}
+                mb={1}
+                isRequired
+              />
+              <Box className="box" style={{ display: display ? "none" : "" }}>
+                {codeList?.map((item, i) => (
+                  <Center
+                    style={{
+                      display:
+                        item.moduleCode?.indexOf(moduleCode) > -1 ? "" : "none",
+                    }}
+                    key={i}
+                    className="center"
+                    onClick={(e) => chooseCode(item.moduleCode, e)}
+                  >
+                    <Text>{item.moduleCode}</Text>
+                  </Center>
+                ))}
+              </Box>
+            </FormControl>
             <FormControl>
+            <FormLabel>Name </FormLabel>
               <Input
                 onChange={(e) => setFocusRoomName(e.target.value)}
                 placeholder="Room name"
@@ -186,11 +236,7 @@ export default function RoomModal() {
               />
             </FormControl>
             <FormControl mt={2}>
-              <Input
-                placeholder="Module code e.g. XX1234"
-                mb={3}
-                onChange={(e) => setModuleCode(e.target.value.toUpperCase())}
-              />
+            <FormLabel>Add user </FormLabel>
               <Input
                 placeholder="Input user name e.g. John"
                 mb={3}

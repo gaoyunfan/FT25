@@ -108,7 +108,7 @@ export default function Navbar() {
             bg={path === "scoreboard" ? "whiteAlpha.800" : ""}
             onClick={(e) => routeChange(e, "/scoreboard")}
           >
-            Timer
+          Scoreboard
           </Button>
 
           <Spacer />
@@ -116,7 +116,7 @@ export default function Navbar() {
             <Tooltip label={user.displayName} aria-label="A tooltip">
               <MenuButton
                 as={Avatar}
-                name={userData?.name}
+                name={user?.displayName}
                 mr={5}
                 src={userData.photoURL}
                 size="sm"

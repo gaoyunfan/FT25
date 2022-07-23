@@ -91,7 +91,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <Center h="92vh">
+    <Center h="700px" overflowY="auto">
       <Flex
         rounded="lg"
         padding="30px"
@@ -99,8 +99,6 @@ export default function ProfilePage() {
         direction="column"
         w="40%"
         minW="400px"
-        height="80vh"
-        overflowY="auto"
       >
         {error && (
           <Alert status="error" mb="10px">
@@ -108,7 +106,7 @@ export default function ProfilePage() {
           </Alert>
         )}
         <Stack margin="auto" spacing="3px" w="200px" mb="10px">
-          <Avatar ml="35%" src={userData?.photoURL} name={userData.name} />
+          <Avatar ml="35%" src={userData?.photoURL} name={userData?.name} />
           <Text ml="5%" fontWeight="bold" size="xl" mb="10px">
             {user.email}
           </Text>
