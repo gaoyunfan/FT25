@@ -1,6 +1,6 @@
 import { useAuth } from "../hooks/useAuth";
 import RoomModal from "../components/rooms/RoomModal";
-import { Text, Box, Flex, Stack, SimpleGrid } from "@chakra-ui/react";
+import { Text, Box, Flex, Stack, SimpleGrid, Avatar } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
@@ -79,8 +79,11 @@ export default function PageRoom() {
               py={2}
               borderRadius="lg"
             >
-              <Text fontSize="4xl">{room.name}</Text>
-              <SimpleGrid columns={2} spacingY='10px'>
+              <Flex alignItems="center" gap="5px">
+                <Avatar size="md" src={room?.photoURL} name={room?.name} />
+                <Text fontSize="4xl">{room.name}</Text>
+              </Flex>
+              <SimpleGrid ml={1} columns={2} spacingY="10px">
                 <Text>Room size: {room.members?.length}</Text>
                 <Text>Room type: {room.status}</Text>
                 <Text>Module: {room.moduleCode}</Text>

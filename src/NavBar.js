@@ -48,6 +48,9 @@ export default function Navbar() {
     else if (location.pathname === "/timer") {
       setPath("timer");
     }
+    else {
+      setPath("");
+    }
   }, [location.pathname])
   console.log("pathName", path);
   
@@ -107,6 +110,7 @@ export default function Navbar() {
           <Tooltip label={user.displayName} aria-label='A tooltip'>
             <MenuButton
               as={Avatar}
+              name={userData?.name}
               mr={5}
               src={userData.photoURL}
               size="sm"

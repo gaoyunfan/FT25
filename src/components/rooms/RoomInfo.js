@@ -139,7 +139,7 @@ export default function RoomInfo(props) {
         h="100%"
         alignItems="center"
       >
-        <Avatar size="sm" src={room?.photoURL} marginEnd={3} />
+        <Avatar size="sm" src={room?.photoURL} name={room?.name} marginEnd={3} />
         <Heading size="lg">{room?.name} </Heading>
       </Flex>
       <Modal
@@ -225,7 +225,7 @@ export default function RoomInfo(props) {
                         icon={<MdCancel />}
                       /></Tooltip>
                     ) : (
-                      <Tooltip label="Add friends" aria-label='A tooltip'>
+                      <Tooltip label="Add friend" aria-label='A tooltip'>
                       <IconButton
                         ml="auto"
                         variant="outline"

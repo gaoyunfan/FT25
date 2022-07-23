@@ -1,5 +1,5 @@
 import { AddIcon, CheckCircleIcon, CheckIcon } from "@chakra-ui/icons";
-import { Avatar, Box, Flex, FormLabel, Icon, IconButton, Input, Text, useToast } from "@chakra-ui/react";
+import { Avatar, Box, Flex, FormLabel, Icon, IconButton, Input, Text, Tooltip, useToast } from "@chakra-ui/react";
 import { arrayUnion, doc, updateDoc } from "firebase/firestore";
 import { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
@@ -85,6 +85,8 @@ export default function AddMember(props) {
                 {isInRoom ? (
                   <Icon ml="auto" as={CheckCircleIcon} mr="10px"/>
                 ) : (
+
+                      <Tooltip label="Add user" aria-label='A tooltip'>
                   <IconButton
                     ml="auto"
                     variant="outline"
@@ -93,6 +95,7 @@ export default function AddMember(props) {
                     icon={<AddIcon />}
                     onClick={(e) => handleAddMember(e, u)}
                   />
+</Tooltip>
                 )}
               </Flex>
             );

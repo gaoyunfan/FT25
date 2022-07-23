@@ -194,7 +194,7 @@ export default function EditRoom(props) {
       >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Room Info</ModalHeader>
+          <ModalHeader>Room Setting</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <FormLabel>Photo</FormLabel>
@@ -204,7 +204,7 @@ export default function EditRoom(props) {
               <div id="image">SELECT FILES</div>
                 */}
               <Tooltip label="Click to upload photo" placement="right">
-                <Avatar src={room?.photoURL} _hover={{ cursor: "pointer" }} />
+                <Avatar src={room?.photoURL} name={room?.name} _hover={{ cursor: "pointer" }} />
               </Tooltip>
               {file && <Text>{file.name}</Text>}
             </label>
