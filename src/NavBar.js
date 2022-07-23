@@ -118,7 +118,7 @@ export default function Navbar() {
                 as={Avatar}
                 name={user?.displayName}
                 mr={5}
-                src={userData.photoURL}
+                src={userData?.photoURL}
                 size="sm"
                 _hover={{
                   cursor: "pointer",

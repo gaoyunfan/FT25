@@ -26,7 +26,6 @@ export default function SendImage(props) {
   const [file, setFile] = useState();
   const fileRef = useRef();
   const textRef = useRef();
-  const { user } = useAuth();
 
   const changeHandler = (e) => {
     setFile(e.target.files[0]);
@@ -41,7 +40,7 @@ export default function SendImage(props) {
     if (!file) {
       return;
     }
-    const storageRef = ref(projectStorage, `rooms/${roomId}/${user.uid}/${file.name}`);
+    const storageRef = ref(projectStorage, `rooms/${roomId}/${file.name}`);
     setNewMessage(textRef.current);
     const uploadTask = uploadBytesResumable(storageRef, file);
 

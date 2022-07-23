@@ -192,7 +192,7 @@ function Modules() {
 				<Center p={5} style={{fontWeight:'bold',fontSize:'20px'}}>Add Module Code</Center>
 				<Flex style = {{padding: '0 30px 30px 30px'}}>
 					<Box className="mainBox">
-						<Input className="inputCode" onInput = {(e) => onInput(e.target.value)} placeholder="Module Code" value={moduleCode} mb={1}/>
+						<Input className="inputCode" onInput = {(e) => onInput(e.target.value.toUpperCase())} placeholder="Module Code" value={moduleCode} mb={1}/>
 						<Box className="box" style={{display:display?'none':''}}>
 							{codeList?.map((item,i) =>(
 								<Center style={{display:item.moduleCode?.indexOf(moduleCode)>-1?'':'none',}} key={i} className="center" onClick={(e)=>chooseCode(item.moduleCode,e)}>

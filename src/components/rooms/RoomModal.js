@@ -51,20 +51,21 @@ export default function RoomModal() {
   const [loading, setLoading] = useState(false);
   const [endUser, setEndUser] = useState([]);
   const [value, setValue] = useState("public");
+  const [queryRes, setQueryRes] = useState("");
 
   const [display, setDisplay] = useState(true);
 
   const handleSearch = (e) => {
-    const query = e.target.value;
-    if (!query) {
+    setQueryRes(e.target.value);
+    if (!queryRes) {
       return;
     }
     setLoading(true);
-    if (query === "" || query === null) {
+    if (queryRes === "" || queryRes === null) {
       return;
     }
     const result = endUser.filter((person) => {
-      return person.name?.toLowerCase().startsWith(query.toLowerCase());
+      return person.name?.toLowerCase().startsWith(queryRes.toLowerCase());
     });
     setSearchResult(result);
     setLoading(false);
@@ -98,6 +99,8 @@ export default function RoomModal() {
       });
     } else {
       setSelectedUsers([...selectedUsers, userToAdd]);
+      setQueryRes("");
+      setSearchResult("");
     }
   };
 
@@ -185,6 +188,14 @@ export default function RoomModal() {
     setModuleCode(item);
     setDisplay(true);
   };
+
+  const handleClose = () => {
+    setModuleCode("");
+    setSearchResult([]);
+    setSelectedUsers([]);
+    setQueryRes("");
+    onClose();
+  }
   return (
     <>
       <Button
@@ -195,7 +206,7 @@ export default function RoomModal() {
       >
         New Focus Room
       </Button>
-      <Modal isOpen={isOpen} onClose={onClose} isCentered>
+      <Modal isOpen={isOpen} closeOnOverlayClick={false} onClose={handleClose} isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Create foucs room</ModalHeader>
@@ -204,7 +215,7 @@ export default function RoomModal() {
             <FormControl mb={3}>
             <FormLabel>Module code</FormLabel>
               <Input
-                onInput={(e) => onInput(e.target.value)}
+                onInput={(e) => onInput(e.target.value.toUpperCase())}
                 placeholder="e.g. FT1234"
                 value={moduleCode}
                 mb={1}
@@ -240,6 +251,7 @@ export default function RoomModal() {
               <Input
                 placeholder="Input user name e.g. John"
                 mb={3}
+                value={queryRes}
                 onChange={handleSearch}
               />
             </FormControl>

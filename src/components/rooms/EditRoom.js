@@ -69,7 +69,7 @@ export default function EditRoom(props) {
   const UploadPic = () => {
     const storageRef = ref(
       projectStorage,
-      `rooms/${room?.id}/photo/${file.name}`
+      `rooms/${room?.id}/${file.name}`
     );
     const uploadTask = uploadBytesResumable(storageRef, file);
 

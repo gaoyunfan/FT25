@@ -60,6 +60,8 @@ import SendImage from "./SendImage";
 import Stopwatch from "./RMstopWatch";
 import RoomInfo from "./RoomInfo";
 import EditRoom from "./EditRoom";
+import { deleteObject, listAll, ref } from "firebase/storage";
+import { projectStorage } from "../../config/firebaseConfig";
 
 export default function FocusRoom() {
   const { state } = useLocation();
@@ -165,6 +167,19 @@ export default function FocusRoom() {
       status: "success",
       duration: 4000,
       isClosable: true,
+    });
+    const storageRef = ref(projectStorage, `rooms/${r_id}`);
+    listAll(storageRef).then((res) => {
+      res.items.forEach((itemRef) => {
+        deleteObject(itemRef)
+          .then(() => {
+            console.log("delete storage successfully");
+          })
+          .catch((error) => {
+            // Uh-oh, an error occurred!
+            console.log("error", error);
+          });
+      });
     });
     navigate("/");
   };
