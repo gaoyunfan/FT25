@@ -7,7 +7,6 @@ import { useAuth } from "../../hooks/useAuth";
 export default function Scoreboard() {			 
 	const [scoreList,setScoreList] = useState([]);
 	const {db} = useAuth();
-	//获取排行数据
 	const request =(nums)=>{
 		setScoreList([])
 		let connect = collection(db, "users");
