@@ -1,6 +1,6 @@
 import { AddIcon, CheckCircleIcon, CheckIcon } from "@chakra-ui/icons";
-import { Avatar, Box, Flex, FormLabel, Icon, IconButton, Input, Tab, TabList, TabPanel, TabPanels, Tabs, Text, Tooltip, useToast } from "@chakra-ui/react";
-import { arrayUnion, collection, doc, getDocs, query, updateDoc, where } from "firebase/firestore";
+import { Avatar, Box, Flex, FormLabel, Icon, IconButton, Input, Text, Tooltip, useToast } from "@chakra-ui/react";
+import { arrayUnion, doc, updateDoc } from "firebase/firestore";
 import { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 
@@ -10,29 +10,7 @@ export default function AddMember(props) {
   const [searchResult, setSearchResult] = useState([]);
   const [queryres, setQueryres] = useState("");
   const [loading, setLoading] = useState(false);
-  const [inputModCode, setInputModCode] = useState("");
   const toast = useToast();
-
-  const handleSearchUserMod = async (e) => {
-    setInputModCode(e.target.value.toUpperCase());
-    if (!inputModCode) {
-      return;
-    }
-    const res = e.target.value.toUpperCase();
-    setLoading(true);
-    const userModRef = collection(db, "user_modList");
-    const q = query(userModRef, where("mod_code", "==", res));
-    const querySnapshot = await getDocs(q);
-    let mod_user_list = [];
-    querySnapshot.forEach((doc) => {
-      mod_user_list.push(doc.data().uid);
-    });
-    const result = allUsers.filter((person) => {
-      return mod_user_list.includes(person.uid);
-    });
-    setSearchResult(result);
-    setLoading(false);
-  };
 
   const handleSearch = (e) => {
     setQueryres(e.target.value);
@@ -65,45 +43,20 @@ export default function AddMember(props) {
     });
   };
 
-  const handleTabChange = () => {
-    setInputModCode("");
-    setQueryres("");
-    setSearchResult([]);
-  }
-
   return (
     <Flex flexDirection="column">
-      <FormLabel>Add member by</FormLabel>
-      <Tabs isFitted variant="enclosed" onChange={handleTabChange}>
-        <TabList mb="1em">
-          <Tab>module code</Tab>
-          <Tab>user name</Tab>
-        </TabList>
-        <TabPanels>
-          <TabPanel>
-            <Input
-              placeholder="Input module code e.g. FT1234"
-              mb={3}
-              value={inputModCode}
-              onChange={handleSearchUserMod}
-            />
-          </TabPanel>
-          <TabPanel>
-            <Input
-              value={queryres}
-              placeholder="e.g. John"
-              mb={3}
-              onChange={handleSearch}
-            />
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
-
-      <Flex flexDirection="column" maxH="200px" overflowY="auto">
+      <FormLabel>Add members</FormLabel>
+      <Input
+        value={queryres}
+        placeholder="e.g. John"
+        mb={3}
+        onChange={handleSearch}
+      />
+      <Flex flexDirection="column">
         {loading ? (
           <div>Loading ...</div>
         ) : searchResult.length > 0 ? (
-          searchResult.map((u, key) => {
+          searchResult.slice(0, 5).map((u, key) => {
             let isInRoom = false;
             if (room.members.includes(u.uid)) {
               isInRoom = true;
@@ -117,8 +70,8 @@ export default function AddMember(props) {
                 color="black"
                 px={3}
                 py={2}
-                mb={3}
-                gap="5px"
+                mb={2}
+                gap="4px"
                 borderRadius="lg"
               >
                 <Avatar mr={2} size="md" name={u.name} src={u.photoURL} />
@@ -130,18 +83,19 @@ export default function AddMember(props) {
                   </Text>
                 </Box>
                 {isInRoom ? (
-                  <Icon ml="auto" as={CheckCircleIcon} mr="10px" />
+                  <Icon ml="auto" as={CheckCircleIcon} mr="10px"/>
                 ) : (
-                  <Tooltip label="Add user" aria-label="A tooltip">
-                    <IconButton
-                      ml="auto"
-                      variant="outline"
-                      size="lg"
-                      aria-label="Add to room"
-                      icon={<AddIcon />}
-                      onClick={(e) => handleAddMember(e, u)}
-                    />
-                  </Tooltip>
+
+                      <Tooltip label="Add user" aria-label='A tooltip'>
+                  <IconButton
+                    ml="auto"
+                    variant="outline"
+                    size="lg"
+                    aria-label="Add to room"
+                    icon={<AddIcon />}
+                    onClick={(e) => handleAddMember(e, u)}
+                  />
+</Tooltip>
                 )}
               </Flex>
             );

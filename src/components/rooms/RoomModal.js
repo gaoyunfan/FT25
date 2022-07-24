@@ -31,11 +31,6 @@ import {
   FormLabel,
   Center,
   Text,
-  Tabs,
-  TabList,
-  Tab,
-  TabPanels,
-  TabPanel,
 } from "@chakra-ui/react";
 
 import { useEffect, useState } from "react";
@@ -57,31 +52,8 @@ export default function RoomModal() {
   const [endUser, setEndUser] = useState([]);
   const [value, setValue] = useState("public");
   const [queryRes, setQueryRes] = useState("");
-  const [inputModCode, setInputModCode] = useState("");
 
   const [display, setDisplay] = useState(true);
-
-  const handleSearchUserMod = async(e) => {
-    e.preventDefault();
-    setInputModCode(e.target.value.toUpperCase());
-    if (!inputModCode) {
-      return;
-    }
-    const res = e.target.value.toUpperCase();
-    setLoading(true);
-    const userModRef = collection(db, "user_modList");
-    const q = query(userModRef, where("mod_code", "==", res));
-    const querySnapshot = await getDocs(q);
-    let mod_user_list = [];
-    querySnapshot.forEach((doc) => {
-      mod_user_list.push(doc.data().uid)
-     });
-     const result = endUser.filter((person) => {
-      return mod_user_list.includes(person.uid);
-     })
-     setSearchResult(result);
-     setLoading(false);
-  };
 
   const handleSearch = (e) => {
     setQueryRes(e.target.value);
@@ -128,7 +100,7 @@ export default function RoomModal() {
     } else {
       setSelectedUsers([...selectedUsers, userToAdd]);
       setQueryRes("");
-      setInputModCode("");
+      setSearchResult("");
     }
   };
 
@@ -222,9 +194,8 @@ export default function RoomModal() {
     setSearchResult([]);
     setSelectedUsers([]);
     setQueryRes("");
-    setInputModCode("");
     onClose();
-  };
+  }
   return (
     <>
       <Button
@@ -235,29 +206,14 @@ export default function RoomModal() {
       >
         New Focus Room
       </Button>
-      <Modal
-        isOpen={isOpen}
-        closeOnOverlayClick={false}
-        onClose={handleClose}
-        isCentered
-        size="lg"
-      >
+      <Modal isOpen={isOpen} closeOnOverlayClick={false} onClose={handleClose} isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Create foucs room</ModalHeader>
           <ModalCloseButton />
-          <ModalBody pb={6} overflowY="auto">
-            <FormControl>
-              <FormLabel>Name </FormLabel>
-              <Input
-                onChange={(e) => setFocusRoomName(e.target.value)}
-                placeholder="Room name"
-                mb={1}
-                isRequired
-              />
-            </FormControl>
+          <ModalBody pb={6}>
             <FormControl mb={3}>
-              <FormLabel>Module code</FormLabel>
+            <FormLabel>Module code</FormLabel>
               <Input
                 onInput={(e) => onInput(e.target.value.toUpperCase())}
                 placeholder="e.g. FT1234"
@@ -281,51 +237,41 @@ export default function RoomModal() {
                 ))}
               </Box>
             </FormControl>
-
+            <FormControl>
+            <FormLabel>Name </FormLabel>
+              <Input
+                onChange={(e) => setFocusRoomName(e.target.value)}
+                placeholder="Room name"
+                mb={1}
+                isRequired
+              />
+            </FormControl>
+            <FormControl mt={2}>
+            <FormLabel>Add user </FormLabel>
+              <Input
+                placeholder="Input user name e.g. John"
+                mb={3}
+                value={queryRes}
+                onChange={handleSearch}
+              />
+            </FormControl>
             <RadioGroup onChange={setValue} value={value} mt={4}>
               <Stack direction="row">
                 <Radio value="public">public</Radio>
                 <Radio value="private">private</Radio>
               </Stack>
             </RadioGroup>
-            <FormControl mt={3}>
-              <FormLabel>Add user by </FormLabel>
-              <Tabs isFitted variant="enclosed">
-                <TabList mb="1em">
-                  <Tab>module code</Tab>
-                  <Tab>user name</Tab>
-                </TabList>
-                <TabPanels>
-                  <TabPanel>
-                    <Input
-                      placeholder="Input module code e.g. FT1234"
-                      mb={3}
-                      value={inputModCode}
-                      onChange={handleSearchUserMod}
-                    />
-                  </TabPanel>
-                  <TabPanel>
-                    <Input
-                      placeholder="Input user name e.g. John"
-                      mb={3}
-                      value={queryRes}
-                      onChange={handleSearch}
-                    />
-                  </TabPanel>
-                </TabPanels>
-              </Tabs>
-            </FormControl>
             <Box w="100%" d="flex" flexWrap="wrap">
               {selectedUsers.map((u) => (
                 <UserBadgeItem u={u} handleDelete={() => handleDelete(u)} />
               ))}
             </Box>
-            <Box maxH="150px" overflowY="auto">
             {loading ? (
               // <ChatLoading />
               <div>Loading...</div>
             ) : searchResult.length > 0 ? (
               searchResult
+                .slice(0, 4)
                 .map((u) => (
                   <UserListItem u={u} handleGroup={() => handleGroup(u)} />
                 ))
@@ -333,7 +279,7 @@ export default function RoomModal() {
               <Box mt="15px" ml="20px">
                 No user found
               </Box>
-            )}</Box>
+            )}
           </ModalBody>
 
           <ModalFooter>

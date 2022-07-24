@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import "./App.css";
+import { Button,  Center, Square, Circle , Text} from '@chakra-ui/react'
 
 class Countdown extends Component {
   state = {
@@ -70,49 +71,49 @@ class Countdown extends Component {
         <div className="Countdown-header">Countdown</div>
         <div className="Countdown-label">Hours : Minutes : Seconds</div>
         <div className="Countdown-display">
-          <button onClick={() => this.adjustTimer("incHours")}>+</button>
-          <button onClick={() => this.adjustTimer("incMinutes")}>
+          <Button colorScheme='teal' size='xs' onClick={() => this.adjustTimer("incHours")}>+</Button>
+          <Button colorScheme='teal' size='xs' onClick={() => this.adjustTimer("incMinutes")}>
             +
-          </button>
-          <button onClick={() => this.adjustTimer("incSeconds")}>
+          </Button>
+          <Button colorScheme='teal' size='xs' onClick={() => this.adjustTimer("incSeconds")}>
             +
-          </button>
+          </Button>
 
-          <div className="Countdown-time">
-            {hours} : {minutes} : {seconds}
-          </div>
+          <Text fontSize='4xl'>{hours} : {minutes} : {seconds}</Text>
+            
+          
 
-          <button onClick={() => this.adjustTimer("decHours")}>-</button>
-          <button onClick={() => this.adjustTimer("decMinutes")}>
+          <Button colorScheme='teal' size='xs' onClick={() => this.adjustTimer("decHours")}> - </Button>
+          <Button colorScheme='teal' size='xs' onClick={() => this.adjustTimer("decMinutes")}>
             -
-          </button>
-          <button onClick={() => this.adjustTimer("decSeconds")}>
+          </Button>
+          <Button colorScheme='teal' size='xs' onClick={() => this.adjustTimer("decSeconds")}>
             -
-          </button>
+          </Button>
         </div>
 
         {timerOn === false && (timerStart === 0 || timerTime === timerStart) && (
-          <button className="Button-start" onClick={this.startTimer}>
+          <Button colorScheme='green' className="Button-start" onClick={this.startTimer}>
             Start
-          </button>
+          </Button>
         )}
         {timerOn === true && timerTime >= 1000 && (
-          <button className="Button-stop" onClick={this.stopTimer}>
+          <Button colorScheme='red' className="Button-stop" onClick={this.stopTimer}>
             Stop
-          </button>
+          </Button>
         )}
         {timerOn === false &&
           (timerStart !== 0 && timerStart !== timerTime && timerTime !== 0) && (
-            <button className="Button-start" onClick={this.startTimer}>
+            <Button colorScheme='blue' className="Button-start" onClick={this.startTimer}>
               Resume
-            </button>
+            </Button>
           )}
 
         {(timerOn === false || timerTime < 1000) &&
           (timerStart !== timerTime && timerStart > 0) && (
-            <button className="Button-reset" onClick={this.resetTimer}>
+            <Button  className="Button-reset" onClick={this.resetTimer}>
               Reset
-            </button>
+            </Button>
           )}
       </div>
     );

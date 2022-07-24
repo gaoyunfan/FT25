@@ -12,7 +12,6 @@ import {
   ModalBody,
   ModalCloseButton,
   FormControl,
-  FormLabel,
   Input,
   useToast,
 } from "@chakra-ui/react";

@@ -155,8 +155,7 @@ export default function RoomInfo(props) {
           <ModalCloseButton />
           <ModalBody>
             <FormLabel>Members</FormLabel>
-            <Box overflowY="auto" maxH="250px">
-            <Flex flexDirection="column"  mb="10px">
+            <Flex flexDirection="column" overflowY="auto" mb="10px">
               {members_list?.map((u, key) => {
                 let isFriend = false;
                 let isRequestSend = false;
@@ -187,7 +186,7 @@ export default function RoomInfo(props) {
                     color="black"
                     px={3}
                     py={2}
-                    mb={3}
+                    mb={2}
                     gap="4px"
                     borderRadius="lg"
                     overflowY="auto"
@@ -266,7 +265,7 @@ export default function RoomInfo(props) {
                   </Flex>
                 );
               })}
-            </Flex></Box>
+            </Flex>
             <AddMember
               room={room}
               allUsers={allUsers}
