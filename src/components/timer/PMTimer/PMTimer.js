@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Session from './Session';
 import Break from './Break';
+import { Button,  Center, Square, Circle , Text} from '@chakra-ui/react'
 
 
 
@@ -104,22 +105,25 @@ const PMTimer = () => {
             </div>
             <div className='timer-container'>
                 <h2 id='timer-label'>{timerLabel}</h2>
-                <h3 id='time-left'>
-                    {minutes < 10 ? ("0" + minutes).slice(-2) : minutes}:{seconds < 10 ? ("0" + seconds).slice(-2) : seconds}
+                <h3 id='time-left'> 
+                <Center  h='50px' w='140px' color='black'>
+                <Text fontSize='4xl'>{minutes < 10 ? ("0" + minutes).slice(-2) : minutes}:{seconds < 10 ? ("0" + seconds).slice(-2) : seconds}</Text>
+                </Center>
+                    
                 </h3>
                 
-                <button
+                <Button colorScheme='blue'
                     id='start_stop'
                     onClick={timerRunning ? handleStop : handleStart}
                     >
                 Start/Stop
-                </button>
-                <button
+                </Button>
+                <Button colorScheme='red'
                     onClick={handleReset}
                     id='reset'
                     >
                 Reset
-                </button>
+                </Button>
             </div>
             
            

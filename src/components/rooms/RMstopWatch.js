@@ -33,15 +33,15 @@ const Stopwatch = () => {
           <Text>{("0" + ((time / 10) % 100)).slice(-2)}</Text>
         </Flex>
       </Center>
-      <Center p={10}>
-        <ButtonGroup gap="4">
-          <Button colorScheme="teal" onClick={() => setRunning(true)}>
+      <Center>
+        <ButtonGroup >
+          <Button colorScheme="teal" size='xs' onClick={() => setRunning(true)}>
             Start
           </Button>
-          <Button colorScheme="red" onClick={() => setRunning(false)}>
+          <Button colorScheme="red" size='xs' onClick={() => setRunning(false)}>
             Stop
           </Button>
-          <Button onClick={() => setTime(0)}>Reset</Button>
+          <Button size='xs' onClick={() => setTime(0)}>Reset</Button>
         </ButtonGroup>
       </Center>
     </div>

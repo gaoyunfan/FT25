@@ -1,29 +1,31 @@
 import React from 'react';
+import { Button,  Center, Square, Circle , Text} from '@chakra-ui/react'
 
 
 const Session = props => {
     return (
         <div className='session-container'>
-            <h2 id='session-label'>Session Length</h2>
+            <h2 id='session-label'>Session Length (mins)</h2>
             
             <div className='button-container'>
-                <button
+            <Button colorScheme='teal' size='xs'
                     id='session-increment'
                     onClick={props.incrementSession}
                     >
                 +
-                </button>
+                </Button>
 
-                <h2 id='session-length' style={{margin: 0}}>
-                {props.sessionLength}
-                </h2>
+                <Center  h='50px' w='70px' color='black'>
+                <Text fontSize='4xl'>{props.sessionLength}</Text>
+                </Center>
                 
-                <button
+                
+                <Button colorScheme='teal' size='xs'
                     id='session-decrement'
                     onClick={props.decrementSession}
                     >
                 -
-                </button>
+                </Button>
             </div>
         </div>
     )

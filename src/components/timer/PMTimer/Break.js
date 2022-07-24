@@ -1,28 +1,32 @@
 import React from 'react';
+import { Button,  Center, Square, Circle , Text} from '@chakra-ui/react'
+
 
 const Break = props => {
     return (
         <div className='break-container'>
-            <h2 id='break-label'>Break Length</h2>
+            <h2 id='break-label'>Break Length (mins)</h2>
             
             <div className='button-container'>
-                <button
+                <Button colorScheme='teal' size='xs'
                     id='break-increment'
                     onClick={props.incrementBreak}
                     >
                 +
-                </button>
+                </Button>
 
-                <h2 id='break-length' style={{margin: 0}}>
-                {props.breakLength}
-                </h2>
+                <Center  h='50px' w='70px' color='black'>
+                <Text fontSize='4xl'>{props.breakLength}</Text>
+                </Center>
+
+            
                 
-                <button
+                <Button colorScheme='teal' size='xs'
                     id='break-decrement'
                     onClick={props.decrementBreak}
                     >
                 -
-                </button>
+                </Button>
             </div>
         </div>
     )

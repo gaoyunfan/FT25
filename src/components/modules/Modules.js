@@ -241,7 +241,7 @@ function Modules() {
 			<Box w = {'50%'} flex = {1} style = {{overflow: 'scroll'}}>
 				<Center p={5} style={{fontWeight:'bold',fontSize:'20px'}}>Search Room</Center>
 				<Flex style = {{padding: '0 30px 30px 30px'}}>
-					<Input placeholder = "Room name" onChange = {(e) => setSearchKey(e.target.value.toUpperCase())} className = "input" />
+					<Input placeholder = "Module Code" onChange = {(e) => setSearchKey(e.target.value.toUpperCase())} className = "input" />
 					<Button className = "button" leftIcon = {<SearchIcon />} colorScheme = 'teal' onClick = {searchHandle}>Search</Button>
 				</Flex> 
 				<Center>{groups_modList.length > 0 ? ( 
