@@ -24,7 +24,10 @@ export default function Navbar() {
   const [userData, setUserData] = useState("");
   const [path, setPath] = useState("");
 
-  useEffect(() => {
+  let navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {  
     async function getUserData() {
       const docRef = doc(db, "users", user?.uid);
       const docSnap = await getDoc(docRef);
@@ -33,12 +36,6 @@ export default function Navbar() {
       }
     }
     getUserData();
-  }, [db, user?.uid]);
-
-  let navigate = useNavigate();
-  const location = useLocation();
-
-  useEffect(() => {
     if (location.pathname === "/friends") {
       setPath("friends");
     } else if (location.pathname === "/modules") {
@@ -50,7 +47,7 @@ export default function Navbar() {
     } else {
       setPath("");
     }
-  }, [location.pathname]);
+  }, [db, location.pathname, user?.uid]);
   console.log("pathName", path);
 
   const handleLogout = async () => {
