@@ -3,7 +3,7 @@ import {
  sendPasswordResetEmail, signOut, updateProfile, updatePassword, sendEmailVerification, deleteUser,} from "firebase/auth"
 
 import {
-getFirestore,query,getDocs,collection,where,setDoc, doc, updateDoc, deleteDoc} from "firebase/firestore";
+getFirestore,query,getDocs,collection,where,setDoc, doc, updateDoc} from "firebase/firestore";
 
 import React, { useState, useEffect, useContext, createContext } from "react";
 import { app } from "../config/firebaseConfig.js";
@@ -34,26 +34,7 @@ export const useAuth = () => {
 export function ProvideAuth({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  // Wrap any Firebase methods we want to use making sure ...
-  // ... to save the user to state.
-  /*
-  const signin = (email, password) => {
-    return firebaseAuth
-      .signInWithEmailAndPassword(email, password)
-      .then((response) => {
-        setUser(response.user);
-        return response.user;
-      });
-  };
-  const signup = (email, password) => {
-    return firebaseAuth
-      .createUserWithEmailAndPassword(email, password)
-      .then((response) => {
-        setUser(response.user);
-        return response.user;
-      });
-  };
-  */
+
 
   const signout = () => {
     return firebaseAuth.signOut().then(() => {
@@ -73,10 +54,7 @@ export function ProvideAuth({ children }) {
     });
   };
 
-  /*const signInWithGoogle = () => {
-    return signInWithPopup(firebaseAuth, googleAuthProvider);
-  };
-  */
+
 
   const signInWithGoogle = async () => {
     try {

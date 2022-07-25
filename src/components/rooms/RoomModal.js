@@ -308,6 +308,8 @@ export default function RoomModal() {
                     <Input
                       placeholder="Input user name e.g. John"
                       mb={3}
+                      data-testid="user_name_input"
+                      id="user_name"
                       value={queryRes}
                       onChange={handleSearch}
                     />
@@ -320,14 +322,14 @@ export default function RoomModal() {
                 <UserBadgeItem u={u} handleDelete={() => handleDelete(u)} />
               ))}
             </Box>
-            <Box maxH="150px" overflowY="auto">
+            <Box maxH="150px" overflowY="auto" data-testid="user_output">
             {loading ? (
               // <ChatLoading />
               <div>Loading...</div>
             ) : searchResult.length > 0 ? (
               searchResult
-                .map((u) => (
-                  <UserListItem u={u} handleGroup={() => handleGroup(u)} />
+                .map((u, index) => (
+                  <UserListItem index={index + 1} u={u} handleGroup={() => handleGroup(u)} />
                 ))
             ) : (
               <Box mt="15px" ml="20px">

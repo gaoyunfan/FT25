@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Session from './Session';
 import Break from './Break';
-import { Button,  Center, Square, Circle , Text} from '@chakra-ui/react'
+import { Button,  Center, Text} from '@chakra-ui/react'
 
 
 

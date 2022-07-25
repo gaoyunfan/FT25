@@ -1,4 +1,4 @@
-import { AddIcon, CheckCircleIcon, CheckIcon } from "@chakra-ui/icons";
+import { AddIcon, CheckCircleIcon } from "@chakra-ui/icons";
 import { Avatar, Box, Flex, FormLabel, Icon, IconButton, Input, Tab, TabList, TabPanel, TabPanels, Tabs, Text, Tooltip, useToast } from "@chakra-ui/react";
 import { arrayUnion, collection, doc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { useState } from "react";

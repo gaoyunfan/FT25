@@ -1,37 +1,25 @@
 import {
   Avatar,
-  Box,
   Button,
   Flex,
   Center,
-  FormLabel,
   Heading,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   Text,
   useToast,
   Image,
   FormControl,
   Input,
-  Stack,
   IconButton,
-  useDisclosure,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   DeleteIcon,
   WarningTwoIcon,
-  AddIcon,
   ArrowBackIcon,
   HamburgerIcon,
 } from "@chakra-ui/icons";
@@ -195,7 +183,7 @@ export default function FocusRoom() {
   function topBar() {
     return (
       <Flex gap="25px" bg="gray.100" h="71px" w="100%" align="center" p={2}>
-        <IconButton icon={<ArrowBackIcon />} onClick={() => navigate(-1)} />
+        <IconButton icon={<ArrowBackIcon />} onClick={() => navigate("/")} />
         <RoomInfo room={room} members_list={members_list} allUsers={allUsers} />
         <Menu>
           <MenuButton

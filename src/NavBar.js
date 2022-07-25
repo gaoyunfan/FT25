@@ -27,15 +27,18 @@ export default function Navbar() {
   let navigate = useNavigate();
   const location = useLocation();
 
-  useEffect(() => {  
+  useEffect(() => {
     async function getUserData() {
-      const docRef = doc(db, "users", user?.uid);
+      const docRef = doc(db, "users", user.uid);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         setUserData(docSnap.data());
       }
     }
-    getUserData();
+    if (user) {
+      getUserData();
+    }
+
     if (location.pathname === "/friends") {
       setPath("friends");
     } else if (location.pathname === "/modules") {
@@ -105,7 +108,7 @@ export default function Navbar() {
             bg={path === "scoreboard" ? "whiteAlpha.800" : ""}
             onClick={(e) => routeChange(e, "/scoreboard")}
           >
-          Scoreboard
+            Scoreboard
           </Button>
 
           <Spacer />
@@ -115,6 +118,7 @@ export default function Navbar() {
                 as={Avatar}
                 name={user?.displayName}
                 mr={5}
+                data-testid="profile-menu"
                 src={userData?.photoURL}
                 size="sm"
                 _hover={{

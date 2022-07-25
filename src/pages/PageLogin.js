@@ -31,6 +31,7 @@ export default function PageLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isOpen, setOpen] = useState(false);
+  const [isdisabled, setIsDisabled] = useState(true)
   const onClickReveal = () => setOpen(!isOpen);
   let navigate = useNavigate();
 
@@ -39,6 +40,27 @@ export default function PageLogin() {
     await logInWithEmailAndPassword(email, password);
     navigate("/");
   };
+
+  const handleEmailInput = (e) => {
+    e.preventDefault();
+    setEmail(e.target.value);
+    if (e.target.value.length < 1 || password.length < 1) {
+      setIsDisabled(true);
+    }
+    else {
+      setIsDisabled(false);
+    }
+  }
+  const handlePasswordInput = (e) => {
+    e.preventDefault();
+    setPassword(e.target.value);
+    if (e.target.value.length < 1 || email.length < 1) {
+      setIsDisabled(true);
+    }
+    else {
+      setIsDisabled(false);
+    }
+  }
 
   return (
     <Container
@@ -107,7 +129,7 @@ export default function PageLogin() {
                   id="email"
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={handleEmailInput}
                 />
               </FormControl>
               <FormControl>
@@ -123,10 +145,11 @@ export default function PageLogin() {
                   </InputRightElement>
                   <Input
                     id="password"
-                    name="password"
                     vaule={password}
+                    name="password"
+                    data-testid="password"
                     type={isOpen ? "text" : "password"}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={handlePasswordInput}
                     required
                   />
                 </InputGroup>
@@ -139,9 +162,11 @@ export default function PageLogin() {
             </HStack>
             <Stack spacing="6">
               <Button
+              data-testid="submit"
                 colorScheme="twitter"
                 variant="solid"
                 onClick={(e) => handleSignIn(e)}
+                disabled={isdisabled}
               >
                 Sign in
               </Button>

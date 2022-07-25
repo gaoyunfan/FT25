@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button,  Center, Square, Circle , Text} from '@chakra-ui/react'
+import { Button,  Center, Text} from '@chakra-ui/react'
 
 
 const Break = props => {
