@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import "./App.css";
+import { Button,  Center, Square, Circle , Text} from '@chakra-ui/react'
 
 class Stopwatch extends Component {
   state = {
@@ -42,20 +43,19 @@ class Stopwatch extends Component {
     return (
       <div className="Stopwatch">
         <div className="Stopwatch-header">Stopwatch</div>
-        <div className="Stopwatch-display">
-          {hours} : {minutes} : {seconds} : {centiseconds}
-        </div>
+
+        <Text fontSize='4xl'>{hours} : {minutes} : {seconds} : {centiseconds}</Text>
         {this.state.timerOn === false && this.state.timerTime === 0 && (
-          <button onClick={this.startTimer}>Start</button>
+          <Button colorScheme='green' onClick={this.startTimer}>Start</Button>
         )}
         {this.state.timerOn === true && (
-          <button onClick={this.stopTimer}>Stop</button>
+          <Button colorScheme='red' onClick={this.stopTimer}>Stop</Button>
         )}
         {this.state.timerOn === false && this.state.timerTime > 0 && (
-          <button onClick={this.startTimer}>Resume</button>
+          <Button colorScheme='blue' onClick={this.startTimer}>Resume</Button>
         )}
         {this.state.timerOn === false && this.state.timerTime > 0 && (
-          <button onClick={this.resetTimer}>Reset</button>
+          <Button onClick={this.resetTimer}>Reset</Button>
         )}
       </div>
     );

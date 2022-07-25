@@ -19,25 +19,48 @@ import {
   InputGroup,
   InputRightElement,
   IconButton,
+  Link,
 } from "@chakra-ui/react";
 
 
 import { HiEye, HiEyeOff } from "react-icons/hi";
-import { useNavigate } from "react-router-dom";
+import { Link as ReachLink, useNavigate } from "react-router-dom";
 
 export default function PageLogin() {
   const { logInWithEmailAndPassword } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isOpen, setOpen] = useState(false);
+  const [isdisabled, setIsDisabled] = useState(true)
   const onClickReveal = () => setOpen(!isOpen);
   let navigate = useNavigate();
 
   const handleSignIn = async(e) => {
-    e.preventDefault()
+    e.preventDefault();
     await logInWithEmailAndPassword(email, password);
     navigate("/");
   };
+
+  const handleEmailInput = (e) => {
+    e.preventDefault();
+    setEmail(e.target.value);
+    if (e.target.value.length < 1 || password.length < 1) {
+      setIsDisabled(true);
+    }
+    else {
+      setIsDisabled(false);
+    }
+  }
+  const handlePasswordInput = (e) => {
+    e.preventDefault();
+    setPassword(e.target.value);
+    if (e.target.value.length < 1 || email.length < 1) {
+      setIsDisabled(true);
+    }
+    else {
+      setIsDisabled(false);
+    }
+  }
 
   return (
     <Container
@@ -70,9 +93,9 @@ export default function PageLogin() {
             </Heading>
             <HStack spacing="1" justify="center">
               <Text color="muted">Don't have an account?</Text>
-            <Button color='blue' variant='link' onClick={() => navigate("/register")}>
-            Sign up now !
-            </Button>
+              <Link color="blue" as={ReachLink} to="/register">
+              Sign up now !
+              </Link>
             </HStack>
           </Stack>
         </Stack>
@@ -106,7 +129,7 @@ export default function PageLogin() {
                   id="email"
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={handleEmailInput}
                 />
               </FormControl>
               <FormControl>
@@ -122,25 +145,28 @@ export default function PageLogin() {
                   </InputRightElement>
                   <Input
                     id="password"
-                    name="password"
                     vaule={password}
+                    name="password"
+                    data-testid="password"
                     type={isOpen ? "text" : "password"}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={handlePasswordInput}
                     required
                   />
                 </InputGroup>
               </FormControl>
             </Stack>
             <HStack justify="space-between">
-            <Button color='blue' variant='link' onClick={() => navigate("/reset")}>
-              Forgot password?
-            </Button>
+              <Link color="blue" as={ReachLink} to="/reset">
+                Forgot password?
+              </Link>
             </HStack>
             <Stack spacing="6">
               <Button
+              data-testid="submit"
                 colorScheme="twitter"
                 variant="solid"
                 onClick={(e) => handleSignIn(e)}
+                disabled={isdisabled}
               >
                 Sign in
               </Button>

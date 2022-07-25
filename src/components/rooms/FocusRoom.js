@@ -1,35 +1,29 @@
 import {
   Avatar,
-  Box,
   Button,
-  Center,
   Flex,
-  FormLabel,
+  Center,
   Heading,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   Text,
-  useDisclosure,
+  useToast,
+  Image,
+  FormControl,
+  Input,
+  IconButton,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { AddIcon, ArrowBackIcon, HamburgerIcon } from "@chakra-ui/icons";
 import {
-  FormControl,
-  Input,
-  useToast,
-  Stack,
-  IconButton,
-} from "@chakra-ui/react";
+  DeleteIcon,
+  WarningTwoIcon,
+  ArrowBackIcon,
+  HamburgerIcon,
+} from "@chakra-ui/icons";
+
 import {
   query,
   onSnapshot,
@@ -39,156 +33,148 @@ import {
   addDoc,
   serverTimestamp,
   updateDoc,
+  arrayRemove,
   arrayUnion,
+  deleteDoc,
 } from "firebase/firestore";
+
 import {
   useCollectionData,
   useDocumentData,
 } from "react-firebase-hooks/firestore";
 import { useAuth } from "../../hooks/useAuth";
-
+import SendImage from "./SendImage";
 
 import Stopwatch from "./RMstopWatch";
-
-import UserListItem from "../user/UserListItem";
-import UserBadgeItem from "../user/UserBadgeItem";
+import RoomInfo from "./RoomInfo";
+import EditRoom from "./EditRoom";
+import { deleteObject, listAll, ref } from "firebase/storage";
+import { projectStorage } from "../../config/firebaseConfig";
 
 export default function FocusRoom() {
   const { state } = useLocation();
+  const { r_id } = state;
   const navigate = useNavigate();
-  const { u_id, r_id } = state;
+  const toast = useToast();
   const { db, user } = useAuth();
   //const [room, setRoom] = useState("");
   const bottomOfChat = useRef();
 
   const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const [typing, setTyping] = useState(false);
-  const toast = useToast();
+  const [admin, setAdmin] = useState(false);
+  const [inputValue, setInputValue] = useState("");
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [selectedUsers, setSelectedUsers] = useState([]);
-  const [searchResult, setSearchResult] = useState([]);
-  const [queryres, setQueryres] = useState("");
   const q = query(collection(db, "users"));
+  const roomRef = doc(db, "groups", r_id);
+  const userRef = doc(db, "users", user.uid);
+  const [room] = useDocumentData(roomRef);
   const [allUsers] = useCollectionData(q);
+  const members_list = allUsers?.filter((u) => room?.members.includes(u.uid));
   const users_list = allUsers?.filter((u) => u.uid !== user.uid);
+  console.log("members_list", members_list);
+  console.log("users_list", users_list);
 
-  /*
   useEffect(() => {
-    async function FetchRoom() {
-      const docRef = doc(db, "groups", r_id);
-      const docSnap = await getDoc(docRef);
-      setRoom(docSnap.data());
-    }
-    FetchRoom();
-  }, []);
-  */
-
-  const handleSearch = (e) => {
-    setQueryres(e.target.value);
-    if (!query) {
-      return;
-    }
-    console.log("query", queryres);
-    setLoading(true);
-    if (queryres === "" || queryres === null) {
-      return;
-    }
-    const result = users_list.filter((person) => {
-      return person.name?.toLowerCase().startsWith(queryres.toLowerCase());
+    setAdmin(false);
+    room?.admin?.forEach((m) => {
+      if (m === user.uid) {
+        setAdmin(true);
+        return;
+      }
     });
-    console.log("result", result);
-    setSearchResult(result);
-    setLoading(false);
-  };
-  const handleDelete = (delUser) => {
-    setSelectedUsers(selectedUsers.filter((sel) => sel.uid !== delUser.uid));
-  };
-  const handleGroup = (userToAdd) => {
-    if (selectedUsers.includes(userToAdd)) {
-      toast({
-        title: "User already selected",
-        status: "warning",
-        duration: 5000,
-        isClosable: true,
-        position: "top",
-      });
-    } else {
-      setSelectedUsers([...selectedUsers, userToAdd]);
-      setQueryres("");
-    }
-  };
-  const handleAddFriends = () => {
-    if (!selectedUsers.length) {
-      toast({
-        title: "No user to add",
-        status: "warning",
-        duration: 5000,
-        isClosable: true,
-        position: "top",
-      });
-      return;
-    }
-    console.log("selected", selectedUsers);
-    selectedUsers.forEach(async (u) => {
-      const ref = doc(db, "users", u.uid);
-      console.log("u", u.uid);
-      await updateDoc(ref, {
-        rooms: arrayUnion(r_id),
-      });
-      const room_ref = doc(db, "groups", r_id);
-      await updateDoc(room_ref, {
-        members: arrayUnion(u.uid),
-      });
-    });
-    onClose();
-    toast({
-      title: "User added!",
-      status: "success",
-      duration: 5000,
-      isClosable: true,
-      position: "bottom",
-    });
-  };
-
-  const [room] = useDocumentData(doc(db, "groups", r_id));
-  console.log("romm", room);
+  }, [admin, room, user.uid]);
 
   useEffect(() => {
     const colRef = collection(db, `messages/${room?.id}/msg`);
     const q = query(colRef, orderBy("createdAt"));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const allMessages = [];
-      console.log("snap", querySnapshot);
       querySnapshot.forEach((doc) => {
-        console.log("q_data", doc.data());
         allMessages.push(doc.data());
       });
       setMessages(allMessages);
-      console.log("allMessages", allMessages);
-      console.log("messages", messages);
     });
 
     return () => unsubscribe();
   }, [db, room?.id]);
 
-  const sendMessage = async (e) => {
+  const sendMessage = async (e, url) => {
     e.preventDefault();
-    console.log("newmessage:", newMessage);
+
     const colRef = collection(db, `messages/${room.id}/msg`);
     await addDoc(colRef, {
+      imageUrl: url,
       text: newMessage,
       createdAt: serverTimestamp(),
       sentBy: user.uid,
       email: user.email,
     });
     setNewMessage("");
+    setInputValue("");
+  };
+
+  const handleLeave = async (e) => {
+    if (room.members.length === 1) {
+      return handleDelete();
+    }
+    if (admin) {
+      await updateDoc(roomRef, {
+        admin: arrayRemove(user.uid),
+      });
+      if (room.admin.length === 0) {
+        const index = room.members.findIndex((m) => m !== user.uid);
+        await updateDoc(roomRef, {
+          admin: arrayUnion(room.members[index]),
+        });
+
+        console.log("Change admin to:", room.members[index]);
+      }
+    }
+    await updateDoc(userRef, { rooms: arrayRemove(r_id) });
+    console.log("remove from user groups");
+    await updateDoc(roomRef, { members: arrayRemove(user.uid) });
+    toast({
+      title: "Room quitted.",
+      status: "success",
+      duration: 4000,
+      isClosable: true,
+    });
+    navigate("/");
+  };
+
+  const handleDelete = async (e) => {
+    room.members.forEach(async (memb) => {
+      const memberRef = doc(db, "users", memb);
+      await updateDoc(memberRef, { rooms: arrayRemove(r_id) });
+    });
+    await deleteDoc(roomRef);
+    toast({
+      title: "Room deleted.",
+      status: "success",
+      duration: 4000,
+      isClosable: true,
+    });
+    const storageRef = ref(projectStorage, `rooms/${r_id}`);
+    listAll(storageRef).then((res) => {
+      res.items.forEach((itemRef) => {
+        deleteObject(itemRef)
+          .then(() => {
+            console.log("delete storage successfully");
+          })
+          .catch((error) => {
+            // Uh-oh, an error occurred!
+            console.log("error", error);
+          });
+      });
+    });
+    navigate("/");
   };
 
   const typingHandler = (e) => {
     setNewMessage(e.target.value);
+    setInputValue(e.target.value);
     if (!typing) {
       setTyping(true);
     }
@@ -196,19 +182,9 @@ export default function FocusRoom() {
 
   function topBar() {
     return (
-      <Flex
-        bg="gray.100"
-        h="71px"
-        w="100%"
-        align="center"
-        p={2}
-        justifyContent="space-between"
-      >
-        <IconButton icon={<ArrowBackIcon />} onClick={() => navigate(-1)} />
-        <Stack direction="row">
-          <Avatar size="sm" src="" marginEnd={3} />
-          <Heading size="lg">{room?.name} </Heading>
-        </Stack>
+      <Flex gap="25px" bg="gray.100" h="71px" w="100%" align="center" p={2}>
+        <IconButton icon={<ArrowBackIcon />} onClick={() => navigate("/")} />
+        <RoomInfo room={room} members_list={members_list} allUsers={allUsers} />
         <Menu>
           <MenuButton
             as={IconButton}
@@ -217,68 +193,20 @@ export default function FocusRoom() {
             variant="outline"
           />
           <MenuList>
-            <>
-              <MenuItem
-                icon={<AddIcon />}
-                command="⌘T"
-                onClick={(e) => onOpen()}
-              >
-                Add member
-              </MenuItem>{" "}
-              <Modal isOpen={isOpen} onClose={onClose}>
-                <ModalOverlay />
-                <ModalContent>
-                  <ModalHeader>Add member</ModalHeader>
-                  <ModalCloseButton />
-                  <ModalBody>
-                    <FormControl mt={2}>
-                      <FormLabel>Search user</FormLabel>
-                      <Input
-                        value={queryres}
-                        placeholder="name"
-                        mb={3}
-                        onChange={handleSearch}
-                      />
-                    </FormControl>
-                    <Box w="100%" d="flex" flexWrap="wrap">
-                      {selectedUsers.map((u) => (
-                        <UserBadgeItem
-                          u={u}
-                          handleDelete={() => handleDelete(u)}
-                        />
-                      ))}
-                    </Box>
-                    {loading ? (
-                      // <ChatLoading />
-                      <div>Loading...</div>
-                    ) : searchResult.length > 0 ? (
-                      searchResult
-                        .slice(0, 5)
-                        .map((u) => (
-                          <UserListItem
-                            u={u}
-                            handleGroup={() => handleGroup(u)}
-                          />
-                        ))
-                    ) : (
-                      <Box mt="15px" ml="20px">
-                        No user found
-                      </Box>
-                    )}
-                  </ModalBody>
-
-                  <ModalFooter>
-                    <Button
-                      colorScheme="blue"
-                      mr={3}
-                      onClick={() => handleAddFriends()}
-                    >
-                      Add
-                    </Button>
-                  </ModalFooter>
-                </ModalContent>
-              </Modal>
-            </>
+            <EditRoom
+              room={room}
+              name={room?.name}
+              admin={admin}
+              setAdmin={setAdmin}
+            />
+            <MenuItem icon={<DeleteIcon />} onClick={handleLeave}>
+              Leave room
+            </MenuItem>
+            {admin && (
+              <MenuItem icon={<WarningTwoIcon />} onClick={handleDelete}>
+                Delete group
+              </MenuItem>
+            )}
           </MenuList>
         </Menu>
       </Flex>
@@ -286,16 +214,25 @@ export default function FocusRoom() {
   }
   function bottomBar() {
     return (
-      <FormControl p={3} onSubmit={sendMessage} as="form">
-        <Input
-          placeholder="Type a message..."
-          autoComplete="off"
-          onChange={(e) => typingHandler(e)}
-          value={newMessage}
-        />
-        <Button type="submit" hidden>
-          Submit
-        </Button>
+      <FormControl p={2} onSubmit={(e) => sendMessage(e, "")} as="form">
+        <Flex>
+          <Input
+            size="lg"
+            placeholder="Type a message and hit enter to send"
+            autoComplete="off"
+            onChange={(e) => typingHandler(e)}
+            value={inputValue}
+          />
+          <Button type="submit" hidden>
+            Submit
+          </Button>
+          <SendImage
+            newMessage={newMessage}
+            setNewMessage={setNewMessage}
+            sendMessage={sendMessage}
+            roomId={room?.id}
+          />
+        </Flex>
       </FormControl>
     );
   }
@@ -313,32 +250,59 @@ export default function FocusRoom() {
   const getMessages = () =>
     messages?.map((msg, index) => {
       const sender = msg.sentBy === user.uid;
+      const senderInfo = allUsers.filter((u) => {
+        return msg.email === u.email;
+      });
+      const date = msg.createdAt?.toDate();
+      let time;
+      if (date) {
+        time = `${date.getHours()}:${date.getMinutes()} ${date.getDate()}/${
+          date.getMonth() + 1
+        }/${date.getFullYear()} `;
+      }
+      console.log("time", time);
+
       return (
         <Flex
           key={index + 1}
           alignSelf={sender ? "flex-end" : "flex-start"}
-          bg={sender ? "green.100" : "blue.100"}
-          direction="column"
-          w="fit-content"
-          minWidth="100px"
-          borderRadius="lg"
-          p={2}
-          m={1}
+          alignItems="flex-end"
+          flexDirection={sender ? "row" : "row-reverse"}
         >
-          <Text mb={1} color="orange.700">
-            {msg.email}
-          </Text>
-          <Text>{msg.text}</Text>
+          <Flex
+            bg={sender ? "green.100" : "blue.100"}
+            direction="column"
+            minWidth="255"
+            maxWidth="45%"
+            borderRadius="lg"
+            p={2}
+            mb={3}
+          >
+            <Flex width="fit-content" mb={2}>
+              <Text color="grey" mr={3}>
+                {senderInfo[0].name}
+              </Text>
+              <Text color="orange.700">{msg.email}</Text>
+            </Flex>
+            {msg.imageUrl && (
+              <a href={msg.imageUrl} target="_blank" rel="noreferrer">
+                <Image boxSize="240px" objectFit="contain" src={msg.imageUrl} />
+              </a>
+            )}
+            <Text mb={1}>{msg.text}</Text>
+            <Text ml="auto">{time}</Text>
+          </Flex>
+          <Avatar mb={3} src={senderInfo[0].photoURL} />
         </Flex>
       );
     });
 
   return (
-    <Flex h="93vh" direction="column">
+    <Flex h="92vh" direction="column">
       {topBar()}
-      <Flex bg="blue.100" h="71px" w="110%" align="center" p={2}>
+      <Flex bg="blue.100" h="71px" w="100%" align="center" p={2}>
         <Flex flex={1}>
-          <Center w="100%" h="100%">
+          <Center w="98%" h="100%">
             <Heading size="lg">
               <Stopwatch />{" "}
             </Heading>

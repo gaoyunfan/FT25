@@ -1,268 +1,295 @@
-import React, { useState, useEffect } from "react";
-import firebase from 'firebase/compat/app';
+import React, {
+	useState,
+	useEffect
+} from "react";
+import {
+	useNavigate
+} from "react-router-dom";
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 import {
-  FormControl,
-  FormLabel,
-  FormErrorMessage,
-  FormHelperText,Button,Collapse,Box,useDisclosure 
-} from '@chakra-ui/react'
-
-import { Center, Square, Circle } from '@chakra-ui/react'
-
+	query,
+	orderBy,
+	collection,
+	doc,
+	getDocs,
+	deleteDoc,
+	addDoc,
+	endAt,
+	startAt,
+	where,
+	updateDoc,
+	arrayUnion
+} from "firebase/firestore";
 import {
-  Table,
-  Thead,
-  Tbody,
-  Tfoot,
-  Tr,
-  Th,
-  Td,
-  TableCaption,
-  TableContainer,Input
+	useAuth
+} from "../../hooks/useAuth";
+import {
+	Input,
+	Center,
+	Button,
+	Box,
+	useDisclosure,
+	Flex,
+	Text,
+	AlertDialog,
+	AlertDialogBody,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogContent,
+	AlertDialogOverlay,
+	useToast
 } from '@chakra-ui/react'
+import {
+	SearchIcon
+} from '@chakra-ui/icons'
 
+import './modules.css'
 
-//import { config as firebaseConfig } from "../config/firebaseConfig.js";
-import { config as firebaseConfig }  from "../../config/firebaseConfig"
-
-  
 function Modules() {
-  const firebaseApp = firebase.initializeApp(firebaseConfig);
+	const toast = useToast();
+	const navigate = useNavigate();
+	const {
+		user,
+		db
+	} = useAuth();
+	const {
+		isOpen,
+		onOpen,
+		onClose
+	} = useDisclosure();
+	const cancelRef = React.useRef();
+	const [searchKey, setSearchKey] = useState('');
+	const [id, setId] = useState("");
 
-// Use these for db & auth
-const db = firebaseApp.firestore();
-const auth = firebase.auth();
-  const [moduleCode, setmoduleCode] = useState("");
-  const [moduleTitle, setmoduleTitle] = useState("");
-  const [user_modList, setuser_modList] = useState([]);
-  const [static_modList, setstatic_modList] = useState([]);
-  const [updatedmoduleCode, setUpdatedmoduleCode] = useState("");
-  const [updatedmoduleTitle, setUpdatedmoduleTitle] = useState("");
-  const [dataIdToBeUpdated, setDataIdToBeUpdated] = useState("");
+	const [user_modList, setuser_modList] = useState({});
+	const [groups_modList, setGroups_modList] = useState([]);
+	
+	const [moduleCode, setModuleCode] = useState('');
+	const [display, setDisplay] = useState(true);
+	const [codeList, setCodeList] = useState([]);
 
-  const { isOpen, onToggle } = useDisclosure()
-  
-  useEffect(() => {
-    db.collection("user_modList").onSnapshot((snapshot) => {
-      setuser_modList(
-        snapshot.docs.map((doc) => ({
-          id: doc.id,
-          data: doc.data(),
-        }))
-      );
+	useEffect(() => {
+		getStaticData('');
+		getUsrData();
+
+	}, []); // eslint-disable-line
+	
+	const onInput = (value)=>{
+		setModuleCode(value);
+		getStaticData(value);
+	}
+	
+	const chooseCode = (item,e)=>{
+		e.preventDefault();
+		setModuleCode(item)
+		setDisplay(true)
+	}
+	
+	const getStaticData = (value)=>{
+		let connect = collection(db, "static_modList");
+		getDocs(connect).then(snapshot=>{
+		    setCodeList(
+				snapshot.docs.map((doc) =>({
+					moduleCode:doc.data().moduleCode
+				}))
+		    )
+		});
+		value&&codeList.length>0?setDisplay(false):setDisplay(true);
+	}
+	
+	const getUsrData = () => {
+		console.log(user.uid)
+		const connect = collection(db, "user_modList");
+		const result = query(connect,where('uid','==',user.uid));
+		getDocs(result).then(snapshot => {
+			var arr = [];
+			snapshot.docs.forEach((doc) => {
+				console.log(doc.data());
+				arr.push({
+					id: doc.id,
+					moduleCode: doc.data().mod_code
+				})
+			})
+			setuser_modList(arr);
+		});
+	};
+
+
+	// above for displaying static_mods
+	const submit = () => {
+		let reslut = user_modList.some((item)=>{
+			if (item.moduleCode === moduleCode) {
+				return true
+			}else{
+				return false
+			}
+		}) 
+
+		if (reslut) {
+			toast({
+				title: "Module Code Already Added",
+				status: "warning",
+				duration: 5000,
+				isClosable: true,
+				position: "top",
+			});
+			return
+		}
+
+		addDoc(collection(db, "user_modList"), {
+			uid:user.uid,
+			mod_code: moduleCode
+		});
+		setuser_modList({});
+		getUsrData();
+	};
+
+	// >> update Data
+	// const updateData = (e) => {
+	// 	e.preventDefault();
+	// 	updateDoc(doc(db, "user_modList",dataIdToBeUpdated),{
+	// 	    mod_code: updatedmoduleCode,
+	// 	    mod_title: updatedmoduleTitle,
+	// 	});
+	// 	setUpdatedmoduleTitle("");
+	// 	setUpdatedmoduleCode("");
+	// 	setDataIdToBeUpdated("");
+	// };
+
+	const deleteData = (id) => {
+		deleteDoc(doc(db, "user_modList", id));
+		getUsrData();
+	};
+
+	const searchHandle = () => {
+		let connect = collection(db, "groups");
+		const reslut = query(connect, orderBy('moduleCode'), startAt(searchKey), endAt(searchKey + "\uf8ff"));
+		getDocs(reslut).then(snapshot => {
+			var arr = [];
+			snapshot.forEach((doc) => {
+				arr.push({
+					id: doc.id,
+					moduleCode: doc.data().moduleCode,
+					name: doc.data().name,
+					status: doc.data().status
+				})
+			})
+			setGroups_modList(arr);
+		});
+	};
+	const joinHandle = async (id) => {
+		setId(id);
+		await updateDoc(doc(db, "groups", id), {
+      members: arrayUnion(user.uid),
     });
-  }, []);
-
-// for displaying static_mods
-
-
-useEffect(() => {
-  db.collection("static_modList").onSnapshot((snapshot) => {
-    setstatic_modList(
-      snapshot.docs.map((doc) => ({
-        id: doc.id,
-        data: doc.data(),
-      }))
-    );
-  });
-}, []);
-
-
-// above for displaying static_mods
-
-
-
-
-
-  
-  const submit = (e) => {
-    e.preventDefault();
-    db.collection("user_modList").add({
-      mod_code: moduleCode,
-      mod_title: moduleTitle,
+    await updateDoc(doc(db, "users", user.uid), {
+      rooms: arrayUnion(id),
     });
-  
-    setmoduleCode("");
-    setmoduleTitle("");
-  };
-  
-  const updateData = (e) => {
-    e.preventDefault();
-    db.collection("user_modList").doc(dataIdToBeUpdated).update({
-      mod_code: updatedmoduleCode,
-      mod_title: updatedmoduleTitle,
-    });
-  
-    setUpdatedmoduleTitle("");
-    setUpdatedmoduleCode("");
-    setDataIdToBeUpdated("");
-  };
+		onOpen();
+	};
 
-  const deleteData = (id) => {
-    db.collection("user_modList").doc(id).delete();
-  };
-  
-  return (
-    
-      
-    <div className="App">
-<Center  bg='white'  color='black'>Add modules here</Center>
-      <FormControl >
+	const JoinIn = () => {
+		onClose()
+    navigate(`/room/${id}`, { state: { r_id: id } });
+	}
 
-
-     
-      {!dataIdToBeUpdated ? (
-        <div >
-          <Input
-            type="text"
-            placeholder="Module Code"
-            width = "sm"
-            value={moduleCode}
-            onChange={(e) => setmoduleCode(e.target.value)}
-          />
-          <Input
-            type="text"
-            placeholder="Module Title"
-            width = "sm" 
-            value={moduleTitle}
-            onChange={(e) => setmoduleTitle(e.target.value)}
-          />
-          <Button  colorScheme='Cyan' onClick={submit}>Add Mod</Button>
-        </div>
-      ) : (
-        <div className="App_Updateform">
-          
-          <Input
-            type="text"
-            placeholder="Module Code"
-
-            width = "sm"
-            value={updatedmoduleCode}
-            onChange={(e) => setUpdatedmoduleCode(e.target.value)}
-          />
-          <Input
-            type="text"
-            placeholder="Module Title"
-            width = "sm"
-            value={updatedmoduleTitle}
-            onChange={(e) => setUpdatedmoduleTitle(e.target.value)}
-          />
-          <Button colorScheme='Cyan' onClick={updateData}>Update</Button>
-        </div>
-      )}
-  </FormControl>
-  <Center  bg='white'  color='black'>List of Modules Added </Center>
-  <Center  bg='white'  color='black'>
-  
-  <TableContainer>
-  <Table variant='striped' colorScheme='blue'>
-  
-    <Thead>
-      <Tr>
-      <th>Module Code</th>
-      <th>Module Title</th>
-      <th></th>
-      <th></th>
-      </Tr>
-    </Thead>
-    <Tbody>
-    {user_modList?.map(({ id, data }) => (
-            <tr key={id}>
-              <td>{data.mod_code}</td>
-              <td>{data.mod_title}</td>
-              <td>
-                <Button
-                  onClick={() => {
-                    setDataIdToBeUpdated(id);
-                    setUpdatedmoduleTitle(data.mod_title);
-                    setUpdatedmoduleCode(data.mod_code);
-                  }}
-                >
-                  Update  
-                </Button>
-              </td>
-              <td>
-                <Button 
-                  onClick={() => {
-                    deleteData(id);
-                  }}
-                >
-                  Delete
-                </Button>
-              </td>
-            </tr>
-          ))}
-      </Tbody>
-
-
-      <Tfoot>
-      <Tr>
-      <th>Module Code</th>
-      <th>Module Title</th>
-      <th></th>
-      <th></th>
-      </Tr>
-    </Tfoot>
-
-
-    </Table>
-</TableContainer>
-    
-</Center>
-      
-      
-          
-      
-      
-
-                
-
-
-      <>
-      <Button colorScheme='teal' onClick={onToggle}>Show All Modules</Button>
-      <Collapse in={isOpen} animateOpacity>
-        <Box
-          p='40px'
-          color='white'
-          mt='4'
-          bg='white.500'
-          rounded='md'
-          shadow='md'
-
-        >
-          <div className="App__DataDisplay">
-        <table>
-          <tr>
-            <th>Module Code</th>
-            <th>Module Title</th>
-  
-          </tr>
-  
-          {static_modList?.map(({ id, data }) => (
-            <tr key={id}>
-              <td>{data.moduleCode}</td>
-              <td>{data.title}</td>
-              <td>
-                
-              </td>
-              <td>
-                
-              </td>
-            </tr>
-          ))}
-        </table>
-      </div>
-        </Box>
-      </Collapse>
-    </>
-
-
-    </div>
-  
-    
-  );
+	return (<div>
+		<Flex h = "calc(100vh - 56px)" w = "100%" bg = "#f2f2f2" >
+			<Box w = {'50%'} flex = {1} style = {{borderRight: '1px solid #ccc',overflow: 'scroll'}}>
+				<Center p={5} style={{fontWeight:'bold',fontSize:'20px'}}>Add Module Code</Center>
+				<Flex style = {{padding: '0 30px 30px 30px'}}>
+					<Box className="mainBox">
+						<Input className="inputCode" onInput = {(e) => onInput(e.target.value.toUpperCase())} placeholder="Module Code" value={moduleCode} mb={1}/>
+						<Box className="box" style={{display:display?'none':''}}>
+							{codeList?.map((item,i) =>(
+								<Center style={{display:item.moduleCode?.indexOf(moduleCode)>-1?'':'none',}} key={i} className="center" onClick={(e)=>chooseCode(item.moduleCode,e)}>
+									<Text>{item.moduleCode}</Text>
+								</Center>)
+							)}
+						</Box>
+					</Box>
+					<Button className = "button"colorScheme = 'red' onClick = {(e) => (submit())}> Add Code </Button> 
+				</Flex> 
+				<Center>
+					{user_modList.length > 0 ? (
+					<Center w = "100%" bg = "#f2f2f2">
+						<Box padding = '4' w = "1000px" bg = '#ffffff' color = '#333' style = {{'overflowY': 'scroll','padding': '30px'}}>
+							<Flex style = {{fontWeight: '600','borderBottom': '1px solid #ededed',padding: '10px 0'}}>
+								<Center flex = {1}>
+									<Text> Module Code </Text> 
+								</Center>
+								<Center flex = {1}>
+									<Text>Action</Text> 
+								</Center> 
+							</Flex> 
+							<Box color = "#888"> 
+								{user_modList?.map((item) => (
+								<Flex className = "flex" key = {item.id} style = {{'borderBottom': '1px solid #ededed',padding: '10px 0'}} >
+									<Center flex = {1}>
+										<Text>{item.moduleCode}</Text> 
+									</Center> 
+									<Center flex = {1}>
+										<Button className = "joinIn" colorScheme = 'red' size = 'sm' onClick = {(e) => (deleteData(item.id))}>Delete</Button> 
+									</Center> 
+								</Flex>))}  
+							</Box> 
+						</Box>
+					</Center> ): 'No Data...'} 
+				</Center> 
+			</Box> 
+			<Box w = {'50%'} flex = {1} style = {{overflow: 'scroll'}}>
+				<Center p={5} style={{fontWeight:'bold',fontSize:'20px'}}>Search Room</Center>
+				<Flex style = {{padding: '0 30px 30px 30px'}}>
+					<Input placeholder = "Module Code" onChange = {(e) => setSearchKey(e.target.value.toUpperCase())} className = "input" />
+					<Button className = "button" leftIcon = {<SearchIcon />} colorScheme = 'teal' onClick = {searchHandle}>Search</Button>
+				</Flex> 
+				<Center>{groups_modList.length > 0 ? ( 
+					<Center w = "100%" bg = "#f2f2f2">
+						<Box padding = '4' w = "1000px" bg = '#ffffff' color = '#333' style = {{'overflowY': 'scroll','padding': '30px'}}>
+							<Flex style = {{fontWeight: '600','borderBottom': '1px solid #ededed',padding: '10px 0'}}>
+								<Center flex = {1}>
+									<Text>Module Code</Text> 
+								</Center> 
+								<Center flex = {1}>
+									<Text>Room Name</Text>
+								</Center > 
+								<Center flex = {1}>
+									<Text>Action</Text> 
+								</Center> 
+							</Flex> 
+						<Box color = "#888">
+							{groups_modList?.map((item) => (
+								<Flex className = "flex" key = {item.id} style = {{'display': item.status === "private" ? 'none' : '','borderBottom': '1px solid #ededed',padding: '10px 0'}}>
+									<Center flex = {1}>
+										<Text>{item.moduleCode}</Text> 
+									</Center> 
+									<Center flex = {1}>
+										<Text>{item.name}</Text> 
+									</Center> 
+									<Center flex = {1}>
+										<Button className = "joinIn" colorScheme = 'teal' size = 'sm' onClick = {(e) => (joinHandle(item.id))}> Join Room </Button>
+									</Center > 
+								</Flex>))}
+						</Box>
+					</Box>
+				</Center>): 'No Data...'} 
+			</Center>
+		</Box>
+	</Flex>
+	<AlertDialog isOpen = {isOpen} leastDestructiveRef = {cancelRef}onClose = {onClose}>
+		<AlertDialogOverlay >
+			<AlertDialogContent >
+				<AlertDialogHeader fontSize = 'lg' fontWeight = 'bold' > Join Room </AlertDialogHeader>
+				<AlertDialogBody>Are you sure you want to join the room ? </AlertDialogBody> 
+				<AlertDialogFooter>
+					<Button className = "joinIn" ref = {cancelRef} onClick = {onClose} >Cancel</Button> 
+					<Button className = "joinIn" colorScheme = 'teal' onClick = {(e) => JoinIn()} ml = {3}>Join</Button> 
+				</AlertDialogFooter> 
+			</AlertDialogContent> 
+		</AlertDialogOverlay>
+	</AlertDialog>
+	</div>)
 }
-  
+
 export default Modules;

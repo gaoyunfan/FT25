@@ -16,21 +16,21 @@ import {
   Input,
   useToast,
 } from "@chakra-ui/react";
-import { AddIcon } from "@chakra-ui/icons";
 import { useState } from "react";
 import UserListItem from "../user/UserListItem";
-import UserBadgeItem from "../user/UserBadgeItem"
+import UserBadgeItem from "../user/UserBadgeItem";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function FirendsModal(props) {
-
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { user, db } = useAuth();
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState("");
   const toast = useToast();
 
-  const {users_list, user, db} = props;
+  const { users_list, friends_list } = props;
 
   const handleSearch = (e) => {
     setQuery(e.target.value);
@@ -65,10 +65,9 @@ export default function FirendsModal(props) {
       setSelectedUsers([...selectedUsers, userToAdd]);
       setQuery("");
     }
-    
   };
   const handleAddFriends = () => {
-    if (!selectedUsers) {
+    if (!selectedUsers || selectedUsers.length === 0) {
       toast({
         title: "No user to add",
         status: "warning",
@@ -78,14 +77,42 @@ export default function FirendsModal(props) {
       });
       return;
     }
-    console.log("selected",selectedUsers)
+    let error = ""; 
+    selectedUsers.forEach((u) => {
+      if (friends_list.friends.includes(u.uid)) {
+        error = "User already a friend";
+        return;
+      }
+      if (friends_list.sendRequest.includes(u.uid)) {
+        error = "Request already sent";
+        return;
+      }
+      if (friends_list.friendRequest.includes(u.uid)) {
+        error = "Received user's friend request";
+        return;
+      }
+    })
+    if (error) {
+      toast ({
+        title: error,
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+        position: "top",
+      })
+      return;
+    }
+    console.log("selected", selectedUsers);
     selectedUsers.forEach(async (u) => {
       const ref = doc(db, "friends", u.uid);
-      console.log("u",u.uid);
+      console.log("u", u.uid);
       await updateDoc(ref, {
-        friendRequest: arrayUnion(user.uid)
+        friendRequest: arrayUnion(user.uid),
       });
-    }) 
+      await updateDoc(doc(db, "friends", user.uid), {
+        sendRequest: arrayUnion(u.uid),
+      });
+    });
     onClose();
     toast({
       title: "Request submitted!",
@@ -94,31 +121,41 @@ export default function FirendsModal(props) {
       isClosable: true,
       position: "bottom",
     });
-}
+  };
+
+  const handleClose = () => {
+    setQuery("");
+    setSearchResult([]);
+    setSelectedUsers([]);
+    onClose();
+  }
 
   return (
     <>
-      <Button 
+      <Button
         d="flex"
         fontSize={{ base: "17px", md: "10px", lg: "17px" }}
-        rightIcon={<AddIcon />}
         onClick={onOpen}
       >
-      Add friends 
+        Add friends
       </Button>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={handleClose}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Add friend</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-          <FormControl mt={2}>
-              <FormLabel>Add user</FormLabel>
-              <Input value={query} placeholder="Add users" mb={3} onChange={handleSearch} />
+            <FormControl mt={2}>
+              <Input
+                value={query}
+                placeholder="Name of the user e.g. John"
+                mb={3}
+                onChange={handleSearch}
+              />
             </FormControl>
             <Box w="100%" d="flex" flexWrap="wrap">
-              {selectedUsers.map((u) => (
-                <UserBadgeItem u={u} handleDelete={() => handleDelete(u)} />
+              {selectedUsers.map((u, key) => (
+                <UserBadgeItem u={u} key={key + 1} handleDelete={() => handleDelete(u)} />
               ))}
             </Box>
             {loading ? (
@@ -127,8 +164,8 @@ export default function FirendsModal(props) {
             ) : searchResult.length > 0 ? (
               searchResult
                 .slice(0, 5)
-                .map((u) => (
-                  <UserListItem u={u} handleGroup={() => handleGroup(u)} />
+                .map((u, key) => (
+                  <UserListItem key={key+1} u={u} handleGroup={() => handleGroup(u)} />
                 ))
             ) : (
               <Box mt="15px" ml="20px">
@@ -138,12 +175,16 @@ export default function FirendsModal(props) {
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme='blue' mr={3} onClick={() => handleAddFriends()}>
+            <Button
+              colorScheme="blue"
+              mr={3}
+              onClick={() => handleAddFriends()}
+            >
               Add
             </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
-      </>
-      )
+    </>
+  );
 }

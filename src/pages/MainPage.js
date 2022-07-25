@@ -1,6 +1,6 @@
 import { useAuth } from "../hooks/useAuth";
-import RoomModal from "../components/rooms/RoomModal"
-import { Text, Box, Flex, Stack } from "@chakra-ui/react";
+import RoomModal from "../components/rooms/RoomModal";
+import { Text, Box, Flex, Stack, SimpleGrid, Avatar } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
@@ -9,8 +9,11 @@ export default function PageRoom() {
   const { user, db } = useAuth();
   const [loading, setLoading] = useState(false);
   const [groups, setGroups] = useState([]);
-  const [selectedRoom, setSelectRoom] = useState("");
+  const [selectRoom,setSelectRoom] = useState("");
   const navigate = useNavigate();
+
+  console.log("user", user);
+  console.log("emailVertified", user.emailVerified);
 
   useEffect(() => {
     const q = query(
@@ -35,9 +38,9 @@ export default function PageRoom() {
 
   const handleSelectRoom = (room) => {
     setSelectRoom(room);
-    navigate("/focusroom", {state:{r_id:room.id, u_id:user.uid}});
-  }
-  
+    navigate(`/room/${room.id}`, { state: { r_id: room.id } });
+  };
+
   return (
     <Flex
       flexDir="column"
@@ -64,20 +67,27 @@ export default function PageRoom() {
       {groups.length > 0 ? (
         <Stack overflowY="scroll">
           {groups.map((room, index) => (
-            <Box key={index + 1} 
+            <Box
+              key={index + 1}
               mb="3"
               onClick={() => handleSelectRoom(room)}
               cursor="pointer"
-              _hover={{background: "#38B2AC",color: "white"}}
-              bg= {"#E8E8E8"}
+              _hover={{ background: "#38B2AC", color: "white" }}
+              bg={"#E8E8E8"}
               color={"black"}
               px={3}
               py={2}
               borderRadius="lg"
             >
-              <Text fontSize="4xl">{room.name}</Text>
-              <Text>Room size: {room.members?.length}</Text>
-              <Text>Room type: {room.private ? "private" : "public"}</Text>
+              <Flex alignItems="center" gap="5px">
+                <Avatar size="md" src={room?.photoURL} name={room?.name} />
+                <Text fontSize="4xl">{room.name}</Text>
+              </Flex>
+              <SimpleGrid ml={1} columns={2} spacingY="10px">
+                <Text>Room size: {room.members?.length}</Text>
+                <Text>Room type: {room.status}</Text>
+                <Text>Module: {room.moduleCode}</Text>
+              </SimpleGrid>
             </Box>
           ))}
         </Stack>

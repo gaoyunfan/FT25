@@ -5,5 +5,5 @@ import { useAuth } from "../../hooks/useAuth";
 
 export default function PrivateRoute({ children }) {
   const { user } = useAuth();
-  return (user ? children : <Navigate to="/login" />);
+  return (user ? (user.emailVerified ? children : <Navigate to="/email-verification" />) : <Navigate to="/login" />);
 }
