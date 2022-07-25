@@ -90,7 +90,7 @@ const PMTimer = () => {
 
     return (
         <div className='Countdown'>
-             <div className="Countdown-header">POTOMO Clock</div>
+             <div className="Countdown-header">POMODORO Clock</div>
             <div className="Countdown-display">
                 <Session
                 sessionLength={sessionLength}
