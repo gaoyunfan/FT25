@@ -18,7 +18,7 @@ import {
 } from "@chakra-ui/react";
 import { arrayRemove, doc, updateDoc } from "firebase/firestore";
 
-import { MdCancel } from "react-icons/md"
+import {MdCancel} from "react-icons/md"
 import { useAuth } from "../../hooks/useAuth";
 
 export default function SendRequest(props) {

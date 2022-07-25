@@ -13,7 +13,7 @@ import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
         <TabList>
           <Tab>Stopwatch</Tab>
           <Tab>Countdown Timer</Tab>
-          <Tab>POMODORO Clock</Tab>
+          <Tab>POMOTO Clock</Tab>
         </TabList>
 
         <TabPanels>

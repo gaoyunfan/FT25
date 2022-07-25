@@ -9,7 +9,10 @@ function ModManager(props) {
   const [newModText, setNewModText] = useState("");
 
   function handleAddMod(event) {
-    // override the default behaviour here as we don't want to refresh
+    // React honours default browser behavior and the
+    // default behaviour for a form submission is to
+    // submit AND refresh the page. So we override the
+    // default behaviour here as we don't want to refresh
     event.preventDefault();
     addMod(newModText);
     setNewModText("");
@@ -17,9 +20,10 @@ function ModManager(props) {
 
   function addMod(description) {
     const newMods = [
-      // creating a brand new array of
+      // the ... operator is called the spread operator
+      // what we are doing is creating a brand new array of
       // mods, that is different from the previous array
-
+      // See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax
       ...mods,
       {
         name: description,
