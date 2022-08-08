@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import "./App.css";
-import { Button,  Center, Square, Circle , Text} from '@chakra-ui/react'
+import { Button,  Text} from '@chakra-ui/react'
 
 class Countdown extends Component {
   state = {

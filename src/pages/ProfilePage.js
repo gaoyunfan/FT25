@@ -35,8 +35,6 @@ export default function ProfilePage() {
 
   const [userData] = useDocumentData(doc(db, "users", user.uid));
 
-  console.log("userData", userData);
-  console.log("user", user)
 
   const handleSubmit = (e) => {
     e.preventDefault();

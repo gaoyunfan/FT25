@@ -99,13 +99,11 @@ function Modules() {
 	}
 	
 	const getUsrData = () => {
-		console.log(user.uid)
 		const connect = collection(db, "user_modList");
 		const result = query(connect,where('uid','==',user.uid));
 		getDocs(result).then(snapshot => {
 			var arr = [];
 			snapshot.docs.forEach((doc) => {
-				console.log(doc.data());
 				arr.push({
 					id: doc.id,
 					moduleCode: doc.data().mod_code

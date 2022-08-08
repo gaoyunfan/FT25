@@ -12,8 +12,6 @@ export default function PageRoom() {
   const [selectRoom,setSelectRoom] = useState("");
   const navigate = useNavigate();
 
-  console.log("user", user);
-  console.log("emailVertified", user.emailVerified);
 
   useEffect(() => {
     const q = query(
@@ -34,7 +32,6 @@ export default function PageRoom() {
     return () => unsubscribe();
   }, [db, user?.uid, loading]);
 
-  console.log("groups", groups);
 
   const handleSelectRoom = (room) => {
     setSelectRoom(room);

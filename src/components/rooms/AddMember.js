@@ -40,7 +40,6 @@ export default function AddMember(props) {
       setSearchResult("");
       return;
     }
-    console.log("query", queryres);
     setLoading(true);
     const result = allUsers.filter((person) => {
       return person.name?.toLowerCase().startsWith(queryres.toLowerCase());

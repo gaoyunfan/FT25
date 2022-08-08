@@ -166,7 +166,6 @@ export default function RoomModal() {
       await setDoc(docRef, group);
       all_members.forEach(async (u) => {
         const ref = doc(db, "users", u);
-        console.log("u", u);
         await updateDoc(ref, {
           rooms: arrayUnion(docRef.id),
         });
@@ -208,8 +207,6 @@ export default function RoomModal() {
     return () => unsubscribe();
   }, [db, user?.uid]);
 
-  console.log("endUser", endUser);
-  console.log("selectedUser ", selectedUsers);
 
   const chooseCode = (item, e) => {
     e.preventDefault();
@@ -329,7 +326,7 @@ export default function RoomModal() {
             ) : searchResult.length > 0 ? (
               searchResult
                 .map((u, index) => (
-                  <UserListItem index={index + 1} u={u} handleGroup={() => handleGroup(u)} />
+                  <UserListItem key={index + 1} index={index + 1} u={u} handleGroup={() => handleGroup(u)} />
                 ))
             ) : (
               <Box mt="15px" ml="20px">

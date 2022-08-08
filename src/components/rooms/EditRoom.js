@@ -99,37 +99,29 @@ export default function EditRoom(props) {
         // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
         const progress =
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log("Upload is " + progress + "% done");
         // eslint-disable-next-line default-case
         switch (snapshot.state) {
           case "paused":
-            console.log("Upload is paused");
             break;
           case "running":
-            console.log("Upload is running");
             break;
         }
       },
       (error) => {
         // A full list of error codes is available at
         // https://firebase.google.com/docs/storage/web/handle-errors
-        console.log("error", error);
       },
       () => {
         // Upload completed successfully, now we can get the download URL
         getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-          console.log("File available at", downloadURL);
           if (room.photoURL) {
             const prevImageRef = ref(projectStorage, room.photoURL);
             deleteObject(prevImageRef)
               .then(() => {
-                console.log("prev image deleted");
               })
               .catch((error) => {
-                console.log(error);
               });
           }
-          console.log("change url");
           await updateDoc(doc(db, "groups", room.id), {
             photoURL: downloadURL,
           });
@@ -164,23 +156,19 @@ export default function EditRoom(props) {
       return;
     }
     if (room.name !== roomName) {
-      console.log("change name");
       await updateDoc(doc(db, "groups", room.id), {
         name: roomName,
       });
     }
     if (file) {
-      console.log("change pic");
       UploadPic();
     }
     if (room.status !== value) {
-      console.log("change status");
       await updateDoc(doc(db, "groups", room.id), {
         status: value,
       });
     }
     if (room.moduleCode !== moduleCode) {
-      console.log("change module code");
       await updateDoc(doc(db, "groups", room.id), {
         moduleCode: moduleCode,
       });

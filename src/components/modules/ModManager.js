@@ -30,7 +30,6 @@ function ModManager(props) {
       }
     ];
     setMods(newMods);
-    console.log(newMods);
   }
 
   return (

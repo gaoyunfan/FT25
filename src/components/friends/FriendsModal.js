@@ -12,7 +12,6 @@ import {
   ModalBody,
   ModalCloseButton,
   FormControl,
-  FormLabel,
   Input,
   useToast,
 } from "@chakra-ui/react";
@@ -37,7 +36,6 @@ export default function FirendsModal(props) {
     if (!query) {
       return;
     }
-    console.log("query", query);
     setLoading(true);
     if (query === "" || query === null) {
       return;
@@ -45,7 +43,6 @@ export default function FirendsModal(props) {
     const result = users_list.filter((person) => {
       return person.name?.toLowerCase().startsWith(query.toLowerCase());
     });
-    console.log("result", result);
     setSearchResult(result);
     setLoading(false);
   };
@@ -102,10 +99,8 @@ export default function FirendsModal(props) {
       })
       return;
     }
-    console.log("selected", selectedUsers);
     selectedUsers.forEach(async (u) => {
       const ref = doc(db, "friends", u.uid);
-      console.log("u", u.uid);
       await updateDoc(ref, {
         friendRequest: arrayUnion(user.uid),
       });

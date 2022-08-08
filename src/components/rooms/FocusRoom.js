@@ -292,7 +292,7 @@ export default function FocusRoom() {
             <Text mb={1}>{msg.text}</Text>
             <Text ml="auto">{time}</Text>
           </Flex>
-          <Avatar mb={3} name={senderInfo[0].name} src={senderInfo[0].photoURL} />
+          <Avatar mb={3} name={senderInfo[0].name} tsrc={senderInfo[0].photoURL} />
         </Flex>
       );
     });

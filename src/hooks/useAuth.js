@@ -35,7 +35,6 @@ export function ProvideAuth({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-
   const signout = () => {
     return firebaseAuth.signOut().then(() => {
       setUser(false);
@@ -54,8 +53,6 @@ export function ProvideAuth({ children }) {
     });
   };
 
-
-
   const signInWithGoogle = async () => {
     try {
       const res = await signInWithPopup(firebaseAuth, googleAuthProvider);
@@ -70,12 +67,12 @@ export function ProvideAuth({ children }) {
           photoURL: user.photoURL,
           authProvider: "google",
           rooms: [],
-		  time:''
+          time: "",
         });
         await setDoc(doc(db, "friends", user.uid), {
           friends: [],
           friendRequest: [],
-          sendRequest:[]
+          sendRequest: [],
         });
       }
     } catch (err) {
@@ -110,18 +107,24 @@ export function ProvideAuth({ children }) {
         photoName: "",
         authProvider: "local",
         rooms: [],
-		time:''
+        time: "",
       });
 
-      await setDoc(doc(db, "friends", user.uid), {friends:[], friendRequest:[], sendRequest:[]});
+      await setDoc(doc(db, "friends", user.uid), {
+        friends: [],
+        friendRequest: [],
+        sendRequest: [],
+      });
     } catch (err) {
-      console.error(err);
       alert(err.message);
     }
-    updateProfile(firebaseAuth.currentUser, {displayName: name}).then(() => console.log("displayName updated")).catch((error) => {alert(error.message)});
+    updateProfile(firebaseAuth.currentUser, { displayName: name })
+      .then()
+      .catch((error) => {
+        alert(error.message);
+      });
     sendEmailVerification(firebaseAuth.currentUser).then(() => {
-      console.log("Email vertification sent!");
-    })
+    });
   };
 
   const sendPasswordReset = async (email) => {
@@ -139,30 +142,30 @@ export function ProvideAuth({ children }) {
   };
 
   const updateDisplayName = async (name) => {
-    await updateProfile(firebaseAuth.currentUser, {displayName: name});
+    await updateProfile(firebaseAuth.currentUser, { displayName: name });
     const userRef = doc(db, "users", user.uid);
-    await updateDoc(userRef, {"name": name});
-  }
+    await updateDoc(userRef, { name: name });
+  };
 
   const changePassword = async (newPassword) => {
-    await updatePassword(firebaseAuth.currentUser, newPassword)
-  }
+    await updatePassword(firebaseAuth.currentUser, newPassword);
+  };
 
   const updateProfilePic = async (url) => {
     updateProfile(firebaseAuth.currentUser, {
-      photoURL: url 
-    })
-   const userRef = doc(db, "users", user.uid);
-   await updateDoc(userRef, { "photoURL" : url });
-  }
+      photoURL: url,
+    });
+    const userRef = doc(db, "users", user.uid);
+    await updateDoc(userRef, { photoURL: url });
+  };
 
-  const deleteAccount = ()=> {
-    deleteUser(firebaseAuth.currentUser).then(() => {
-      console.log("user deleted");
-    }).catch((error) => {
-      alert(error);
-    })
-  }
+  const deleteAccount = () => {
+    deleteUser(firebaseAuth.currentUser)
+      .then(() => {})
+      .catch((error) => {
+        alert(error);
+      });
+  };
 
   // Subscribe to user on mount
   // Because this sets state in the callback it will cause any ...
@@ -197,11 +200,11 @@ export function ProvideAuth({ children }) {
     updateDisplayName,
     changePassword,
     updateProfilePic,
-    deleteAccount
+    deleteAccount,
   };
   return (
     <authContext.Provider value={value}>
       {!loading && children}
     </authContext.Provider>
-  )
+  );
 }

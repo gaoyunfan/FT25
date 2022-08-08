@@ -28,7 +28,6 @@ export default function ChangeProfilePic(props) {
 
     if (selected && types.includes(selected.type)) {
       setFile(selected);
-      console.log("file selected", File);
       setError("");
       setDisable(false);
     } else {
@@ -39,7 +38,6 @@ export default function ChangeProfilePic(props) {
   };
   const handleSubmit = async(e) => {
     setIsUpload(true);
-    console.log("userData photoName:", userData?.photoName);
     if (userData.photoName) {
       const desertRef = ref(
         projectStorage,
@@ -49,11 +47,9 @@ export default function ChangeProfilePic(props) {
       // Delete the file
       deleteObject(desertRef)
         .then(() => {
-          console.log("deleted");
         })
         .catch((error) => {
           // Uh-oh, an error occurred!
-          console.log(error);
         });
     }
   };

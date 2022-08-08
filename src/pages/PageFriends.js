@@ -26,7 +26,6 @@ export default function PageFriends() {
   const toast = useToast();
 
   const [friends_list] = useDocumentData(doc(db, "friends", user?.uid));
-  console.log("friends_info", friends_list?.friends);
   const q = query(collection(db, "users"));
   const [allUsers] = useCollectionData(q);
   const users_list = allUsers?.filter((u) => u.uid !== user.uid);

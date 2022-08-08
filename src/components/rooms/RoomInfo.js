@@ -38,9 +38,6 @@ export default function RoomInfo(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [friends_list] = useDocumentData(doc(db, "friends", user.uid));
   const [isAdmin, setIsAdmin] = useState(false);
-  console.log("friends_list", friends_list);
-  console.log("friends", friends_list?.friends);
-  console.log("sendRequest", friends_list?.sendRequest);
 
   const toast = useToast();
 
@@ -50,7 +47,6 @@ export default function RoomInfo(props) {
       setIsAdmin(true);
     }
   }, [room, user?.uid]);
-  console.log("admin = ", isAdmin);
 
   const handleAddFriends = async (u) => {
     const ref = doc(db, "friends", u.uid);
@@ -176,7 +172,6 @@ export default function RoomInfo(props) {
                   }
                 if (friends_list?.sendRequest?.includes(u.uid)) {
                   isRequestSend = true;
-                  console.log("isRequestedSend:", isRequestSend);
                 }
                 return (
                   <Flex

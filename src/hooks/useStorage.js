@@ -31,10 +31,8 @@ const useStorage = (file) => {
           const prevImageRef = ref(projectStorage, user.photoURL);
           deleteObject(prevImageRef)
           .then(() => {
-            console.log("prev image deleted");
           })
           .catch((error) => {
-            console.log(error);
           });
           }
           setUrl(downloadURL);

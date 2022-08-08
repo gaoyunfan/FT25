@@ -17,8 +17,6 @@ export default function PageVerification() {
     }
   }, [navigate, user.emailVerified])
 
-  console.log("user", user);
-  console.log("emailVertified", user.emailVerified);
   return (
     <Center h="40vh">
       <Flex

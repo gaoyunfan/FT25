@@ -17,10 +17,8 @@ export default function ProgressBar({ file, setFile, setIsUpload, imageInputRef 
       updateDoc(doc(db,"users", user.uid), {
         photoName: file.name
       }).then(() => {
-        console.log("new photoName updated")
       });
       imageInputRef.current.value = "";
-      console.log("update profile pic")
     }
   }, [url, setFile, setIsUpload, updateProfilePic, imageInputRef, db, file.name, user.uid]);
 

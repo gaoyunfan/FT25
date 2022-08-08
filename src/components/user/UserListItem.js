@@ -5,6 +5,7 @@ export default function UserListItem (props) {
   const { u, handleGroup } = props;
   return (
     <Flex 
+      data-testid={`test_${props.index}`}
       onClick={handleGroup}
       cursor="pointer"
       bg="#E8E8E8"
